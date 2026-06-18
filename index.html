@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UFOlogist — Atlas global del fenómeno UAP</title>
+<meta name="description" content="Atlas interactivo de avistamientos OVNI/UAP documentados: globo 3D, 80.000+ reportes, mapa de calor, línea de tiempo y fuentes originales." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css?v=2" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛸</text></svg>" />
+</head>
+<body>
+
+<!-- ======== TOP BAR ======== -->
+<header id="topbar">
+  <div class="brand">
+    <span class="brand-icon">🛸</span>
+    <div class="brand-text">
+      <h1>UFO<span>logist</span></h1>
+      <p>Atlas global del fenómeno UAP · 80.000+ reportes</p>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <input id="search" type="text" placeholder="Buscar caso, lugar o país… (ej. Nimitz, Rendlesham, España)" autocomplete="off" />
+    <div id="search-results" class="hidden"></div>
+  </div>
+
+  <div class="topbar-actions">
+    <button id="btn-add" class="btn-ghost" title="Registrar un avistamiento propio">➕ Registrar</button>
+    <button id="btn-tour" class="btn-ghost" title="Tour guiado por los casos esenciales">🧭 Expedición</button>
+    <button id="btn-stats" class="btn-ghost" title="Panel de análisis y tendencias">📊 Análisis</button>
+    <button id="btn-knowledge" class="btn-ghost" title="Centro de conocimiento">📚</button>
+    <button id="btn-about" class="btn-ghost" title="Metodología y fuentes">ⓘ</button>
+  </div>
+</header>
+
+<!-- ======== GLOBE ======== -->
+<main id="globe-container">
+  <div id="globe"></div>
+  <div id="loading">
+    <div class="loader-orb"></div>
+    <p>Inicializando atlas orbital…</p>
+  </div>
+</main>
+
+<!-- ======== PICK MODE HINT ======== -->
+<div id="pick-hint" class="glass hidden">🎯 Haz clic en el globo en el lugar exacto del avistamiento <button id="pick-cancel" class="btn-link">cancelar</button></div>
+
+<!-- ======== TOAST ======== -->
+<div id="toast" class="hidden"></div>
+
+<!-- ======== LEFT PANEL: FILTERS ======== -->
+<aside id="panel-left" class="glass">
+  <div class="panel-head">
+    <h2>Filtros</h2>
+    <button id="btn-collapse-left" class="btn-mini" title="Plegar">«</button>
+  </div>
+
+  <div class="panel-scroll">
+    <section class="filter-block">
+      <h3>Capas</h3>
+      <div class="seg-control" id="layer-mode">
+        <button data-mode="both" class="active">Ambas</button>
+        <button data-mode="heat">Calor</button>
+        <button data-mode="points">Casos</button>
+      </div>
+      <label class="switch-row"><input type="checkbox" id="hotspots-toggle" /><span>🔥 Hotspots legendarios</span></label>
+    </section>
+
+    <section class="filter-block">
+      <h3>Base masiva NUFORC <span id="mass-status" class="count-pill">cargando…</span></h3>
+      <label class="switch-row"><input type="checkbox" id="mass-toggle" checked /><span>80.332 reportes geolocalizados (1906–2014)</span></label>
+      <div id="shape-filters"></div>
+      <div class="seg-control small" id="tod-filter" title="Franja horaria del avistamiento">
+        <button data-tod="all" class="active">24 h</button>
+        <button data-tod="day">☀ Día</button>
+        <button data-tod="night">☾ Noche</button>
+      </div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Tipo de caso curado <button id="types-all" class="btn-link">todos</button><button id="types-none" class="btn-link">ninguno</button></h3>
+      <div id="type-filters"></div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Credibilidad mínima</h3>
+      <div class="cred-filter" id="cred-filter">
+        <input type="range" id="cred-range" min="1" max="5" value="1" step="1" />
+        <div class="cred-stars" id="cred-stars">★☆☆☆☆</div>
+      </div>
+      <p class="hint">5★ = radar + testigos militares + documentación oficial</p>
+    </section>
+
+    <section class="filter-block">
+      <h3>Selección <span id="case-count" class="count-pill">0</span></h3>
+      <p class="hint" id="mass-count-hint"></p>
+      <div class="export-row">
+        <button id="btn-export-csv" class="btn-ghost small" title="Exportar selección filtrada">⬇ CSV</button>
+        <button id="btn-export-json" class="btn-ghost small" title="Exportar selección filtrada">⬇ JSON</button>
+        <button id="btn-permalink" class="btn-ghost small" title="Copiar enlace con los filtros actuales">🔗 Enlace</button>
+      </div>
+      <div id="case-list"></div>
+    </section>
+  </div>
+</aside>
+<button id="btn-expand-left" class="edge-tab glass hidden" title="Mostrar filtros">»</button>
+
+<!-- ======== RIGHT PANEL: CASE DETAIL ======== -->
+<aside id="panel-case" class="glass hidden">
+  <button id="btn-close-case" class="btn-mini close">✕</button>
+  <div id="case-content"></div>
+</aside>
+
+<!-- ======== RIGHT PANEL: STATS ======== -->
+<aside id="panel-stats" class="glass hidden">
+  <button id="btn-close-stats" class="btn-mini close">✕</button>
+  <h2 class="stats-title">📊 Análisis de la selección</h2>
+  <div id="stats-content"></div>
+</aside>
+
+<!-- ======== TOUR CARD ======== -->
+<div id="tour-card" class="glass hidden">
+  <div class="tour-head">
+    <span id="tour-progress">1/14</span>
+    <span id="tour-title">—</span>
+    <button id="tour-close" class="btn-mini">✕</button>
+  </div>
+  <p id="tour-text"></p>
+  <div class="tour-bar"><div id="tour-bar-fill"></div></div>
+  <div class="tour-controls">
+    <button id="tour-prev" class="btn-ghost small">⏮ Anterior</button>
+    <button id="tour-pause" class="btn-ghost small">⏸ Pausa</button>
+    <button id="tour-next" class="btn-ghost small">Siguiente ⏭</button>
+  </div>
+</div>
+
+<!-- ======== BOTTOM: TIMELINE ======== -->
+<footer id="timeline" class="glass">
+  <div class="tl-controls">
+    <button id="btn-play" class="btn-play" title="Reproducir línea de tiempo (espacio)">▶</button>
+    <div class="seg-control small" id="play-mode">
+      <button data-pmode="cumulative" class="active" title="Acumula los casos desde el inicio">Acumulado</button>
+      <button data-pmode="window" title="Ventana móvil de 10 años">Ventana 10a</button>
+    </div>
+    <div class="tl-speed">
+      <label>Velocidad</label>
+      <input type="range" id="speed" min="1" max="10" value="4" />
+    </div>
+  </div>
+
+  <div class="tl-main">
+    <div class="tl-year-display"><span id="year-from">1942</span><span class="tl-sep">—</span><span id="year-to">2025</span></div>
+    <div class="tl-canvas-wrap">
+      <canvas id="tl-canvas"></canvas>
+      <div id="tl-events"></div>
+      <div id="tl-range">
+        <div id="tl-fill"></div>
+        <div id="handle-min" class="tl-handle" tabindex="0"></div>
+        <div id="handle-max" class="tl-handle" tabindex="0"></div>
+      </div>
+    </div>
+    <div class="tl-axis" id="tl-axis"></div>
+  </div>
+</footer>
+
+<!-- ======== SIGHTING FORM ======== -->
+<div id="sight-overlay" class="hidden">
+  <div id="sight-form" class="glass">
+    <button id="sight-close" class="btn-mini close">✕</button>
+    <h3>➕ Registrar avistamiento</h3>
+    <p class="hint">Se guarda solo en tu navegador (cuaderno de campo local).</p>
+    <label>Título *<input type="text" id="sf-name" placeholder="Luz pulsante sobre la sierra" /></label>
+    <div class="sf-row">
+      <label>Fecha *<input type="date" id="sf-date" /></label>
+      <label>Hora<input type="time" id="sf-time" /></label>
+    </div>
+    <div class="sf-row">
+      <label>Latitud<input type="number" id="sf-lat" step="0.0001" /></label>
+      <label>Longitud<input type="number" id="sf-lng" step="0.0001" /></label>
+    </div>
+    <label>Forma observada
+      <select id="sf-shape"></select>
+    </label>
+    <label>Notas<textarea id="sf-notes" rows="3" placeholder="Duración, dirección, color, testigos, condiciones…"></textarea></label>
+    <button id="sf-save" class="btn-ghost">💾 Guardar en mi cuaderno</button>
+  </div>
+</div>
+
+<!-- ======== KNOWLEDGE MODAL ======== -->
+<div id="modal-overlay" class="hidden">
+  <div id="modal" class="glass">
+    <button id="btn-close-modal" class="btn-mini close">✕</button>
+    <nav id="modal-tabs">
+      <button data-tab="hynek" class="active">Clasificación</button>
+      <button data-tab="disclosure">Disclosure USA</button>
+      <button data-tab="glossary">Glosario</button>
+      <button data-tab="method">Metodología</button>
+      <button data-tab="report">Reportar</button>
+    </nav>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
+<script src="js/data.js?v=2"></script>
+<script src="js/app.js?v=2"></script>
+</body>
+</html>
