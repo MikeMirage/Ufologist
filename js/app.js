@@ -61,6 +61,8 @@ const state = {
   massOn: true,
   shapes: new Set(SHAPE_META.map((_, i) => i)),
   tod: 'all',                   // all | day | night
+  geipanOn: true,
+  geipanClasses: new Set(GEIPAN_META.map((_, i) => i)),
   hotspots: false,
   pickMode: false,
 };
@@ -118,6 +120,34 @@ function massFiltered() {
   });
 }
 
+// ---------- GEIPAN DB (France / CNES) ----------
+let geipanData = null;   // array of {d,lat,lng,ci,zone,resume,year,geipan:true}
+function ingestGeipan(json) {
+  geipanData = json.rows.map(r => ({
+    d: r[0], lat: r[1], lng: r[2], ci: r[3], zone: r[4], resume: r[5],
+    year: Math.floor(r[0] / 10000), geipan: true,
+  }));
+  $('geipan-status').textContent = geipanData.length.toLocaleString('es');
+  refresh();
+}
+fetch('data/geipan.json?v=1')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(ingestGeipan)
+  .catch(() => {
+    const s = document.createElement('script');
+    s.src = 'data/geipan.js?v=1';
+    s.onload = () => window.GEIPAN_DATA ? ingestGeipan(window.GEIPAN_DATA)
+                                        : ($('geipan-status').textContent = 'no disponible');
+    s.onerror = () => { $('geipan-status').textContent = 'no disponible'; };
+    document.head.appendChild(s);
+  });
+
+function geipanFiltered() {
+  if (!state.geipanOn || !geipanData) return [];
+  const { yearFrom, yearTo, geipanClasses } = state;
+  return geipanData.filter(r => r.year >= yearFrom && r.year <= yearTo && geipanClasses.has(r.ci));
+}
+
 // ---------- Globe ----------
 const MASS_POINT_LIMIT = 600;  // show individual mass dots only below this (DOM markers); else heatmap
 
@@ -162,15 +192,18 @@ const globe = Globe()($('globe'))
 function buildMarker(d) {
   const el = document.createElement('div');
   el.className = 'globe-marker';
-  const color = d.mass ? SHAPE_META[d.s].color : TYPE_META[d.type].color;
-  const cls = 'case-hex' + (d.mass ? ' mass' : '') + (d.mine ? ' mine' : '');
-  const pip = d.mass ? '' : '<circle class="pip" cx="12" cy="12" r="2.3"/>';
+  const isMassLike = d.mass || d.geipan;
+  const color = d.geipan ? GEIPAN_META[d.ci].color : (d.mass ? SHAPE_META[d.s].color : TYPE_META[d.type].color);
+  const cls = 'case-hex' + (isMassLike ? ' mass' : '') + (d.mine ? ' mine' : '');
+  const pip = isMassLike ? '' : '<circle class="pip" cx="12" cy="12" r="2.3"/>';
   el.innerHTML = `<svg class="${cls}" viewBox="0 0 24 24" style="--c:${color}">
     <polygon points="12,1.6 21.5,7 21.5,17 12,22.4 2.5,17 2.5,7"/>${pip}</svg>`;
-  el.title = d.mass
-    ? `${SHAPE_META[d.s].label} · ${fmtDateInt(d.d)} · ${d.loc || 'ubicación geocodificada'}`
-    : `${d.name} · ${d.year} · ${d.loc || ''}`;
-  el.onclick = () => d.mass ? openMassReport(d) : openCase(d.id, true);
+  el.title = d.geipan
+    ? `GEIPAN ${GEIPAN_META[d.ci].code} · ${fmtDateInt(d.d)} · ${d.zone || 'Francia'}`
+    : d.mass
+      ? `${SHAPE_META[d.s].label} · ${fmtDateInt(d.d)} · ${d.loc || 'ubicación geocodificada'}`
+      : `${d.name} · ${d.year} · ${d.loc || ''}`;
+  el.onclick = () => d.geipan ? openGeipanReport(d) : (d.mass ? openMassReport(d) : openCase(d.id, true));
   return el;
 }
 
@@ -224,29 +257,34 @@ let lastMassCount = 0;
 function refresh() {
   const curated = filteredCases();
   const mass = massFiltered();
+  const geipan = geipanFiltered();
   lastMassCount = mass.length;
-  heatRef = mass.length > 0 ? Math.max(20, mass.length / 30) : 15;
+  const heatTotal = mass.length + geipan.length;
+  heatRef = heatTotal > 0 ? Math.max(20, heatTotal / 30) : 15;
 
   let points = [];
   if (state.layerMode !== 'heat') {
     points = curated.slice();
     // mobile keeps only the curated dots as DOM markers (heatmap shows mass density);
-    // desktop may also show individual mass reports when the selection is small
-    if (!isMobile() && mass.length > 0 && mass.length <= MASS_POINT_LIMIT) points = points.concat(mass);
+    // desktop also shows individual mass/GEIPAN reports when each subset is small
+    if (!isMobile()) {
+      if (mass.length > 0 && mass.length <= MASS_POINT_LIMIT) points = points.concat(mass);
+      if (geipan.length > 0 && geipan.length <= MASS_POINT_LIMIT) points = points.concat(geipan);
+    }
   }
   globe.htmlElementsData(points);
-  globe.hexBinPointsData(state.layerMode !== 'points' ? curated.concat(mass) : []);
+  globe.hexBinPointsData(state.layerMode !== 'points' ? curated.concat(mass, geipan) : []);
   globe.labelsData(state.hotspots ? HOTSPOTS : []);
 
   renderCaseList(curated);
   renderTypeCounts();
   renderShapeCounts();
-  $('case-count').textContent = (curated.length + mass.length).toLocaleString('es');
-  $('mass-count-hint').textContent = mass.length
-    ? (mass.length > MASS_POINT_LIMIT
-        ? `${curated.length} casos curados + ${mass.length.toLocaleString('es')} reportes NUFORC (en mapa de calor; acota filtros a ≤ ${MASS_POINT_LIMIT.toLocaleString('es')} para verlos como puntos)`
-        : `${curated.length} casos curados + ${mass.length.toLocaleString('es')} reportes NUFORC como puntos`)
-    : `${curated.length} casos curados`;
+  renderGeipanCounts();
+  $('case-count').textContent = (curated.length + mass.length + geipan.length).toLocaleString('es');
+  const parts = [`${curated.length} curados`];
+  if (mass.length) parts.push(`${mass.length.toLocaleString('es')} NUFORC${mass.length > MASS_POINT_LIMIT ? ' (calor)' : ''}`);
+  if (geipan.length) parts.push(`${geipan.length.toLocaleString('es')} GEIPAN${geipan.length > MASS_POINT_LIMIT ? ' (calor)' : ''}`);
+  $('mass-count-hint').textContent = parts.join(' + ') + ((mass.length > MASS_POINT_LIMIT || geipan.length > MASS_POINT_LIMIT) ? ` · acota a ≤${MASS_POINT_LIMIT} para ver puntos` : '');
   $('year-from').textContent = state.yearFrom;
   $('year-to').textContent = state.yearTo;
   drawHistogram();
@@ -331,6 +369,35 @@ document.querySelectorAll('#tod-filter button').forEach(btn => {
   };
 });
 $('hotspots-toggle').onchange = e => { state.hotspots = e.target.checked; refresh(); };
+
+// ---------- Classification filters (GEIPAN) ----------
+function buildGeipanFilters() {
+  const wrap = $('geipan-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  GEIPAN_META.forEach((g, i) => {
+    const el = document.createElement('span');
+    el.className = 'shape-pill' + (state.geipanClasses.has(i) ? '' : ' off');
+    el.dataset.gclass = i;
+    el.title = g.desc;
+    el.innerHTML = `<span class="sdot" style="background:${g.color}"></span>${g.label} <span class="g-count"></span>`;
+    el.onclick = () => {
+      state.geipanClasses.has(i) ? state.geipanClasses.delete(i) : state.geipanClasses.add(i);
+      el.classList.toggle('off', !state.geipanClasses.has(i));
+      refresh();
+    };
+    wrap.appendChild(el);
+  });
+}
+function renderGeipanCounts() {
+  if (!geipanData) return;
+  const counts = new Array(GEIPAN_META.length).fill(0);
+  geipanData.forEach(r => { if (r.year >= state.yearFrom && r.year <= state.yearTo) counts[r.ci]++; });
+  document.querySelectorAll('#geipan-filters .shape-pill').forEach(el => {
+    el.querySelector('.g-count').textContent = counts[+el.dataset.gclass] || 0;
+  });
+}
+$('geipan-toggle').onchange = e => { state.geipanOn = e.target.checked; refresh(); };
 
 // ---------- Credibility ----------
 $('cred-range').oninput = e => {
@@ -540,6 +607,33 @@ function openMassReport(d) {
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
 }
+
+function openGeipanReport(d) {
+  closeStats();
+  state.selectedCase = null;
+  const g = GEIPAN_META[d.ci];
+  const q = encodeURIComponent((d.zone || 'France') + ' ' + Math.floor(d.d / 10000) + ' OVNI UAP');
+  $('case-content').innerHTML = `
+    <span class="cc-type-badge" style="background:${g.color}22;color:${g.color};border:1px solid ${g.color}55">
+      <span class="dot" style="width:8px;height:8px;border-radius:50%;background:${g.color}"></span>GEIPAN · ${g.label}</span>
+    <h2 class="cc-title">Caso GEIPAN (CNES)</h2>
+    <p class="cc-loc">📍 ${d.zone || 'Francia'} · <span style="color:var(--txt-dim)">ubicación a nivel de departamento</span></p>
+    <div class="cc-row">
+      <div class="cc-stat"><label>Fecha</label><span class="v">${fmtDateInt(d.d)}</span></div>
+      <div class="cc-stat"><label>Clasificación</label><span class="v">${g.code}</span></div>
+    </div>
+    <p class="cc-summary">${d.resume || 'Caso del archivo oficial del GEIPAN (agencia espacial francesa CNES).'}</p>
+    <p class="hint">${g.desc}</p>
+    <div class="cc-sources"><h4>Fuente oficial</h4>
+      <a class="cc-source-link" href="https://www.cnes-geipan.fr/fr/recherche/cas" target="_blank" rel="noopener">GEIPAN — Recherche de cas</a>
+    </div>
+    <div class="cc-media-actions">
+      <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">▶ Buscar vídeos</a>
+      <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}">🖼 Buscar imágenes</a>
+    </div>`;
+  $('panel-case').classList.remove('hidden');
+  mobileOnCaseOpen();
+}
 $('btn-close-case').onclick = () => {
   $('panel-case').classList.add('hidden');
   state.selectedCase = null;
@@ -601,6 +695,11 @@ function drawHistogram() {
   if (state.massOn && massData) {
     massData.forEach(r => {
       if (r.year >= YEAR_MIN && r.year <= YEAR_MAX && state.shapes.has(r.s)) counts[r.year - YEAR_MIN]++;
+    });
+  }
+  if (state.geipanOn && geipanData) {
+    geipanData.forEach(r => {
+      if (r.year >= YEAR_MIN && r.year <= YEAR_MAX && state.geipanClasses.has(r.ci)) counts[r.year - YEAR_MIN]++;
     });
   }
   // log scale (mass DB is exponentially skewed toward 2000s)
@@ -767,12 +866,18 @@ function hbar(label, n, max, suffix) {
 function renderStats() {
   const curated = filteredCases();
   const mass = massFiltered();
+  const geipan = geipanFiltered();
   // decades
   const dec = {};
   curated.forEach(c => { const d = Math.floor(c.year / 10) * 10; dec[d] = (dec[d] || 0) + 1; });
   mass.forEach(r => { const d = Math.floor(r.year / 10) * 10; dec[d] = (dec[d] || 0) + 1; });
+  geipan.forEach(r => { const d = Math.floor(r.year / 10) * 10; dec[d] = (dec[d] || 0) + 1; });
   const decKeys = Object.keys(dec).map(Number).sort((a, b) => a - b);
   const decMax = Math.max(1, ...Object.values(dec));
+  // GEIPAN by classification
+  const gc = new Array(GEIPAN_META.length).fill(0);
+  geipan.forEach(r => gc[r.ci]++);
+  const gcMax = Math.max(1, ...gc);
   // shapes
   const sh = new Array(SHAPE_META.length).fill(0);
   mass.forEach(r => sh[r.s]++);
@@ -789,11 +894,15 @@ function renderStats() {
   $('stats-content').innerHTML = `
     <div class="kpi-row">
       <div class="kpi"><span class="n">${curated.length}</span><label>Casos curados</label></div>
-      <div class="kpi"><span class="n">${mass.length.toLocaleString('es')}</span><label>Reportes NUFORC</label></div>
-      <div class="kpi"><span class="n">${(curated.length + mass.length).toLocaleString('es')}</span><label>Total selección</label></div>
+      <div class="kpi"><span class="n">${mass.length.toLocaleString('es')}</span><label>NUFORC</label></div>
+      <div class="kpi"><span class="n">${geipan.length.toLocaleString('es')}</span><label>GEIPAN</label></div>
+      <div class="kpi"><span class="n">${(curated.length + mass.length + geipan.length).toLocaleString('es')}</span><label>Total</label></div>
     </div>
     <div class="chart-block"><h4>Por década</h4>
       ${decKeys.map(d => hbar(d + 's', dec[d], decMax)).join('')}</div>
+    ${geipan.length ? `
+    <div class="chart-block"><h4>GEIPAN por clasificación (Francia)</h4>
+      ${GEIPAN_META.map((g, i) => ({ g, n: gc[i] })).filter(x => x.n).map(x => hbar(x.g.label, x.n, gcMax)).join('')}</div>` : ''}
     ${mass.length ? `
     <div class="chart-block"><h4>Por forma reportada (NUFORC)</h4>
       ${SHAPE_META.map((s, i) => ({ s, i, n: sh[i] })).filter(x => x.n).sort((a, b) => b.n - a.n)
@@ -833,7 +942,13 @@ function exportRows() {
     lat: r.lat, lng: r.lng, type: SHAPE_META[r.s].code, type_label: SHAPE_META[r.s].label,
     location: r.loc || '', credibility: '', summary: '', sources: 'https://nuforc.org/databank/',
   }));
-  return curated.concat(mass);
+  const geipan = geipanFiltered().map(r => ({
+    source: 'GEIPAN (CNES)',
+    name: (r.zone || 'France') + ' ' + Math.floor(r.d / 10000), date: `${Math.floor(r.d / 10000)}-${String(Math.floor(r.d / 100) % 100).padStart(2, '0')}-${String(r.d % 100).padStart(2, '0')}`,
+    time: '', lat: r.lat, lng: r.lng, type: GEIPAN_META[r.ci].code, type_label: GEIPAN_META[r.ci].label,
+    location: r.zone || '', credibility: '', summary: r.resume || '', sources: 'https://www.cnes-geipan.fr/fr/recherche/cas',
+  }));
+  return curated.concat(mass, geipan);
 }
 function download(filename, text, mime) {
   const a = document.createElement('a');
@@ -868,6 +983,8 @@ function encodeHash() {
   if (!state.massOn) p.set('m', '0');
   if (state.shapes.size !== SHAPE_META.length) p.set('s', [...state.shapes].join('.'));
   if (state.tod !== 'all') p.set('h', state.tod);
+  if (!state.geipanOn) p.set('g', '0');
+  if (state.geipanClasses.size !== GEIPAN_META.length) p.set('gc', [...state.geipanClasses].join('.'));
   if (state.hotspots) p.set('hs', '1');
   if (state.selectedCase) p.set('case', state.selectedCase);
   return p.toString();
@@ -893,6 +1010,8 @@ function applyHash() {
     if (p.get('m') === '0') state.massOn = false;
     if (p.get('s')) state.shapes = new Set(p.get('s').split('.').map(Number).filter(i => i >= 0 && i < SHAPE_META.length));
     if (p.get('h') && ['day', 'night'].includes(p.get('h'))) state.tod = p.get('h');
+    if (p.get('g') === '0') state.geipanOn = false;
+    if (p.get('gc')) state.geipanClasses = new Set(p.get('gc').split('.').map(Number).filter(i => i >= 0 && i < GEIPAN_META.length));
     if (p.get('hs') === '1') state.hotspots = true;
     return p.get('case');
   } finally { applyingHash = false; }
@@ -1026,6 +1145,94 @@ $('tour-pause').onclick = () => {
 };
 
 // ---------- Knowledge modal ----------
+// ---------- "Anatomía de un encuentro" — animated SVG dioramas ----------
+const SAUCER = (cls) => `<g class="${cls}">
+  <ellipse cx="0" cy="0" rx="22" ry="6.5" fill="var(--c)" fill-opacity=".85"/>
+  <path d="M-11,-2.5 A11,8 0 0 1 11,-2.5 Z" fill="var(--c)" fill-opacity=".5"/>
+  <circle cx="-9" cy="2" r="1.5" fill="#fff"/><circle cx="0" cy="2.6" r="1.5" fill="#fff"/><circle cx="9" cy="2" r="1.5" fill="#fff"/></g>`;
+const BEING = (fill) => `<ellipse cx="0" cy="-9" rx="3.5" ry="4.5" fill="${fill}"/><rect x="-3" y="-5" width="6" height="13" rx="2.5" fill="${fill}"/>`;
+
+const ANATOMY = [
+  { code:'NL', caseId:'hessdalen-1984', scene:`
+    <rect class="an-ground" x="0" y="112" width="240" height="28"/>
+    <circle class="an-pulse" cx="78" cy="48" r="6" fill="var(--c)"/>
+    <circle class="an-pulse d2" cx="138" cy="38" r="5" fill="var(--c)"/>
+    <circle class="an-pulse d3" cx="170" cy="62" r="4" fill="var(--c)"/>` },
+  { code:'DD', caseId:'mcminnville-1950', day:true, scene:`
+    <circle cx="200" cy="34" r="14" fill="#ffe9a8" fill-opacity=".8"/>
+    <g class="an-cross">${SAUCER('')}</g>` },
+  { code:'RV', caseId:'washington-1952', scene:`
+    <circle cx="70" cy="72" r="46" fill="none" stroke="var(--c)" stroke-opacity=".3"/>
+    <circle cx="70" cy="72" r="28" fill="none" stroke="var(--c)" stroke-opacity=".18"/>
+    <line x1="24" y1="72" x2="116" y2="72" stroke="var(--c)" stroke-opacity=".15"/>
+    <line x1="70" y1="26" x2="70" y2="118" stroke="var(--c)" stroke-opacity=".15"/>
+    <g class="an-sweep"><path d="M70,72 L70,26 A46,46 0 0 1 103,40 Z" fill="var(--c)" fill-opacity=".2"/></g>
+    <circle class="an-pulse" cx="94" cy="50" r="3.5" fill="var(--c)"/>
+    <g transform="translate(185,58)"><path d="M-16,0 L12,0 L18,-1.5 M0,0 L-6,-9 M0,0 L-6,9 M-12,0 L-17,-6" stroke="#cdd8ef" stroke-width="1.4" fill="none"/></g>` },
+  { code:'CE1', caseId:'exeter-1965', scene:`
+    <rect class="an-ground" x="0" y="112" width="240" height="28"/>
+    <g transform="translate(120,52)">${SAUCER('an-bob')}</g>
+    <line x1="120" y1="66" x2="120" y2="108" stroke="var(--c)" stroke-dasharray="3 3" stroke-opacity=".6"/>
+    <line x1="113" y1="108" x2="127" y2="108" stroke="var(--c)"/>
+    <line x1="113" y1="66" x2="127" y2="66" stroke="var(--c)" stroke-opacity=".6"/>
+    <text x="134" y="92" class="an-label">&lt;150 m</text>` },
+  { code:'CE2', caseId:'trans-en-provence-1981', scene:`
+    <rect class="an-ground" x="0" y="112" width="240" height="28"/>
+    <g transform="translate(126,50)">${SAUCER('an-bob')}</g>
+    <ellipse class="an-trace" cx="126" cy="113" rx="30" ry="5" fill="none" stroke="var(--c)" stroke-width="1.5"/>
+    <path class="an-em" d="M44,34 l9,11 l-7,4 l11,13" stroke="var(--c)" fill="none" stroke-width="2.2"/>` },
+  { code:'CE3', caseId:'socorro-1964', scene:`
+    <rect class="an-ground" x="0" y="112" width="240" height="28"/>
+    <g transform="translate(92,96)">${SAUCER('')}<line x1="-11" y1="5" x2="-14" y2="16" stroke="var(--c)"/><line x1="11" y1="5" x2="14" y2="16" stroke="var(--c)"/></g>
+    <g class="an-sway" transform="translate(156,110)">${BEING('#cdd8ef')}</g>
+    <g class="an-sway d2" transform="translate(174,111)">${BEING('#9fb0d0')}</g>` },
+  { code:'CE4', caseId:'travis-walton-1975', scene:`
+    <rect class="an-ground" x="0" y="112" width="240" height="28"/>
+    <g transform="translate(120,40)">${SAUCER('an-bob')}</g>
+    <path class="an-beam" d="M104,46 L136,46 L150,112 L90,112 Z" fill="var(--c)"/>
+    <g class="an-rise">${BEING('#fff')}</g>` },
+  { code:'MIL', caseId:'nimitz-2004', scene:`
+    <g transform="translate(58,72)"><path d="M-18,0 L12,0 L20,-1.5 L12,1.5 Z M-2,0 L7,-10 M-2,1 L7,11 M-12,0 L-18,-7" stroke="#cdd8ef" stroke-width="1.5" fill="#cdd8ef" fill-opacity=".5"/></g>
+    <g transform="translate(172,56)">${SAUCER('an-bob')}</g>
+    <g class="an-pulse" transform="translate(172,56)"><circle r="21" fill="none" stroke="var(--c)" stroke-width="1.2"/><line x1="-27" y1="0" x2="-23" y2="0" stroke="var(--c)"/><line x1="23" y1="0" x2="27" y2="0" stroke="var(--c)"/><line x1="0" y1="-27" x2="0" y2="-23" stroke="var(--c)"/><line x1="0" y1="23" x2="0" y2="27" stroke="var(--c)"/></g>` },
+  { code:'USO', caseId:'shag-harbour-1967', scene:`
+    <rect class="an-water" x="0" y="94" width="240" height="46"/>
+    <g class="an-dive"><circle cx="120" cy="0" r="8" fill="var(--c)"/><circle cx="120" cy="0" r="3" fill="#fff" fill-opacity=".7"/></g>
+    <ellipse class="an-ripple" cx="120" cy="94" rx="7" ry="2.4" fill="none" stroke="var(--c)" stroke-width="1.5"/>
+    <ellipse class="an-ripple d2" cx="120" cy="94" rx="7" ry="2.4" fill="none" stroke="var(--c)" stroke-width="1.5"/>` },
+  { code:'MASS', caseId:'phoenix-1997', scene:`
+    <rect class="an-ground" x="0" y="116" width="240" height="24"/>
+    <g transform="translate(120,46) scale(1.55)">${SAUCER('an-bob')}</g>
+    <g class="an-crowd" fill="#8595b8">
+      <g transform="translate(70,116)"><circle cy="-7" r="3"/><rect x="-2.5" y="-4" width="5" height="11" rx="2"/></g>
+      <g transform="translate(96,116)"><circle cy="-7" r="3"/><rect x="-2.5" y="-4" width="5" height="11" rx="2"/></g>
+      <g transform="translate(122,116)"><circle cy="-7" r="3"/><rect x="-2.5" y="-4" width="5" height="11" rx="2"/></g>
+      <g transform="translate(148,116)"><circle cy="-7" r="3"/><rect x="-2.5" y="-4" width="5" height="11" rx="2"/></g>
+      <g transform="translate(174,116)"><circle cy="-7" r="3"/><rect x="-2.5" y="-4" width="5" height="11" rx="2"/></g>
+    </g>` },
+];
+function buildAnatomy() {
+  return `
+    <h3>Anatomía de un encuentro</h3>
+    <p>Qué distingue a cada tipo de avistamiento, de una luz lejana a un presunto encuentro con ocupantes.
+    Las escenas son ilustrativas; pulsa <b>"ver caso real"</b> para volar a un ejemplo documentado en el globo.</p>
+    <div class="anatomy-grid">
+      ${ANATOMY.map(a => {
+        const m = TYPE_META[a.code];
+        return `<div class="anatomy-card" style="--c:${m.color}">
+          <div class="anatomy-scene${a.day ? ' scene-day' : ''}">
+            <svg class="anat-svg" viewBox="0 0 240 140" preserveAspectRatio="xMidYMid slice">${a.scene}</svg>
+          </div>
+          <div class="anatomy-meta">
+            <b>${m.label} <span class="an-code">[${a.code}]</span></b>
+            <p>${m.desc}</p>
+            <button class="anatomy-go" data-go="${a.caseId}">ver caso real →</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
 const TABS = {
   hynek: () => `
     <h3>Clasificación de casos</h3>
@@ -1041,6 +1248,7 @@ const TABS = {
     <p>Los 80.332 reportes ciudadanos se agrupan en 10 morfologías. La "luz" nocturna domina el registro — coherente
     con la categoría NL de Hynek y con la dificultad de estimar forma de noche.</p>
     ${SHAPE_META.map(s => `<span class="shape-pill" style="cursor:default;margin:2px"><span class="sdot" style="background:${s.color}"></span>${s.label}</span>`).join(' ')}`,
+  anatomy: () => buildAnatomy(),
   disclosure: () => `
     <h3>Cronología del disclosure en EE.UU.</h3>
     <p>Ochenta años de investigación oficial, negación pública y desclasificación gradual: del memo Twining a las audiencias del Congreso.
@@ -1082,6 +1290,13 @@ function switchTab(tab) {
   $('modal-body').scrollTop = 0;
 }
 document.querySelectorAll('#modal-tabs button').forEach(b => { b.onclick = () => switchTab(b.dataset.tab); });
+// "ver caso real" in the Anatomy tab → close modal and fly to the example case
+$('modal-body').addEventListener('click', e => {
+  const b = e.target.closest('.anatomy-go');
+  if (!b) return;
+  $('modal-overlay').classList.add('hidden');
+  openCase(b.dataset.go, true);
+});
 $('btn-knowledge').onclick = () => openModal('hynek');
 $('btn-about').onclick = () => openModal('method');
 $('btn-close-modal').onclick = () => $('modal-overlay').classList.add('hidden');
@@ -1195,11 +1410,13 @@ $('speed').value = state.speed;
 $('cred-range').value = state.credMin;
 $('cred-stars').textContent = '★'.repeat(state.credMin) + '☆'.repeat(5 - state.credMin);
 $('mass-toggle').checked = state.massOn;
+$('geipan-toggle').checked = state.geipanOn;
 $('hotspots-toggle').checked = state.hotspots;
 document.querySelectorAll('#layer-mode button').forEach(b => b.classList.toggle('active', b.dataset.mode === state.layerMode));
 document.querySelectorAll('#tod-filter button').forEach(b => b.classList.toggle('active', b.dataset.tod === state.tod));
 buildTypeFilters();
 buildShapeFilters();
+buildGeipanFilters();
 positionHandles();
 renderTimelineEvents();
 refresh();

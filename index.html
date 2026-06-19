@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=10" />
+<link rel="stylesheet" href="css/styles.css?v=12" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛸</text></svg>" />
 </head>
 <body>
@@ -25,7 +25,8 @@
       <span class="emblem-ufo">🛸</span>
     </div>
     <h1 class="landing-title">UFO<span>logist</span></h1>
-    <p class="landing-sub">the UFO encounter atlas</p>
+    <p class="landing-sub">by Miquel Gelabert</p>
+    <p class="landing-tag">the UFO encounter atlas</p>
     <div class="landing-progress"><div id="landing-bar"></div></div>
     <div class="landing-log" id="landing-log">Inicializando atlas orbital…</div>
     <div class="landing-count"><span id="landing-count">0</span> reportes indexados</div>
@@ -100,6 +101,12 @@
         <button data-tod="day">☀ Día</button>
         <button data-tod="night">☾ Noche</button>
       </div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Base GEIPAN · Francia <span id="geipan-status" class="count-pill">cargando…</span></h3>
+      <label class="switch-row"><input type="checkbox" id="geipan-toggle" checked /><span>Casos oficiales del CNES (1937–2018)</span></label>
+      <div id="geipan-filters"></div>
     </section>
 
     <section class="filter-block">
@@ -217,6 +224,7 @@
     <button id="btn-close-modal" class="btn-mini close">✕</button>
     <nav id="modal-tabs">
       <button data-tab="hynek" class="active">Clasificación</button>
+      <button data-tab="anatomy">Anatomía</button>
       <button data-tab="disclosure">Disclosure USA</button>
       <button data-tab="glossary">Glosario</button>
       <button data-tab="method">Metodología</button>
@@ -256,7 +264,7 @@
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
-<script src="js/data.js?v=10"></script>
-<script src="js/app.js?v=10"></script>
+<script src="js/data.js?v=12"></script>
+<script src="js/app.js?v=12"></script>
 </body>
 </html>

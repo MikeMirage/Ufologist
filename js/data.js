@@ -445,6 +445,14 @@ const SHAPE_META = [
   { code:'other',     label:'Otro/Desc.',  color:'#93a1c0' },
 ];
 
+// GEIPAN classification (official French CNES scale) — order = index in data/geipan.json
+const GEIPAN_META = [
+  { code:'A', label:'A · Identificado',        color:'#6c8b7f', desc:'Fenómeno identificado con certeza (avión, globo, Venus, dron…).' },
+  { code:'B', label:'B · Prob. identificado',  color:'#8ecae6', desc:'Identificación muy probable, sin certeza total.' },
+  { code:'C', label:'C · Sin datos',           color:'#ffd166', desc:'Datos insuficientes para concluir.' },
+  { code:'D', label:'D · Inexplicado',         color:'#ef476f', desc:'Inexplicado pese a datos consistentes (incluye D1/D2). El residuo de mayor interés.' },
+];
+
 // Legendary hotspots (point of interest layer)
 const HOTSPOTS = [
   { name:'Área 51 / Rachel, NV', lat:37.24, lng:-115.81, desc:'Base secreta de pruebas aeroespaciales (Groom Lake). Epicentro de la mitología moderna desde las afirmaciones de Bob Lazar (1989). La "Extraterrestrial Highway" (SR-375) la rodea.' },
