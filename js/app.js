@@ -30,6 +30,7 @@
     if (log) log.textContent = 'Atlas listo.';
     el.classList.add('done');
     setTimeout(() => { el.style.display = 'none'; }, 750);
+    revealCasesSweep();   // heatmap is already drawn; now sweep-reveal the case hexagons
   }
   function frame(now) {
     const p = Math.min(1, (now - t0) / DURATION);
