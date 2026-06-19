@@ -8,6 +8,44 @@
 (function () {
 'use strict';
 
+// ---------- Landing / loading screen (fake load sequence, auto-advance 5s) ----------
+(function landing() {
+  const el = document.getElementById('landing');
+  if (!el) return;
+  const bar = document.getElementById('landing-bar');
+  const log = document.getElementById('landing-log');
+  const count = document.getElementById('landing-count');
+  const DURATION = 5000, TARGET = 80432;
+  const steps = [
+    [0.00, 'Cargando encuentros…'],
+    [0.28, 'Investigando datos desclasificados…'],
+    [0.56, 'Enlazando con fuentes online…'],
+    [0.82, 'Calibrando el atlas orbital…'],
+  ];
+  let t0 = performance.now(), raf = 0, finished = false, lastStep = -1;
+  function finish() {
+    if (finished) return; finished = true;
+    cancelAnimationFrame(raf);
+    if (bar) bar.style.width = '100%';
+    if (log) log.textContent = 'Atlas listo.';
+    el.classList.add('done');
+    setTimeout(() => { el.style.display = 'none'; }, 750);
+  }
+  function frame(now) {
+    const p = Math.min(1, (now - t0) / DURATION);
+    if (bar) bar.style.width = (p * 100).toFixed(1) + '%';
+    if (count) count.textContent = Math.round(p * TARGET).toLocaleString('es');
+    let s = 0;
+    for (let i = 0; i < steps.length; i++) if (p >= steps[i][0]) s = i;
+    if (s !== lastStep && log) { lastStep = s; log.textContent = steps[s][1]; }
+    if (p >= 1) { finish(); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  raf = requestAnimationFrame(frame);
+  setTimeout(finish, DURATION + 250);        // hard backstop (rAF can be throttled when backgrounded)
+  el.addEventListener('click', finish);      // tap anywhere / "Entrar" to skip
+})();
+
 // ---------- State ----------
 const YEAR_MIN = 1942, YEAR_MAX = 2026;
 const state = {

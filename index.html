@@ -8,10 +8,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=8" />
+<link rel="stylesheet" href="css/styles.css?v=10" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛸</text></svg>" />
 </head>
 <body>
+
+<!-- ======== LANDING / LOADING SCREEN ======== -->
+<div id="landing">
+  <div class="landing-stars"></div>
+  <div class="landing-inner">
+    <div class="landing-emblem">
+      <svg viewBox="0 0 100 100" class="emblem-hex" aria-hidden="true">
+        <polygon points="50,7 87,28.5 87,71.5 50,93 13,71.5 13,28.5"/>
+      </svg>
+      <span class="emblem-orbit"><i></i></span>
+      <span class="emblem-ufo">🛸</span>
+    </div>
+    <h1 class="landing-title">UFO<span>logist</span></h1>
+    <p class="landing-sub">the UFO encounter atlas</p>
+    <div class="landing-progress"><div id="landing-bar"></div></div>
+    <div class="landing-log" id="landing-log">Inicializando atlas orbital…</div>
+    <div class="landing-count"><span id="landing-count">0</span> reportes indexados</div>
+    <button id="landing-skip" class="landing-skip">Entrar al atlas →</button>
+  </div>
+  <div class="landing-copy">© Miquel Gelabert 2026 · UFOlogist</div>
+</div>
 
 <!-- ======== TOP BAR ======== -->
 <header id="topbar">
@@ -235,7 +256,7 @@
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
-<script src="js/data.js?v=8"></script>
-<script src="js/app.js?v=8"></script>
+<script src="js/data.js?v=10"></script>
+<script src="js/app.js?v=10"></script>
 </body>
 </html>
