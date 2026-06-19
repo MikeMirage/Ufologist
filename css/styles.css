@@ -698,13 +698,34 @@ input[type="range"]::-webkit-slider-thumb {
   animation: landing-twinkle 4s ease-in-out infinite;
 }
 .landing-inner {
-  position: relative; z-index: 3; text-align: center;
-  width: min(760px, 92vw);
-  padding: clamp(12px, 3vh, 34px) 20px 0;
-  transform: translateY(-5vh);
+  position: absolute; inset: 0; z-index: 3; text-align: center;
+  width: 100%;
+  padding: 0 20px;
+  transform: none;
+}
+.landing-logo-anchor {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(520px, 62vw);
+  transform: translate(-50%, -50%);
+}
+.landing-brand-meta {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + clamp(68px, 10vh, 96px));
+  width: min(640px, 90vw);
+  transform: translateX(-50%);
+}
+.landing-runtime {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + clamp(148px, 20vh, 190px));
+  width: min(360px, 72vw);
+  transform: translateX(-50%);
 }
 .landing-logo {
-  width: min(520px, 62vw);
+  width: 100%;
   max-height: 28vh;
   object-fit: contain;
   mix-blend-mode: screen;
@@ -730,8 +751,8 @@ input[type="range"]::-webkit-slider-thumb {
   animation: landing-rise .8s ease both .58s;
 }
 .landing-progress {
-  width: min(360px, 72vw); height: 2px; border-radius: 0; overflow: hidden;
-  background: rgba(169,177,186,0.16); margin: 24px auto 12px;
+  width: 100%; height: 2px; border-radius: 0; overflow: hidden;
+  background: rgba(169,177,186,0.16); margin: 0 auto 12px;
   border: 1px solid rgba(169,177,186,0.08);
 }
 #landing-bar {
@@ -1007,15 +1028,24 @@ input[type="range"]::-webkit-slider-thumb {
   .landing-inner {
     width: 100%;
     position: absolute;
-    left: 0;
-    top: 20vh;
-    bottom: auto;
+    inset: 0;
     transform: none;
     padding: 0 20px;
   }
+  .landing-logo-anchor {
+    width: min(86vw, 390px);
+  }
+  .landing-brand-meta {
+    top: calc(50% + 104px);
+    width: min(350px, 90vw);
+  }
+  .landing-runtime {
+    top: calc(50% + 174px);
+    width: min(280px, 72vw);
+  }
   .landing-logo {
     display: block;
-    width: min(86vw, 390px);
+    width: 100%;
     max-height: 24vh;
     margin: 0 auto;
   }
@@ -1030,6 +1060,6 @@ input[type="range"]::-webkit-slider-thumb {
     display: block;
     margin-top: 18px;
   }
-  .landing-progress { margin-top: 22px; }
+  .landing-progress { margin-top: 0; }
   .landing-copy { bottom: calc(18px + env(safe-area-inset-bottom)); padding: 0 18px; line-height: 1.5; }
 }
