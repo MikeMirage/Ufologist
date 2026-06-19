@@ -21,7 +21,8 @@ desde `data/nuforc.js` como respaldo cuando `fetch()` está bloqueado.
 ## Funcionalidades
 
 - **Globo 3D** con capa de puntos (color por tipo/forma) y **mapa de calor hexagonal** (escala logarítmica adaptativa) para ver tendencias geográficas.
-- **Base masiva NUFORC**: 80.332 reportes ciudadanos geolocalizados (1906–2014) integrados como capa conmutables; se muestran como puntos individuales cuando la selección baja de 1.800.
+- **Base masiva NUFORC**: 80.332 reportes ciudadanos geolocalizados (1906–2014) integrados como capa conmutables; se muestran como puntos individuales cuando la selección baja del límite.
+- **Base GEIPAN · Francia**: 2.677 casos oficiales de la agencia espacial francesa (CNES, 1937–2018), geolocalizados por departamento, con **filtro por clasificación A/B/C/D** (A=identificado … D=inexplicado). Reduce el sesgo estadounidense del mapa de calor con datos oficiales europeos.
 - **Filtros de la base masiva**: 10 morfologías (luz, triángulo, disco, esfera…) y franja horaria (24h / día / noche).
 - **Línea de tiempo 1942–2025**: histograma anual (log), rombos ◆ con los hitos del fenómeno, rango ajustable y modo reproducción (▶ o espacio) acumulado o ventana de 10 años.
 - **📊 Análisis**: KPIs, distribución por década, por forma, día vs noche y top-10 localidades de la selección actual.
@@ -41,6 +42,7 @@ desde `data/nuforc.js` como respaldo cuando `fetch()` está bloqueado.
 - `data/nuforc.json` — 80.332 reportes NUFORC geocodificados (formato compacto `[fechaInt, hora, lat, lng, formaIdx, "ciudad, estado, país"]`).
 - `data/nuforc.js` — el mismo dataset envuelto en `window.NUFORC_DATA` para el respaldo `file://`.
 - `tools/process_nuforc.js` — regenera ambos a partir del CSV original (instrucciones en la cabecera del script).
+- `data/geipan.json` (+ `.js`) — 2.677 casos GEIPAN (`[fechaInt, lat, lng, claseIdx, "zona", "resumen"]`), geocodificados por centroide de departamento francés. `tools/process_geipan.js` los regenera desde el CSV oficial `export_cas_pub` de geipan.fr.
 
 ## Stack
 
@@ -49,6 +51,7 @@ HTML/CSS/JS vanilla + [globe.gl](https://globe.gl) (Three.js) vía CDN. Tipograf
 ## Créditos y datos
 
 - **Reportes masivos:** National UFO Reporting Center (NUFORC), vía el dataset público [`planetsig/ufo-reports`](https://github.com/planetsig/ufo-reports). Geocodificados a nivel de localidad. Son testimonios ciudadanos sin verificar: su valor es estadístico (tendencias, geografía, formas), no probatorio caso a caso.
+- **Casos oficiales europeos:** [GEIPAN](https://www.cnes-geipan.fr/) (CNES, Francia), CSV público `export_cas_pub`. Geolocalización a nivel de departamento (el CSV no incluye coordenadas exactas). Clasificación oficial A–D.
 - **Casos curados:** selección editorial con fuentes primarias enlazadas en cada ficha (archivos desclasificados, NICAP, Black Vault, GEIPAN, prensa de la época).
 - **Render 3D:** [globe.gl](https://globe.gl) · texturas de [three-globe](https://github.com/vasturiano/three-globe).
 

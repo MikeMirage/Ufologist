@@ -82,6 +82,39 @@ journal.forEach(j => { j.year = +j.date.slice(0, 4); j.mine = true; j.type = 'MI
 function saveJournal() { localStorage.setItem(JOURNAL_KEY, JSON.stringify(journal)); }
 function allCuratedPool() { return CASES.concat(journal); }
 
+// ---------- Entry reveal + hex-cap altitudes ----------
+let casesReady = false;   // gate: heatmap draws first, cases revealed after the landing
+let revealCases = false;  // active during the sweep-in animation
+
+// Place each curated case at the top of its heatmap column (H3 bin), matching the
+// hex-bar height so the hexagon sits like the column's lid in hybrid view.
+function computeCapAltitudes() {
+  if (typeof h3 === 'undefined' || !h3.latLngToCell) return;
+  const res = (window.matchMedia('(max-width: 760px)').matches) ? 2 : 3;
+  const weight = new Map();
+  const bump = (lat, lng) => { const c = h3.latLngToCell(lat, lng, res); weight.set(c, (weight.get(c) || 0) + 1); };
+  if (massData) massData.forEach(r => bump(r.lat, r.lng));
+  if (geipanData) geipanData.forEach(r => bump(r.lat, r.lng));
+  allCuratedPool().forEach(c => bump(c.lat, c.lng));
+  const total = (massData ? massData.length : 0) + (geipanData ? geipanData.length : 0);
+  const capRef = total > 0 ? Math.max(20, total / 30) : 15;
+  const capT = w => Math.min(1, Math.log10(1 + w) / Math.log10(1 + capRef));
+  allCuratedPool().forEach(c => {
+    const w = weight.get(h3.latLngToCell(c.lat, c.lng, res)) || 1;
+    c._capAlt = capT(w) * 0.17 + 0.012 + 0.006;   // top face + small lift so it caps the bar
+  });
+}
+
+// Reveal the case hexagons with a longitude sweep, after the heatmap is drawn.
+function revealCasesSweep() {
+  if (casesReady) return;
+  casesReady = true;
+  revealCases = true;
+  computeCapAltitudes();
+  refresh();
+  setTimeout(() => { revealCases = false; }, 2200);
+}
+
 // ---------- Mass DB (NUFORC) ----------
 let massData = null;   // array of {d,h,lat,lng,s,loc,year}
 function ingestMass(json) {
@@ -90,6 +123,7 @@ function ingestMass(json) {
     year: Math.floor(r[0] / 10000), mass: true,
   }));
   $('mass-status').textContent = massData.length.toLocaleString('es');
+  computeCapAltitudes();
   refresh();
 }
 fetch('data/nuforc.json?v=2')
@@ -128,6 +162,7 @@ function ingestGeipan(json) {
     year: Math.floor(r[0] / 10000), geipan: true,
   }));
   $('geipan-status').textContent = geipanData.length.toLocaleString('es');
+  computeCapAltitudes();
   refresh();
 }
 fetch('data/geipan.json?v=1')
@@ -159,7 +194,13 @@ const globe = Globe()($('globe'))
   .atmosphereAltitude(0.18)
   .htmlLat(d => d.lat)
   .htmlLng(d => d.lng)
-  .htmlAltitude(d => d.mass ? 0.007 : 0.013)
+  .htmlAltitude(d => {
+    // hybrid view: curated case hexagons ride on top of their heatmap column
+    // (like the lid of the 3D hex). Mass/GEIPAN points and "only cases" view stay low.
+    if (d.mass || d.geipan) return 0.007;
+    if (state.layerMode === 'both' && d._capAlt != null) return d._capAlt;
+    return 0.013;
+  })
   .htmlElement(d => buildMarker(d))
   .hexBinPointLat('lat').hexBinPointLng('lng')
   .hexBinPointWeight(1)
@@ -194,9 +235,11 @@ function buildMarker(d) {
   el.className = 'globe-marker';
   const isMassLike = d.mass || d.geipan;
   const color = d.geipan ? GEIPAN_META[d.ci].color : (d.mass ? SHAPE_META[d.s].color : TYPE_META[d.type].color);
-  const cls = 'case-hex' + (isMassLike ? ' mass' : '') + (d.mine ? ' mine' : '');
+  const reveal = revealCases && !isMassLike;
+  const cls = 'case-hex' + (isMassLike ? ' mass' : '') + (d.mine ? ' mine' : '') + (reveal ? ' reveal' : '');
   const pip = isMassLike ? '' : '<circle class="pip" cx="12" cy="12" r="2.3"/>';
-  el.innerHTML = `<svg class="${cls}" viewBox="0 0 24 24" style="--c:${color}">
+  const delay = reveal ? `;animation-delay:${Math.round(((d.lng + 180) / 360) * 1500)}ms` : '';
+  el.innerHTML = `<svg class="${cls}" viewBox="0 0 24 24" style="--c:${color}${delay}">
     <polygon points="12,1.6 21.5,7 21.5,17 12,22.4 2.5,17 2.5,7"/>${pip}</svg>`;
   el.title = d.geipan
     ? `GEIPAN ${GEIPAN_META[d.ci].code} · ${fmtDateInt(d.d)} · ${d.zone || 'Francia'}`
@@ -263,7 +306,7 @@ function refresh() {
   heatRef = heatTotal > 0 ? Math.max(20, heatTotal / 30) : 15;
 
   let points = [];
-  if (state.layerMode !== 'heat') {
+  if (state.layerMode !== 'heat' && casesReady) {
     points = curated.slice();
     // mobile keeps only the curated dots as DOM markers (heatmap shows mass density);
     // desktop also shows individual mass/GEIPAN reports when each subset is small
@@ -354,7 +397,7 @@ function renderShapeCounts() {
   if (!massData) return;
   const counts = new Array(SHAPE_META.length).fill(0);
   massData.forEach(r => { if (r.year >= state.yearFrom && r.year <= state.yearTo) counts[r.s]++; });
-  document.querySelectorAll('.shape-pill').forEach(el => {
+  document.querySelectorAll('#shape-filters .shape-pill').forEach(el => {
     const n = counts[+el.dataset.shape];
     el.querySelector('.s-count').textContent = n > 999 ? (n / 1000).toFixed(1) + 'k' : n;
   });

@@ -96,17 +96,21 @@
       <h3>Base masiva NUFORC <span id="mass-status" class="count-pill">cargando…</span></h3>
       <label class="switch-row"><input type="checkbox" id="mass-toggle" checked /><span>80.332 reportes geolocalizados (1906–2014)</span></label>
       <div id="shape-filters"></div>
-      <div class="seg-control small" id="tod-filter" title="Franja horaria del avistamiento">
-        <button data-tod="all" class="active">24 h</button>
-        <button data-tod="day">☀ Día</button>
-        <button data-tod="night">☾ Noche</button>
-      </div>
     </section>
 
     <section class="filter-block">
       <h3>Base GEIPAN · Francia <span id="geipan-status" class="count-pill">cargando…</span></h3>
       <label class="switch-row"><input type="checkbox" id="geipan-toggle" checked /><span>Casos oficiales del CNES (1937–2018)</span></label>
       <div id="geipan-filters"></div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Franja horaria</h3>
+      <div class="seg-control small" id="tod-filter" title="Filtra los reportes por hora del avistamiento">
+        <button data-tod="all" class="active">24 h</button>
+        <button data-tod="day">☀ Día</button>
+        <button data-tod="night">☾ Noche</button>
+      </div>
     </section>
 
     <section class="filter-block">
@@ -264,6 +268,7 @@
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/h3-js@4.1.0/dist/h3-js.umd.js"></script>
 <script src="js/data.js?v=12"></script>
 <script src="js/app.js?v=12"></script>
 </body>
