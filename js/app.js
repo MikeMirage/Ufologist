@@ -15,6 +15,8 @@ const AUDIO_TRACKS = [
   'assets/audio/ufologist-ambient-01.mp3',
   'assets/audio/ufologist-ambient-02.mp3',
 ];
+const RESEARCH_PASS_EMAIL = 'mgrconcept@gmail.com';
+const PASS_INTENT_KEY = 'ufologist-research-pass-intent';
 const I18N = {
   es: {
     metaTitle: 'UFOlogist — Atlas global del fenómeno UAP',
@@ -32,11 +34,13 @@ const I18N = {
     navReport: 'Reportar',
     navInfo: 'Info',
     navTour: 'Expedición',
+    navPass: 'Pass',
     titleKnowledge: 'Centro de conocimiento',
     titleStats: 'Panel de análisis y tendencias',
     titleReport: 'Reportar o registrar un avistamiento propio',
     titleInfo: 'Información sobre UFOlogist',
     titleTour: 'Tour guiado por los casos esenciales',
+    titlePass: 'UFOlogist Research Pass',
     ambientOn: 'Encender ambiente',
     ambientOff: 'Apagar ambiente',
     ambientEnabled: 'Ambiente activado',
@@ -102,6 +106,23 @@ const I18N = {
     appInfoCopyrightTitle: 'Autoría y copyright',
     appInfoCopyright: 'Creado por <b>Miquel Gelabert</b>. © Miquel Gelabert 2026 · UFOlogist.',
     appInfoNote: 'Proyecto divulgativo e independiente. No afiliado a NUFORC, GEIPAN, CNES, AARO ni a ningún organismo oficial. El código se publica bajo licencia MIT. Los datos y fuentes enlazadas pertenecen a sus respectivos titulares y se usan con fines de divulgación e investigación.',
+    passEyebrow: 'UFOlogist Research Pass',
+    passTitle: 'Financia herramientas de investigación, no un muro de pago.',
+    passIntro: 'El atlas seguirá abierto. El pass está pensado para quienes quieran apoyar el proyecto y recibir utilidades avanzadas cuando estén listas.',
+    passFeatures: [
+      ['Exportaciones limpias', 'CSV/JSON extendidos, paquetes por caso y bibliografía preparada para investigación.'],
+      ['Cuadernos avanzados', 'Colecciones, notas cruzadas, seguimiento de fuentes y preparación para sincronización.'],
+      ['Alertas y dossiers', 'Notificaciones de nuevas fuentes, comparativas por oleada y dossiers descargables.'],
+    ],
+    passPlans: ['4 €/mes', '29 €/año', 'Fundador'],
+    passEmail: 'Email',
+    passEmailPlaceholder: 'tu@email.com',
+    passCta: 'Solicitar acceso',
+    passNote: 'Sin popups, sin bloqueo de datos, sin publicidad invasiva. Primero se valida interés; después se puede conectar Stripe o Lemon Squeezy.',
+    passEmailMissing: 'Añade un email para solicitar acceso',
+    passInterestSaved: 'Solicitud preparada',
+    passMailSubject: 'UFOlogist Research Pass',
+    passMailBody: 'Hola Miquel,\n\nQuiero solicitar acceso al UFOlogist Research Pass.\nPlan: {plan}\nEmail: {email}\n\nGracias.',
     mobileMenu: 'Menú',
     mobileExport: 'Exportar selección',
     mobileHelp: 'Pulsa un punto del globo para abrir su ficha. Arrastra el globo para girarlo.',
@@ -198,11 +219,13 @@ const I18N = {
     navReport: 'Report',
     navInfo: 'Info',
     navTour: 'Expedition',
+    navPass: 'Pass',
     titleKnowledge: 'Knowledge center',
     titleStats: 'Analysis and trends panel',
     titleReport: 'Report or register your own sighting',
     titleInfo: 'Information about UFOlogist',
     titleTour: 'Guided tour through essential cases',
+    titlePass: 'UFOlogist Research Pass',
     ambientOn: 'Turn ambient sound on',
     ambientOff: 'Turn ambient sound off',
     ambientEnabled: 'Ambient sound on',
@@ -268,6 +291,23 @@ const I18N = {
     appInfoCopyrightTitle: 'Authorship and copyright',
     appInfoCopyright: 'Created by <b>Miquel Gelabert</b>. © Miquel Gelabert 2026 · UFOlogist.',
     appInfoNote: 'Independent educational project. Not affiliated with NUFORC, GEIPAN, CNES, AARO, or any official body. Code is published under the MIT license. Linked data and sources belong to their respective owners and are used for education and research.',
+    passEyebrow: 'UFOlogist Research Pass',
+    passTitle: 'Fund research tools, not a paywall.',
+    passIntro: 'The atlas stays open. The pass is for people who want to support the project and receive advanced utilities as they ship.',
+    passFeatures: [
+      ['Clean exports', 'Extended CSV/JSON, case bundles, and research-ready source lists.'],
+      ['Advanced notebooks', 'Collections, cross-notes, source tracking, and a path toward sync.'],
+      ['Alerts and dossiers', 'Source updates, wave comparisons, and downloadable research dossiers.'],
+    ],
+    passPlans: ['€4/month', '€29/year', 'Founder'],
+    passEmail: 'Email',
+    passEmailPlaceholder: 'you@email.com',
+    passCta: 'Request access',
+    passNote: 'No popups, no locked data, no invasive ads. First validate demand; later connect Stripe or Lemon Squeezy.',
+    passEmailMissing: 'Add an email to request access',
+    passInterestSaved: 'Request prepared',
+    passMailSubject: 'UFOlogist Research Pass',
+    passMailBody: 'Hi Miquel,\n\nI want to request access to the UFOlogist Research Pass.\nPlan: {plan}\nEmail: {email}\n\nThanks.',
     mobileMenu: 'Menu',
     mobileExport: 'Export selection',
     mobileHelp: 'Tap a globe point to open its card. Drag the globe to rotate it.',
@@ -378,6 +418,7 @@ const GEIPAN_TEXT = {
 let currentLang = localStorage.getItem(LANG_KEY) || 'es';
 if (!I18N[currentLang]) currentLang = 'es';
 let audioEnabled = localStorage.getItem(AUDIO_KEY) !== 'off';
+let selectedPassPlan = 'monthly';
 function t(key, vars) {
   let value = (I18N[currentLang] && I18N[currentLang][key]) || I18N.es[key] || key;
   if (vars) Object.entries(vars).forEach(([k, v]) => { value = value.replaceAll(`{${k}}`, v); });
@@ -416,6 +457,32 @@ function setButton(id, icon, labelKey, titleKey) {
   el.textContent = `${icon} ${t(labelKey)}`;
   if (titleKey) el.title = t(titleKey);
 }
+function applyPassI18n() {
+  const modal = $('pass-modal');
+  if (!modal) return;
+  setText('.pass-eyebrow', t('passEyebrow'));
+  setText('#pass-modal h2', t('passTitle'));
+  setText('.pass-intro', t('passIntro'));
+  const features = t('passFeatures');
+  document.querySelectorAll('.pass-grid article').forEach((article, i) => {
+    const item = Array.isArray(features) ? features[i] : null;
+    if (!item) return;
+    const title = article.querySelector('b');
+    const body = article.querySelector('p');
+    if (title) title.textContent = item[0];
+    if (body) body.textContent = item[1];
+  });
+  const plans = t('passPlans');
+  document.querySelectorAll('.pass-plans button').forEach((button, i) => {
+    if (Array.isArray(plans) && plans[i]) button.textContent = plans[i];
+  });
+  const emailLabel = document.querySelector('.pass-form label');
+  if (emailLabel) setFirstText(emailLabel, t('passEmail'));
+  if ($('pass-email')) $('pass-email').placeholder = t('passEmailPlaceholder');
+  const submit = document.querySelector('#pass-form button[type="submit"]');
+  if (submit) submit.textContent = t('passCta');
+  setText('.pass-note', t('passNote'));
+}
 function applyStaticI18n() {
   document.documentElement.lang = currentLang;
   document.title = t('metaTitle');
@@ -436,6 +503,7 @@ function applyStaticI18n() {
   setButton('btn-add', '+', 'navReport', 'titleReport');
   setButton('btn-about', 'ⓘ', 'navInfo', 'titleInfo');
   setButton('btn-tour', '⌖', 'navTour', 'titleTour');
+  setButton('btn-pass', '◇', 'navPass', 'titlePass');
   updateAudioButton();
   document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
 
@@ -523,10 +591,11 @@ function applyStaticI18n() {
     if (ps[2]) ps[2].innerHTML = t('appInfoCopyright');
     if (ps[3]) ps[3].textContent = t('appInfoNote');
   }
+  applyPassI18n();
 
   setText('#mobile-more .more-title', t('mobileMenu'));
   const moreButtons = document.querySelectorAll('#mobile-more .more-grid:first-of-type button span');
-  ['navKnowledge', 'navStats', 'navReport', 'navInfo', 'navTour', 'ambientLabel'].forEach((key, i) => { if (moreButtons[i]) moreButtons[i].textContent = t(key); });
+  ['navKnowledge', 'navStats', 'navReport', 'navInfo', 'navTour', 'navPass', 'ambientLabel'].forEach((key, i) => { if (moreButtons[i]) moreButtons[i].textContent = t(key); });
   const mobileTitles = document.querySelectorAll('#mobile-more .more-title');
   if (mobileTitles[1]) mobileTitles[1].textContent = t('mobileExport');
   const exportSpans = document.querySelectorAll('#mobile-more .more-grid:nth-of-type(2) button span');
@@ -1975,10 +2044,43 @@ $('app-info-overlay').addEventListener('click', e => {
   if (e.target === $('app-info-overlay')) closeAppInfo();
 });
 
+function openPassModal() {
+  applyPassI18n();
+  $('pass-overlay').classList.remove('hidden');
+}
+function closePassModal() { $('pass-overlay').classList.add('hidden'); }
+function selectedPassLabel() {
+  const active = document.querySelector(`.pass-plans button[data-plan="${selectedPassPlan}"]`);
+  return active ? active.textContent.trim() : selectedPassPlan;
+}
+if ($('btn-pass')) $('btn-pass').onclick = openPassModal;
+if ($('btn-close-pass')) $('btn-close-pass').onclick = closePassModal;
+if ($('pass-overlay')) $('pass-overlay').addEventListener('click', e => {
+  if (e.target === $('pass-overlay')) closePassModal();
+});
+document.querySelectorAll('.pass-plans button').forEach(button => {
+  button.onclick = () => {
+    selectedPassPlan = button.dataset.plan || 'monthly';
+    document.querySelectorAll('.pass-plans button').forEach(b => b.classList.toggle('active', b === button));
+  };
+});
+if ($('pass-form')) $('pass-form').onsubmit = e => {
+  e.preventDefault();
+  const email = $('pass-email').value.trim();
+  if (!email) { toast(t('passEmailMissing')); return; }
+  const plan = selectedPassLabel();
+  localStorage.setItem(PASS_INTENT_KEY, JSON.stringify({ email, plan, lang: currentLang, at: new Date().toISOString() }));
+  const subject = encodeURIComponent(t('passMailSubject'));
+  const body = encodeURIComponent(t('passMailBody', { plan, email }));
+  toast(t('passInterestSaved'));
+  window.location.href = `mailto:${RESEARCH_PASS_EMAIL}?subject=${subject}&body=${body}`;
+};
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     $('modal-overlay').classList.add('hidden');
     closeAppInfo();
+    closePassModal();
     $('panel-case').classList.add('hidden');
     $('sight-overlay').classList.add('hidden');
     closeStats();
@@ -2037,7 +2139,7 @@ $('btn-close-more').onclick = closeSheets;
 // "Más" sheet reuses the existing (hidden on mobile) top-bar handlers
 document.querySelectorAll('#mobile-more .more-grid button').forEach(b => {
   const map = { add: 'btn-add', tour: 'btn-tour', knowledge: 'btn-knowledge', about: 'btn-about',
-    audio: 'btn-audio', csv: 'btn-export-csv', json: 'btn-export-json', permalink: 'btn-permalink' };
+    pass: 'btn-pass', audio: 'btn-audio', csv: 'btn-export-csv', json: 'btn-export-json', permalink: 'btn-permalink' };
   b.onclick = () => {
     const act = b.dataset.act;
     closeSheets();

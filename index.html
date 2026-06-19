@@ -64,6 +64,7 @@
     <button id="btn-add" class="btn-ghost" title="Reportar o registrar un avistamiento propio">+ Reportar</button>
     <button id="btn-about" class="btn-ghost" title="Información sobre UFOlogist">ⓘ Info</button>
     <button id="btn-tour" class="btn-ghost action-utility" title="Tour guiado por los casos esenciales">⌖ Expedición</button>
+    <button id="btn-pass" class="btn-ghost btn-pass" title="Research Pass">◇ Pass</button>
   </div>
 </header>
 
@@ -260,6 +261,43 @@
   </div>
 </div>
 
+<!-- ======== RESEARCH PASS MODAL ======== -->
+<div id="pass-overlay" class="hidden">
+  <div id="pass-modal" class="glass">
+    <button id="btn-close-pass" class="btn-mini close">✕</button>
+    <p class="pass-eyebrow">UFOlogist Research Pass</p>
+    <h2>Financia herramientas de investigación, no un muro de pago.</h2>
+    <p class="pass-intro">El atlas seguirá abierto. El pass está pensado para quienes quieran apoyar el proyecto y recibir utilidades avanzadas cuando estén listas.</p>
+    <div class="pass-grid">
+      <article>
+        <span>01</span>
+        <b>Exportaciones limpias</b>
+        <p>CSV/JSON extendidos, paquetes por caso y bibliografía preparada para investigación.</p>
+      </article>
+      <article>
+        <span>02</span>
+        <b>Cuadernos avanzados</b>
+        <p>Colecciones, notas cruzadas, seguimiento de fuentes y preparación para sincronización.</p>
+      </article>
+      <article>
+        <span>03</span>
+        <b>Alertas y dossiers</b>
+        <p>Notificaciones de nuevas fuentes, comparativas por oleada y dossiers descargables.</p>
+      </article>
+    </div>
+    <div class="pass-plans" role="group" aria-label="Research Pass plan">
+      <button type="button" class="active" data-plan="monthly">4 €/mes</button>
+      <button type="button" data-plan="yearly">29 €/año</button>
+      <button type="button" data-plan="founder">Fundador</button>
+    </div>
+    <form id="pass-form" class="pass-form">
+      <label>Email<input id="pass-email" type="email" placeholder="tu@email.com" autocomplete="email" /></label>
+      <button type="submit" class="btn-ghost">Solicitar acceso</button>
+    </form>
+    <p class="pass-note">Sin popups, sin bloqueo de datos, sin publicidad invasiva. Primero se valida interés; después se puede conectar Stripe o Lemon Squeezy.</p>
+  </div>
+</div>
+
 <!-- ======== MOBILE: backdrop + bottom-sheet nav ======== -->
 <div id="sheet-backdrop"></div>
 <div id="mobile-more" class="glass hidden">
@@ -272,6 +310,7 @@
     <button data-act="add">+<span>Reportar</span></button>
     <button data-act="about">ⓘ<span>Info</span></button>
     <button data-act="tour">⌖<span>Expedición</span></button>
+    <button data-act="pass">◇<span>Pass</span></button>
     <button data-act="audio">◉<span>Ambiente</span></button>
   </div>
   <h3 class="more-title">Exportar selección</h3>
