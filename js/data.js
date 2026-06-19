@@ -510,3 +510,1377 @@ const REPORT_LINKS = [
   ['Archivos UFO del Reino Unido (National Archives)', 'https://www.nationalarchives.gov.uk/ufos/'],
   ['Expedientes OVNI desclasificados de España', 'https://bibliotecavirtual.defensa.gob.es/BVMDefensa/expedientes-ovni'],
 ];
+
+// ---------- English content translations (generated static runtime data) ----------
+const CONTENT_EN = {
+  "cases": {
+    "battle-la-1942": {
+      "name": "Battle of Los Angeles",
+      "loc": "Los Angeles, California",
+      "country": "United States",
+      "summary": "Antiaircraft artillery fired more than 1,400 shells at a slow, searchlight-lit object over the city, weeks after Pearl Harbor. The Secretary of the Navy attributed it to \"war nerves\"; the Army maintained that there was a real object.",
+      "sources": [
+        "Wikipedia",
+        "Photo LA Times 1942"
+      ]
+    },
+    "foo-fighters-1944": {
+      "name": "Foo Fighters (European Front)",
+      "loc": "Rhine Valley, Alsace",
+      "country": "France/Germany",
+      "summary": "Allied crews of the 415th Night Squadron repeatedly reported balls of light chasing and maneuvering around their aircraft. Documented in official mission reports; It was never satisfactorily explained.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "ghost-rockets-1946": {
+      "name": "Scandinavian ghost rockets",
+      "loc": "Lake Kölmjärv, Norrbotten",
+      "country": "Sweden",
+      "summary": "About 2,000 reports of rocket-type objects over Scandinavia. The Swedish army dredged lakes without finding remains; Declassified documents show US and UK concern.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "kenneth-arnold-1947": {
+      "name": "Kenneth Arnold—Mt. Rainier",
+      "loc": "Mount Rainier, Washington",
+      "country": "United States",
+      "summary": "Private pilot Kenneth Arnold observed nine objects in formation flying \"like saucers bouncing off the water\" at an estimated speed of 1,900 km/h. Origin of the term \"flying saucer\" and the modern phenomenon.",
+      "sources": [
+        "Wikipedia",
+        "Project Blue Book Report (NARA)"
+      ]
+    },
+    "roswell-1947": {
+      "name": "Roswell incident",
+      "loc": "Foster Ranch, near Corona, New Mexico",
+      "country": "United States",
+      "summary": "The 509th Bomb Group officially announced the recovery of a \"flying disc\"; hours later the version changed to a weather balloon. In 1994 the USAF linked him to Project Mogul. Central case of the crash-retrieval mythology.",
+      "sources": [
+        "Wikipedia",
+        "USAF Report 1994 (GPO)"
+      ]
+    },
+    "mantell-1948": {
+      "name": "Mantell Incident",
+      "loc": "Franklin, Kentucky",
+      "country": "United States",
+      "summary": "Captain Thomas Mantell was killed when his P-51 crashed while pursuing a huge, metallic object reported by the tower at Godman Field. Most accepted explanation: secret Skyhook balloon; The case prompted the official investigation.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "chiles-whitted-1948": {
+      "name": "Chiles–Whitted (Eastern Airlines)",
+      "loc": "Near Montgomery, Alabama",
+      "country": "United States",
+      "summary": "Two veteran commercial pilots saw a tubular object with illuminated \"windows\" pass just a few meters from their DC-3. The case motivated the \"Estimate of the Situation\" of Project Sign, which concluded interplanetary origin and was rejected by General Vandenberg.",
+      "sources": [
+        "Wikipedia",
+        "NICAP"
+      ]
+    },
+    "gorman-1948": {
+      "name": "Gorman's Dogfight",
+      "loc": "Fargo, North Dakota",
+      "country": "United States",
+      "summary": "National Guard pilot George Gorman maintained a 27-minute aerial pursuit with a small, extremely maneuverable light, confirmed by the tower. Blue Book closed it as \"illuminated globe.\"",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "mcminnville-1950": {
+      "name": "Photos of McMinnville",
+      "loc": "McMinnville, Oregon",
+      "country": "United States",
+      "summary": "Paul and Evelyn Trent photographed a metal disc on their farm twice. The Condon Report (1968) called it among the few cases where \"all the factors investigated are consistent with a real, metallic, artificial object.\"",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "mariana-1950": {
+      "name": "Mariana movie",
+      "loc": "Great Falls, Montana",
+      "country": "United States",
+      "summary": "Nick Mariana filmed two bright, discoidal objects in broad daylight: one of the first UFO films analyzed by the USAF. The official analysis failed to conclusively identify them.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "lubbock-1951": {
+      "name": "Lubbock Lights",
+      "loc": "Lubbock, Texas",
+      "country": "United States",
+      "summary": "V formations of blue-green lights seen by university science professors and photographed by Carl Hart Jr. Blue Book never explained the photos definitively.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "tremonton-1952": {
+      "name": "Tremonton Movie",
+      "loc": "Tremonton, Utah",
+      "country": "United States",
+      "summary": "Navy Petty Officer Delbert Newhouse filmed ~12 bright objects maneuvering. Analyzed frame by frame by the Navy, which ruled out birds and planes; the Robertson Panel reopened it as \"probable seagulls\".",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "washington-1952": {
+      "name": "Washington D.C. wave",
+      "loc": "Washington D.C.",
+      "country": "United States",
+      "summary": "Over two weekends, multiple radar returns at National Airport and Andrews AFB coincided with visible lights and F-94 fighters failing to intercept them. It sparked the largest Pentagon press conference since World War II and the CIA's Robertson Panel.",
+      "sources": [
+        "Wikipedia",
+        "NICAP"
+      ]
+    },
+    "flatwoods-1952": {
+      "name": "Flatwoods Monster",
+      "loc": "Flatwoods, West Virginia",
+      "country": "United States",
+      "summary": "After seeing a shiny object descend, a group of neighbors reported a tall figure with a \"pike head\" and an irritating metallic odor. Proposed explanations: bright meteor plus an owl; witnesses suffered real physical symptoms.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "kinross-1953": {
+      "name": "Kinross (Moncla) disappearance",
+      "loc": "Lake Superior, Michigan",
+      "country": "United States",
+      "summary": "An F-89 Scorpion sent to intercept an unidentified radar target merged with the echo on the screen and disappeared with its two crew members. Neither the plane nor the bodies were recovered. The USAF attributed it to a Canadian plane, a version that Canada denied.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "quarouble-1954": {
+      "name": "Quarouble (Marius Dewilde)",
+      "loc": "Quarouble, North",
+      "country": "France",
+      "summary": "Emblematic case of the great French wave of 1954: a worker reported two small entities next to an object on the tracks; The gendarmerie documented pressure marks weighing several tons on the sleepers.",
+      "sources": [
+        "Wikipedia (FR)"
+      ]
+    },
+    "florence-1954": {
+      "name": "Florence Stadium",
+      "loc": "Florence, Tuscany",
+      "country": "Italy",
+      "summary": "A Fiorentina–Pistoiese match was stopped when 10,000 spectators observed slow objects over the stadium, accompanied by filaments (\"angel hair\") falling from the sky. Covered by the BBC on its 60th anniversary.",
+      "sources": [
+        "BBCNews",
+        "Wikipedia"
+      ]
+    },
+    "kelly-1955": {
+      "name": "Kelly–Hopkinsville",
+      "loc": "Kelly, Kentucky",
+      "country": "United States",
+      "summary": "Two families shot for hours at small silver entities with big eyes that looked out over the farm. Police found witnesses in genuine panic; origin of the \"little green men\" archetype.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "lakenheath-1956": {
+      "name": "Lakenheath–Bentwaters",
+      "loc": "RAF Lakenheath, Suffolk",
+      "country": "United Kingdom",
+      "summary": "Objects tracked simultaneously by ground radars from two bases, airborne radar and visual witnesses; An RAF Venom was repeatedly outwitted by the object, which pulled up behind it. The Condon Report admitted that \"the probability of a genuine UFO appears quite high.\"",
+      "sources": [
+        "Wikipedia",
+        "NICAP"
+      ]
+    },
+    "rb47-1957": {
+      "name": "RB-47 incident",
+      "loc": "Between Mississippi and Texas (Gulf)",
+      "country": "United States",
+      "summary": "An electronic warfare RB-47 was tracked for 1.5 hours and 1,100 km by an object detected by onboard radar, ELINT equipment, ground radars and visually. One of the best documented cases with multiple instrumentation in history.",
+      "sources": [
+        "Wikipedia",
+        "NICAP"
+      ]
+    },
+    "vilas-boas-1957": {
+      "name": "Antônio Vilas Boas",
+      "loc": "São Francisco de Sales, Minas Gerais",
+      "country": "Brazil",
+      "summary": "First widely documented abduction case: a young farmer reported being carried aboard an object while plowing at night. Examined by doctor Olavo Fontes, who recorded injuries compatible with radiation.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "levelland-1957": {
+      "name": "Levelland",
+      "loc": "Levelland, Texas",
+      "country": "United States",
+      "summary": "On one night, at least 15 independent witnesses on different roads reported a luminous object that turned off the engines and headlights of their vehicles, restoring themselves as they moved away. Classic case of electromagnetic effects; Blue Book dismissed it as \"ball lightning\" with an hours-long investigation.",
+      "sources": [
+        "Wikipedia",
+        "NICAP"
+      ]
+    },
+    "trindade-1958": {
+      "name": "Trindade Island",
+      "loc": "Trindade Island, South Atlantic",
+      "country": "Brazil",
+      "summary": "From the training ship Almirante Saldanha, photographer Almiro Baraúna captured four images of an annular \"Saturn\" type object in front of dozens of Brazilian Navy crew members. The photos were analyzed and endorsed by the Navy; The debate about its authenticity is still open.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "gill-1959": {
+      "name": "Father William Gill—Boianai",
+      "loc": "Boianai, Papua",
+      "country": "Papua New Guinea",
+      "summary": "Anglican missionary William Gill and 37 witnesses observed for two nights an object with humanoid figures on top that responded to their greetings. Hynek considered it one of the strongest CE3 cases due to the number and quality of witnesses.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "red-bluff-1960": {
+      "name": "Red Bluff (CHP Patrol)",
+      "loc": "Red Bluff, California",
+      "country": "United States",
+      "summary": "Two highway patrol agents chased a luminous object that was ascending and descending with impossible movements, confirmed by other agents and by local radar according to the report. Classic case of police witnesses.",
+      "sources": [
+        "NICAP"
+      ]
+    },
+    "hill-1961": {
+      "name": "Betty and Barney Hill Abduction",
+      "loc": "Lincoln, New Hampshire",
+      "country": "United States",
+      "summary": "The first US media abduction case: the Hill couple reported loss of time and, under hypnosis, an on-board examination. Betty's \"star map\" and the analyzed dress keep the debate alive. Documented by the Blue Book project as an independent observation case.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "trancas-1963": {
+      "name": "Trancas Case",
+      "loc": "Trancas, Tucumán",
+      "country": "Argentina",
+      "summary": "The Moreno family reported six objects in formation next to the train tracks, with beams of light, intense heat and the smell of sulfur; marks were documented on the ground. One of the classic cases of Argentine casuistry.",
+      "sources": [
+        "Wikipedia (ES)"
+      ]
+    },
+    "socorro-1964": {
+      "name": "Socorro (Lonnie Zamora)",
+      "loc": "Socorro, New Mexico",
+      "country": "United States",
+      "summary": "Police officer Lonnie Zamora observed a white ovoid object with two small figures, which took off with blue flame, leaving footprints of landing gear and burned bushes. The case was left as \"unidentified\" in Blue Book and Hynek considered it one of the most credible in the file.",
+      "sources": [
+        "Wikipedia",
+        "NICAP"
+      ]
+    },
+    "valensole-1965": {
+      "name": "Valensole (Maurice Masse)",
+      "loc": "Valensole, Alpes-de-Haute-Provence",
+      "country": "France",
+      "summary": "A lavender farmer observed a perched object and two small entities paralyzing it with a device. The gendarmerie checked the compacted soil and the lavandin did not grow back on the spot for years. Investigated by GEPAN.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "exeter-1965": {
+      "name": "Exeter incident",
+      "loc": "Exeter, New Hampshire",
+      "country": "United States",
+      "summary": "An object with pulsing red lights harassed a young man and was confirmed up close by two police officers. The Pentagon ended up admitting that the case remained unexplained. Origin of the book \"Incident at Exeter\" by John G. Fuller.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "kecksburg-1965": {
+      "name": "Kecksburg",
+      "loc": "Kecksburg, Pennsylvania",
+      "country": "United States",
+      "summary": "A fireball crossed six states and something fell in a forest in Pennsylvania. Witnesses described a flared object with hieroglyphic-like markings and an extensive military deployment that cordoned off the area. NASA attributed the remains to a Russian satellite, but declared the case files lost following a FOIA demand.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "wanaque-1966": {
+      "name": "Wanaque Reservoir",
+      "loc": "Wanaque, New Jersey",
+      "country": "United States",
+      "summary": "Police and residents of several municipalities reported for weeks a bright light maneuvering over the reservoir, with an alleged beam that melted the ice. Classic case of local wave with official witnesses.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "dexter-1966": {
+      "name": "Dexter/Hillsdale (\"swamp gas\")",
+      "loc": "Dexter, Michigan",
+      "country": "United States",
+      "summary": "Dozens of witnesses, including police officers, saw lights over swamps in Michigan. Hynek's \"swamp gas\" explanation sparked national ridicule, the outrage of Congressman Gerald Ford, and eventually the commissioning of the Condon Report. Political turning point of the phenomenon.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "westall-1966": {
+      "name": "Westall (school)",
+      "loc": "Clayton South, Melbourne",
+      "country": "Australia",
+      "summary": "More than 200 students and teachers from two schools watched a silver object descend behind some trees and leave at high speed, followed by small planes. Witnesses report a subsequent military presence and orders of silence. Australia's largest mass school sighting.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "portage-1966": {
+      "name": "Portage County Pursuit",
+      "loc": "Portage County, Ohio",
+      "country": "United States",
+      "summary": "Ohio police officers chased a low-altitude luminous object into Pennsylvania for 137 km and half an hour. Blue Book closed it as \"satellite and Venus\", an explanation rejected in writing by the agents and criticized by Hynek. It inspired the chase scene in \"Close Encounters of the Third Kind.\"",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "tully-1966": {
+      "name": "Tully Nests",
+      "loc": "Tully, Queensland",
+      "country": "Australia",
+      "summary": "A farmer saw an object rise from a pond, leaving a circle of flattened reeds in a spiral: the famous \"saucer nests\", precursors of crop circles. Investigated by the RAAF.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "malmstrom-1967": {
+      "name": "Malmstrom AFB — missiles disabled",
+      "loc": "Malmstrom AFB, Montana",
+      "country": "United States",
+      "summary": "According to launch officer Robert Salas and declassified documents, ten Minuteman nuclear missiles were knocked out of service while security personnel reported a glowing object above the facility's gate. Boeing found no conclusive technical cause. Key piece of the \"UFOs and nuclear weapons\" file.",
+      "sources": [
+        "Wikipedia",
+        "CUFON — documents"
+      ]
+    },
+    "falcon-lake-1967": {
+      "name": "Falcon Lake (Stefan Michalak)",
+      "loc": "Whiteshell Park, Manitoba",
+      "country": "Canada",
+      "summary": "An amateur prospector suffered grid pattern burns when touching a grounded object that ejected hot gas. Hospitalized with real symptoms; radioactive soil at the site. Considered by the Canadian government its best documented UFO case.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "cussac-1967": {
+      "name": "Cussac",
+      "loc": "Cussac, Cantal",
+      "country": "France",
+      "summary": "Two shepherd children observed a glowing sphere and four small entities rising towards it. Officially investigated by the gendarmerie and then by GEPAN, which kept him unidentified.",
+      "sources": [
+        "Wikipedia (FR)"
+      ]
+    },
+    "shag-harbour-1967": {
+      "name": "Shag Harbor",
+      "loc": "Shag Harbour, Nova Scotia",
+      "country": "Canada",
+      "summary": "Multiple witnesses saw an object with lights hit the water; boats found bright yellow foam on the surface. The Canadian Navy organized an official underwater search documented as a \"UFO\" in government archives. The \"Canadian Roswell.\"",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "minot-1968": {
+      "name": "Minot AFB—B-52",
+      "loc": "Minot AFB, North Dakota",
+      "country": "United States",
+      "summary": "A B-52 recorded a huge echo on its onboard radar that accompanied it, while 16 witnesses on the ground (including nuclear silo personnel) observed the object. Radar scope photographs preserved in Blue Book; officially closed without convincing explanation.",
+      "sources": [
+        "Case investigation site",
+        "NICAP"
+      ]
+    },
+    "carter-1969": {
+      "name": "Jimmy Carter sighting",
+      "loc": "Leary, Georgia",
+      "country": "United States",
+      "summary": "The future US president and a dozen witnesses saw a light that changed color and size before a speech. Carter presented an official report in 1973 and promised during the campaign to open the government's UFO files.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "delphos-1971": {
+      "name": "Delphos Ring",
+      "loc": "Delphos, Kansas",
+      "country": "United States",
+      "summary": "A teenager saw a low illuminated object on the family farm; What remained was a ring of whitish, hydrophobic and phosphorescent soil analyzed by several laboratories. Awarded best case of the year by the National Enquirer after evaluation by a scientific panel.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "pascagoula-1973": {
+      "name": "Pascagoula abduction",
+      "loc": "Pascagoula, Mississippi",
+      "country": "United States",
+      "summary": "Charles Hickson and Calvin Parker recounted being levitated onto an object by \"robotic\" entities while fishing. A secret police recording captured them terrified, believing they were alone, a detail that gave credibility to the case. Parker kept the story until his death in 2023.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "coyne-1973": {
+      "name": "Coyne helicopter",
+      "loc": "Mansfield, Ohio",
+      "country": "United States",
+      "summary": "An Army Reserve UH-1 helicopter nearly collided with a gray cigar-shaped object that illuminated it with a green beam; The device ascended 600 m with the controls in descent. Four military crew members and witnesses on the ground. Awarded best case by an international panel in 1975.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "loring-1975": {
+      "name": "Raids on Loring AFB",
+      "loc": "Loring AFB, Maine",
+      "country": "United States",
+      "summary": "For several nights, unidentified objects flew over the base's nuclear weapons storage area, confirmed by radar. Documented in NORAD and Strategic Air Command memos declassified via FOIA; part of a wave on nuclear bases in 1975.",
+      "sources": [
+        "Wikipedia",
+        "NORAD Documents (Black Vault)"
+      ]
+    },
+    "travis-walton-1975": {
+      "name": "Travis Walton Case",
+      "loc": "Apache-Sitgreaves Forest, Arizona",
+      "country": "United States",
+      "summary": "A lumberjack disappeared five days after being hit by a beam of light in front of six colleagues, who took a polygraph while they were being investigated for murder. The most documented case of alleged abduction with multiple witnesses; origin of the movie \"Fire in the Sky\".",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "canarias-1976": {
+      "name": "Canary Islands Case (sphere)",
+      "loc": "Gran Canaria, Canary Islands",
+      "country": "Spain",
+      "summary": "A gigantic luminous sphere with alleged figures inside was seen by witnesses on several islands, including a doctor and the crew of the Navy corvette Atrevida. File declassified by the Spanish Air Force in the 90s.",
+      "sources": [
+        "Air Force UFO Files (Defense Library)",
+        "Wikipedia (ES)"
+      ]
+    },
+    "tehran-1976": {
+      "name": "Tehran F-4 Incident",
+      "loc": "Tehran",
+      "country": "Iran",
+      "summary": "Two Iranian F-4 Phantoms suffered instrumentation and weapons losses while approaching a bright object that ejected a smaller object toward one of them. Documented in a DIA memo distributed to the White House and NSA, which called the case \"outstanding.\" Obligatory reference of the military radar-visual category.",
+      "sources": [
+        "Wikipedia",
+        "Memo DIA (Black Vault)"
+      ]
+    },
+    "broad-haven-1977": {
+      "name": "Broad Haven Triangle",
+      "loc": "Broad Haven, Wales",
+      "country": "United Kingdom",
+      "summary": "Fourteen schoolchildren separately drew the same silver object seen next to their school, within a wave in Pembrokeshire (\"the Welsh triangle\") documented in British Ministry of Defense files.",
+      "sources": [
+        "Wikipedia",
+        "BBC"
+      ]
+    },
+    "petrozavodsk-1977": {
+      "name": "Petrozavodsk phenomenon",
+      "loc": "Petrozavodsk, Karelia",
+      "country": "Russia (USSR)",
+      "summary": "A luminous \"jellyfish\" irradiated beams over the city before thousands of witnesses, coinciding with the launch of the Kosmos-955 satellite. The event prompted the creation of the secret Soviet anomaly study program (Setka-AN).",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "colares-1977": {
+      "name": "Operação Prato — Colares",
+      "loc": "Colares, Pará",
+      "country": "Brazil",
+      "summary": "Dozens of inhabitants of the island of Colares suffered burns and marks after being hit by beams of light (\"chupa-chupa\"). The Brazilian Air Force deployed Operation Prato, which generated hundreds of photos and reports now declassified; The commanding officer, Uyrangê Hollanda, confirmed the facts in 1997.",
+      "sources": [
+        "Wikipedia",
+        "Archives Arquivo Nacional (Brazil)"
+      ]
+    },
+    "emilcin-1978": {
+      "name": "Emilcin abduction",
+      "loc": "Emilcin, Lublin",
+      "country": "Poland",
+      "summary": "Farmer Jan Wolski claimed to have been taken by two entities with Asian features to a suspended object where he was examined. Eastern Europe's most famous abduction case; There is a monument at the site.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "valentich-1978": {
+      "name": "Disappearance of Frederick Valentich",
+      "loc": "Bass Strait, Victoria",
+      "country": "Australia",
+      "summary": "A 20-year-old pilot reported to air traffic control a metallic object with green lights maneuvering over his Cessna (\"it's not a plane\") before the transmission ended with a clang. Neither the plane nor the pilot appeared. Official Australian Department of Transport transcript preserved.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "kaikoura-1978": {
+      "name": "Kaikoura Lights",
+      "loc": "Kaikoura, South Island",
+      "country": "New Zealand",
+      "summary": "Lights followed Argosy cargo planes, confirmed by radar from Wellington and filmed by an Australian TV crew on a second flight. The RNZAF put fighters on alert; The official report attributed part of it to ship lights and Venus, an explanation contested by the pilots.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "zanfretta-1978": {
+      "name": "Zanfretta case",
+      "loc": "Torriglia, Liguria",
+      "country": "Italy",
+      "summary": "The night watchman Fortunato Zanfretta recounted several encounters with tall beings and a triangular object; His companions found him in shock with the gun drawn. Controversial but central case in Italian casuistry, investigated by the carabinieri.",
+      "sources": [
+        "Wikipedia (IT)"
+      ]
+    },
+    "val-johnson-1979": {
+      "name": "Val Johnson Incident",
+      "loc": "Marshall County, Minnesota",
+      "country": "United States",
+      "summary": "Deputy Sheriff Val Johnson's patrol car was struck by a light that damaged windshields, antennas, and bent the headlight bracket; both vehicle and officer clocks were lost 14 minutes. The car is preserved in a county museum. No official explanation.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "robert-taylor-1979": {
+      "name": "Livingston Incident (Robert Taylor)",
+      "loc": "Dechmont Law, Livingston",
+      "country": "United Kingdom",
+      "summary": "A forest guard was allegedly attacked by two spiked spheres emerging from a larger object; He woke up with his clothes torn and marks on the floor. Only UK UFO case investigated as criminal assault by police.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "manises-1979": {
+      "name": "Manises Case",
+      "loc": "Manises, Valencia",
+      "country": "Spain",
+      "summary": "A TAE commercial flight to Tenerife made the first emergency landing in history caused by a UFO, after being harassed by red lights. An Air Force Mirage F-1 took off and unsuccessfully pursued an object that was executing impossible maneuvers. Official file declassified.",
+      "sources": [
+        "Wikipedia (ES)",
+        "UFO Defense Files"
+      ]
+    },
+    "la-joya-1980": {
+      "name": "Oscar Santa María — La Joya",
+      "loc": "La Joya Air Base, Arequipa",
+      "country": "Peru",
+      "summary": "FAP pilot Oscar Santa María fired 64 30 mm projectiles at a \"balloon-type\" object that turned out to be a metal structure with a dome and that outmaneuvered it until it ran out of fuel. Only documented case of live fire against a UFO; collected in a document from the American DIA.",
+      "sources": [
+        "Wikipedia",
+        "DIA Document (Black Vault)"
+      ]
+    },
+    "cash-landrum-1980": {
+      "name": "Cash–Landrum",
+      "loc": "Huffman, Texas",
+      "country": "United States",
+      "summary": "Betty Cash, Vickie Landrum and her grandson were exposed to a burning diamond-shaped object escorted by more than 20 Chinook helicopters. They suffered symptoms compatible with radiation; They sued the US government, which denied having devices in the area. Key case for medically documented physiological damage.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "rendlesham-1980": {
+      "name": "Rendlesham Forest",
+      "loc": "RAF Woodbridge, Suffolk",
+      "country": "United Kingdom",
+      "summary": "For two nights, USAF personnel (including Deputy Base Commander Lt. Col. Halt) investigated a triangular object with symbols that left footprints and elevated radiation. The \"Halt memo\" and its live recording are official documents. The \"British Roswell\", cited in 2023 congressional hearings.",
+      "sources": [
+        "Wikipedia",
+        "Memo Halt (UK Archives)"
+      ]
+    },
+    "trans-en-provence-1981": {
+      "name": "Trans-en-Provence",
+      "loc": "Trans-en-Provence, Var",
+      "country": "France",
+      "summary": "A barrel-shaped object landed on an agricultural terrace in front of a witness and left ring marks. GEPAN (the official French agency) analyzed soil and plants: compaction at 4-5 tons, heating at 300-600 °C and biochemical alterations in alfalfa. Probably the CE2 case with the best laboratory analysis in history.",
+      "sources": [
+        "Wikipedia",
+        "GEIPAN (CNES)"
+      ]
+    },
+    "hessdalen-1984": {
+      "name": "Hessdalen Lights",
+      "loc": "Hessdalen Valley",
+      "country": "Norway",
+      "summary": "Recurring light phenomenon in a Norwegian valley since 1981, studied by the Hessdalen Project with radars, spectrometers and automatic stations that are still active. The best natural laboratory in the world for anomalous light phenomena; without complete explanation.",
+      "sources": [
+        "Wikipedia",
+        "Project Hessdalen"
+      ]
+    },
+    "hudson-valley-1983": {
+      "name": "Hudson Valley Surge",
+      "loc": "Hudson Valley, New York",
+      "country": "United States",
+      "summary": "Between 1982 and 1986, more than 5,000 people reported a huge, silent triangular or boomerang object over New York and Connecticut, including a crowd on the Taconic Highway. Researched by J. Allen Hynek and Philip Imbrogno; The explanation of \"planes in formation\" did not convince the witnesses.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "minsk-1985": {
+      "name": "Aeroflot Flight 8352",
+      "loc": "Between Tbilisi and Tallinn (about Minsk)",
+      "country": "Russia (USSR)",
+      "summary": "The crew of a Tupolev reported a luminous cloud with beams that imitated the shape of the plane and followed it; also observed by another flight and radars. Published by the TASS agency, something unpublished in the USSR, and picked up in the international press.",
+      "sources": [
+        "Press archive (AP)"
+      ]
+    },
+    "dalnegorsk-1986": {
+      "name": "Hill 611 — Dalnegorsk",
+      "loc": "Dalnegorsk, Primorye",
+      "country": "Russia (USSR)",
+      "summary": "A reddish sphere hit Hill 611; Soviet scientists recovered metal mesh, lead spherules and quartz \"nets\" with anomalous properties. Known as the \"Soviet Roswell\", studied by the Academy of Sciences.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "jal1628-1986": {
+      "name": "Japan Air Lines 1628",
+      "loc": "About Alaska",
+      "country": "United States",
+      "summary": "Captain Kenju Terauchi reported two objects and a \"mothership\" the size of two aircraft carriers following his cargo Boeing 747 for 50 minutes, with echoes on shipboard and FAA radar. The head of the FAA accident division, John Callahan, preserved the data and declared that the CIA ordered silence. Complete FAA file available.",
+      "sources": [
+        "Wikipedia",
+        "FAA Documents (Black Vault)"
+      ]
+    },
+    "gulf-breeze-1987": {
+      "name": "Gulf Breeze Sightings",
+      "loc": "Gulf Breeze, Florida",
+      "country": "United States",
+      "summary": "Ed Walters published dozens of clear photos of an object with a luminous ring. There were also hundreds of independent sightings in the area over the years. Walters' photos were discredited when a model was found in his former house; the local surge remains disputed. Included as an example of a contaminated case.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "nullarbor-1988": {
+      "name": "Knowles family—Nullarbor",
+      "loc": "Nullarbor Plain",
+      "country": "Australia",
+      "summary": "One family reported that a luminous object lifted their car on the Eyre Road, covering it in ashy dust and bursting a tyre. Samples analyzed; The case made news in Australia and the car was examined by the police.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "voronezh-1989": {
+      "name": "Voronezh (park)",
+      "loc": "Voronezh",
+      "country": "Russia (USSR)",
+      "summary": "Dozens of children and adults reported a pink sphere from which three-meter beings descended with a \"robot.\" Published by TASS as official news, generating global headlines. Investigated by local scientists with soil analysis.",
+      "sources": [
+        "Wikipedia",
+        "NYT 1989"
+      ]
+    },
+    "belgian-eupen-1989": {
+      "name": "Belgian Wave — Eupen",
+      "loc": "Eupen, Liège",
+      "country": "Belgium",
+      "summary": "Two gendarmes and dozens of witnesses observed a silent triangle with three spotlights over Eupen, the beginning of a wave with more than 2,000 reports in a year and a half. The Belgian gendarmerie and army openly collaborated with civilian investigators (SOBEPS): a unique case of official transparency.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "belgian-f16-1990": {
+      "name": "Belgian wave — F-16 chase",
+      "loc": "Wallonia",
+      "country": "Belgium",
+      "summary": "Two Belgian Air Force F-16s chased radar echoes running accelerations of up to 40 g, correlated with NATO ground radars. The chief of the Air Staff, General De Brouwer, presented the data publicly and maintains the case as unidentified.",
+      "sources": [
+        "Wikipedia",
+        "SOBEPS report (summary)"
+      ]
+    },
+    "mexico-eclipse-1991": {
+      "name": "Mexico City Eclipse",
+      "loc": "Mexico City",
+      "country": "Mexico",
+      "summary": "During the total solar eclipse, thousands of people filmed a stationary silver object over the capital, kicking off the 1990s Mexican wave popularized by Jaime Maussan. Skeptics identify Venus in many recordings; others remain discussed.",
+      "sources": [
+        "Wikipedia (ES)"
+      ]
+    },
+    "cosford-1993": {
+      "name": "Cosford/Shawbury Incident",
+      "loc": "RAF Cosford, Shropshire",
+      "country": "United Kingdom",
+      "summary": "Police, military and meteorologist at RAF Shawbury reported a huge, slow-moving object with a beam of light sweeping the ground. Nick Pope, head of the Ministry of Defence's \"UFO desk\", officially investigated it and considers it his best case; The report reached the chief of the Air Staff.",
+      "sources": [
+        "MoD UFO Archives (National Archives)"
+      ]
+    },
+    "ariel-1994": {
+      "name": "Ariel School — Ruwa",
+      "loc": "Ruwa",
+      "country": "Zimbabwe",
+      "summary": "62 students from a rural school saw a landed object and large-eyed entities next to it during recess; several related \"messages\" about the damage to the planet. Interviewed days later by Harvard psychiatrist John E. Mack and by the BBC. The witnesses, now adults, maintain the story (documentary \"Ariel Phenomenon\").",
+      "sources": [
+        "Wikipedia",
+        "BBC (archive)"
+      ]
+    },
+    "bariloche-1995": {
+      "name": "Bariloche Case",
+      "loc": "San Carlos de Bariloche, Río Negro",
+      "country": "Argentina",
+      "summary": "An Aerolíneas Argentinas Boeing 727 on approach to Bariloche was accompanied by a luminous object while the city suffered a blackout; the tower and an Air Force plane confirmed the observation. Emblematic case of Argentine commercial aviation.",
+      "sources": [
+        "Wikipedia (ES)"
+      ]
+    },
+    "varginha-1996": {
+      "name": "Varginha case",
+      "loc": "Varginha, Minas Gerais",
+      "country": "Brazil",
+      "summary": "Three young people reported a brown creature with red eyes; Later testimonies speak of captures by the military and a cordoned off hospital. The Brazilian army denies it; The case was discussed in the Brazilian Senate and continues to generate documentaries (\"Moment of Contact\", 2022).",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "yukon-1996": {
+      "name": "Yukon Giant UFO",
+      "loc": "Fox Lake—Carmacks, Yukon",
+      "country": "Canada",
+      "summary": "More than 30 witnesses along 200 km of the Klondike Highway described an object with strings of lights estimated to be hundreds of meters long. Comprehensive civil investigation with triangulated reconstruction; Skeptics propose rocket re-entry of a satellite.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "phoenix-1997": {
+      "name": "Phoenix Lights",
+      "loc": "Phoenix, Arizona",
+      "country": "United States",
+      "summary": "Thousands of people watched a silent, kilometer-long V formation cross Arizona, and hours later a row of lights over Phoenix (military flares according to the USAF). Governor Fife Symington ridiculed the case at a press conference and a decade later admitted having seen the object: \"it was something from another world.\"",
+      "sources": [
+        "Wikipedia",
+        "CNN—Symington"
+      ]
+    },
+    "illinois-2000": {
+      "name": "Southern Illinois Triangle",
+      "loc": "Highland—Lebanon, Illinois",
+      "country": "United States",
+      "summary": "Five police officers from different municipalities followed by radio a huge and silent triangular object at low altitude. Office communications were recorded. \"Black triangles\" reference case; documentary \"The Edge of Reality.\"",
+      "sources": [
+        "Wikipedia",
+        "NUFORC"
+      ]
+    },
+    "campeche-2004": {
+      "name": "FLIR of Campeche (FAM)",
+      "loc": "About Campeche",
+      "country": "Mexico",
+      "summary": "An anti-narcotics surveillance plane of the Mexican Air Force filmed in infrared 11 heat sources that surrounded it, invisible to the naked eye. The Secretary of Defense made the video public: the first official declassification of this type in America. Proposed explanation: flares from Cantarell oil platforms.",
+      "sources": [
+        "Wikipedia (ES)"
+      ]
+    },
+    "tinley-park-2004": {
+      "name": "Tinley Park Lights",
+      "loc": "Tinley Park, Illinois",
+      "country": "United States",
+      "summary": "Three red lights in a slow triangular formation were seen and videotaped by hundreds of witnesses in the Chicago area, repeating themselves at later dates. One of the massive sightings with the most independent recordings crossed.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "nimitz-2004": {
+      "name": "USS Nimitz—\"Tic Tac\" (FLIR1)",
+      "loc": "Off San Diego, Pacific",
+      "country": "United States",
+      "summary": "The cruiser USS Princeton tracked objects that fell from 24,000 m to sea level in seconds for days. The F/A-18s of Commander David Fravor and Lieutenant Alex Dietrich intercepted a white, wingless \"Tic Tac-type\" object that outmaneuvered them and reappeared at their secret rendezvous point. FLIR1 video declassified by the Pentagon in 2020; Fravor testified under oath before Congress in 2023. The quintessential modern UAP case.",
+      "sources": [
+        "Wikipedia",
+        "Official video (Navy/DoD)",
+        "NYT 2017"
+      ],
+      "mediaCaps": [
+        "\"FLIR1\" video — officially declassified by the Pentagon (US Navy/DoD, public domain)"
+      ]
+    },
+    "ohare-2006": {
+      "name": "Chicago O'Hare Airport",
+      "loc": "O'Hare Airport, Chicago",
+      "country": "United States",
+      "summary": "United Airlines employees and pilots observed a gray metallic disk suspended above gate C-17, which ascended, piercing a clear hole in the clouds. The FAA attributed it to an uninvestigated \"meteorological phenomenon\"; the recording of the supervisor's call to the tower was obtained via FOIA.",
+      "sources": [
+        "Wikipedia",
+        "Chicago Tribune"
+      ]
+    },
+    "alderney-2007": {
+      "name": "Alderney sighting",
+      "loc": "English Channel, near Alderney",
+      "country": "United Kingdom",
+      "summary": "Two commercial pilots on separate flights observed two huge stationary bright yellow objects over the Channel for 15 minutes; Passengers also saw them. Studied in a 180-page independent technical report; without explanation.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "stephenville-2008": {
+      "name": "Stephenville",
+      "loc": "Stephenville, Texas",
+      "country": "United States",
+      "summary": "Dozens of witnesses, including a pilot and an agent, saw huge, silent lights. FAA radar data obtained via FOIA by MUFON showed an object without a transponder heading toward George W. Bush's ranch, carrying F-16 fighters whose presence the USAF first denied and then admitted.",
+      "sources": [
+        "Wikipedia",
+        "MUFON radar report (summary)"
+      ]
+    },
+    "kumburgaz-2008": {
+      "name": "Kumburgaz Videos",
+      "loc": "Kumburgaz, Istanbul",
+      "country": "Türkiye",
+      "summary": "A security guard recorded objects over the Sea of ​​Marmara for several nights with a powerful zoom; The Turkish scientific council TÜBITAK declared the videos genuine. Skeptics identify them as an out-of-focus illuminated cruise ship. Included as famous case of ambiguous video evidence.",
+      "sources": [
+        "Wikipedia"
+      ]
+    },
+    "el-bosque-2010": {
+      "name": "El Bosque Air Festival",
+      "loc": "El Bosque Air Base, Santiago",
+      "country": "Chili",
+      "summary": "Several cameras recorded an object crossing at high speed between the fighters during an air show. Analyzed by CEFAA, the official Chilean organization for the study of anomalous aerial phenomena; discussed conclusions (possible insect close to the target).",
+      "sources": [
+        "Wikipedia (CEFAA)"
+      ]
+    },
+    "xiaoshan-2010": {
+      "name": "Xiaoshan Airport Closure",
+      "loc": "Hangzhou, Zhejiang",
+      "country": "China",
+      "summary": "Hangzhou airport suspended operations for an hour after a flight crew detected an unidentified object; 18 flights diverted. The authorities said they knew the cause but did not reveal it because it \"involved military secrets.\"",
+      "sources": [
+        "Wikipedia",
+        "ABC News"
+      ]
+    },
+    "aguadilla-2013": {
+      "name": "Aguadilla (DHS video)",
+      "loc": "Aguadilla, Puerto Rico",
+      "country": "United States",
+      "summary": "The thermal camera on a Customs and Border Protection plane recorded an object that flew over the airport, entered and left the sea without braking and appeared to split in two. Exhaustive technical analysis of the SCU group (Scientific Coalition for UAP Studies). Transmedia reference case.",
+      "sources": [
+        "SCU report",
+        "Wikipedia"
+      ]
+    },
+    "chile-navy-2014": {
+      "name": "FLIR of the Chilean Navy",
+      "loc": "Valparaiso Coast",
+      "country": "Chili",
+      "summary": "A naval helicopter recorded in infrared an object that seemed to expel a hot contrail. The CEFAA published it after two years of analysis as \"unidentified\"; Independent investigators later identified it as commercial flight IB6830. Example of how an official case can be resolved with open data.",
+      "sources": [
+        "Article resolution (Metabunk)"
+      ]
+    },
+    "gimbal-2015": {
+      "name": "USS Theodore Roosevelt—\"Gimbal\"",
+      "loc": "East Coast, Atlantic (Florida-Georgia)",
+      "country": "United States",
+      "summary": "Aviators from Roosevelt's air wing recorded the video \"Gimbal\": an object without wings or escapement that rotates on its axis against the wind, along with a formation of 4-6 objects. Pilots Ryan Graves and others reported daily detections following improvements to AESA radars. Declassified by the Pentagon in 2020; Graves testified before Congress in 2023.",
+      "sources": [
+        "Wikipedia (Pentagon UFO videos)",
+        "NYT 2019"
+      ],
+      "mediaCaps": [
+        "\"Gimbal\" video — officially declassified by the Pentagon (US Navy/DoD, public domain)"
+      ]
+    },
+    "gofast-2015": {
+      "name": "\"GoFast\" (East Coast)",
+      "loc": "East coast, Atlantic",
+      "country": "United States",
+      "summary": "Third video declassified by the Pentagon: a white object apparently hovering over the sea captured by the ATFLIR of an F/A-18. Paralytic analysis suggests that he was flying higher and slower than he appears; AARO itself considers it a probable parallax effect. Included as an example of rigorous analysis of official data.",
+      "sources": [
+        "Wikipedia (Pentagon UFO videos)",
+        "AARO"
+      ],
+      "mediaCaps": [
+        "\"GoFast\" video — officially declassified by the Pentagon (US Navy/DoD, public domain)"
+      ]
+    },
+    "uss-russell-2019": {
+      "name": "USS Russell—\"pyramids\"",
+      "loc": "Channel Islands, California",
+      "country": "United States",
+      "summary": "During exercises off California, several destroyers were overflown on consecutive nights by swarms of objects; a nighttime video showed \"pyramid\" shapes (likely bokeh from flickering lights). The Navy confirmed the authenticity of the images; internal investigation points to unattributed drones. Key case of the drone/UAP problem.",
+      "sources": [
+        "The Drive/War Zone",
+        "Wikipedia"
+      ]
+    },
+    "omaha-2019": {
+      "name": "USS Omaha — transmedium sphere",
+      "loc": "Off San Diego, Pacific",
+      "country": "United States",
+      "summary": "The CIC of the USS Omaha recorded a dark sphere that, after maneuvering, entered the sea without apparent deceleration; no remains were recovered. Images confirmed as authentic by the Pentagon and included in the UAP file presented to Congress.",
+      "sources": [
+        "Mystery Wire / verified video",
+        "Wikipedia (USS Omaha)"
+      ]
+    },
+    "aa2292-2021": {
+      "name": "American Airlines 2292 — \"long, cylindrical missile\"",
+      "loc": "Over northeastern New Mexico",
+      "country": "United States",
+      "summary": "The crew of an Airbus A320 radioed to Albuquerque: \"we have a long, cylindrical object that almost passed over us...it was moving very fast.\" The recording was intercepted by a radio amateur and American Airlines confirmed its authenticity. The FBI declined to comment; no recognized military traffic in the area.",
+      "sources": [
+        "The War Zone",
+        "Snopes (verification)"
+      ]
+    },
+    "lake-huron-2023": {
+      "name": "Shooting down over Lake Huron",
+      "loc": "Lake Huron, Michigan",
+      "country": "United States",
+      "summary": "An F-16 shot down a slow octagonal object at 6,000 m with an AIM-9X missile, one of three unidentified objects shot down that February after the Chinese spy balloon (Alaska on the 10th, Yukon on the 11th). The first missile failed. The remains were never recovered and the White House closed the episode without public identification. First recognized shootdown of an unidentified object over the US.",
+      "sources": [
+        "AP News",
+        "Wikipedia"
+      ]
+    },
+    "langley-2023": {
+      "name": "Drone Raids — Langley AFB",
+      "loc": "Langley AFB, Virginia",
+      "country": "United States",
+      "summary": "For 17 nights, swarms of unidentified objects flew over one of the most important US fighter bases with impunity, forcing the transfer of F-22s. Documented via FOIA and recognized by the Pentagon; the origin remains officially unattributed. Paradigm of drone-UAP overlap in national security.",
+      "sources": [
+        "The War Zone",
+        "cnn"
+      ]
+    },
+    "nj-drones-2024": {
+      "name": "New Jersey Drone Surge",
+      "loc": "New Jersey (state)",
+      "country": "United States",
+      "summary": "Thousands of reports of large “drones” at night over New Jersey and neighboring states for weeks, flying over critical infrastructure. The FBI received more than 5,000 tips; The White House attributed the majority to misidentified legal aircraft, without convincing governors or congressmen. Case study of panic, information gap and limits of attribution.",
+      "sources": [
+        "AP News",
+        "Wikipedia"
+      ]
+    },
+    "harare-airport-2008": {
+      "name": "Harare airport drive",
+      "loc": "Harare International Airport",
+      "country": "Zimbabwe",
+      "summary": "Case included in the files declassified by the Pentagon in 2026 (PURSUE system): a disk-shaped object with a hollow center and rotating lights observed at Harare airport. The report was transmitted to the White House Situation Room, a detail that reveals the monitoring of international UAP incidents.",
+      "sources": [
+        "CBS News — PURSUE Round 3",
+        "Official WAR.GOV/UFO Portal"
+      ]
+    },
+    "pursue-western-2021": {
+      "name": "Desert Sphere (DOW-UAP-PR061)",
+      "loc": "Western US (exact location not disclosed)",
+      "country": "United States",
+      "summary": "Official video declassified in 2026. A small luminous spherical object over the western US desert exhibits directional control and apparent \"cloaking behavior.\" Listed by AARO as DOW-UAP-PR061. Approximate coordinates of the disclosed region.",
+      "sources": [
+        "Official video (Wikimedia Commons, public domain)",
+        "The Debrief — PURSUE analysis"
+      ],
+      "mediaCaps": [
+        "Official AARO footage — western US, 2021 (public domain, PURSUE batch 2026)"
+      ]
+    },
+    "pursue-midest-2022": {
+      "name": "Middle East Globe (FLIR)",
+      "loc": "Middle East (region; exact location not disclosed)",
+      "country": null,
+      "summary": "Infrared recording from a US military platform declassified by the Pentagon in 2026. A spherical object moves without a visible propulsion signature. AARO has not offered a public resolution. Approximate coordinates of the region.",
+      "sources": [
+        "Official video (Wikimedia Commons, public domain)",
+        "Official WAR.GOV/UFO Portal"
+      ],
+      "mediaCaps": [
+        "Official AARO footage — Middle East, 07/12/2022 (public domain, PURSUE batch 2026)"
+      ]
+    },
+    "pursue-southasia-2023": {
+      "name": "South Asian globe",
+      "loc": "South Asia (region; exact location not disclosed)",
+      "country": null,
+      "summary": "One of the infrared videos released in the PURSUE 2026 series: a spherical object captured by US military sensors over South Asia. No official resolution published. Approximate coordinates of the disclosed region.",
+      "sources": [
+        "Official video (Wikimedia Commons, public domain)",
+        "Official WAR.GOV/UFO Portal"
+      ],
+      "mediaCaps": [
+        "Official AARO footage — South Asia, 01/15/2023 (public domain, PURSUE batch 2026)"
+      ]
+    },
+    "pursue-orbs-2023": {
+      "name": "Mothership orb of the Western US",
+      "loc": "Western US (exact location not disclosed)",
+      "country": "United States",
+      "summary": "Star case of the 3rd round PURSUE (2026): five federal agents describe a large orange light from which smaller red orbs were \"born\" repeatedly. One asked his partner: \"Are you seeing this?\" The red orbs accelerated instantly and maneuvered in a coordinated horizontal formation. Approximate coordinates of the disclosed region.",
+      "sources": [
+        "CBS News — PURSUE Round 3",
+        "Newsweek — 5 revelations"
+      ]
+    },
+    "colorado-springs-2022": {
+      "name": "Colorado Springs Opalescent Object",
+      "loc": "Near Cheyenne Mountain, Colorado Springs",
+      "country": "United States",
+      "summary": "Included in the 2026 PURSUE archives: a \"potato-shaped\" object with an opalescent whitish color and articulated panels, observed near the Cheyenne Mountain complex. AARO evaluated it with \"low confidence\" as sunlight backscatter — a good example of the residual principle: even in a historical batch, some of the cases have a probable mundane explanation.",
+      "sources": [
+        "CBS News — PURSUE Round 3",
+        "The Debrief — PURSUE analysis"
+      ]
+    },
+    "haussmann-mallorca-1950": {
+      "name": "Photos of Haussmann (Mallorca)",
+      "loc": "Between Montuïri and Vilafranca de Bonany, Mallorca",
+      "country": "Spain",
+      "summary": "The German photographer based in Mallorca Heinrich (Enrique) Haussmann photographed with his Linhof camera what he described as a large rotating disk that crossed the sky from east to west emitting a humming sound. Published in the Baleares newspaper, they were among the first photos of a UFO with national impact in Spain. Its authenticity has been debated ever since; They appear in the Ballester Olmos FOTOCAT catalogue.",
+      "sources": [
+        "Breaking News — \"UFOmania\" in Mallorca",
+        "UFO FOTOCAT (Ballester Olmos)"
+      ]
+    },
+    "iberia435-1969": {
+      "name": "Iberia flight 435 (Palma–Madrid)",
+      "loc": "Over the Mediterranean, west of Mallorca",
+      "country": "Spain",
+      "summary": "The crew of an Iberia Caravelle (commander Jaime Ordovás) reported at 26,000 feet a blinding white light that took on a triangular shape before disappearing. The Air Force questioned the pilots and closed the case; the official conclusion was the planet Venus. Classic example of skeptical filtering of Spanish files.",
+      "sources": [
+        "Air Force UFO Files (Defense Library)",
+        "Breaking News"
+      ]
+    },
+    "soller-1979": {
+      "name": "Pictures of Sóller (l'Ofre)",
+      "loc": "L'Ofre, Sóller, Serra de Tramuntana, Mallorca",
+      "country": "Spain",
+      "summary": "The same morning as the Manises Case, mechanic Pep Climent photographed two powerful red lights over the Serra de Tramuntana from l'Ofre. The case was integrated into the file declassified by the Air Force; When it was declassified, the author formally claimed the negatives from the Air Command. For decades Sóller was the most active point of the Balearic casuistry.",
+      "sources": [
+        "Air Force UFO Files (Defense Library)",
+        "Breaking News",
+        "Manises Case (Wikipedia)"
+      ]
+    },
+    "menorca-1989": {
+      "name": "Flashes of the northeast of Menorca",
+      "loc": "Northeast of Menorca",
+      "country": "Spain",
+      "summary": "Between November 1989 and February 1990, several witnesses from the northeast of Menorca described intense flashes that transformed into a circular object floating at low altitude, with a rotation movement on its own axis. Local wave collected by the Balearic casuistry.",
+      "sources": [
+        "Breaking News — sightings in the Balearic Islands"
+      ]
+    },
+    "cala-tuent-1991": {
+      "name": "Jomel Case (Cala Tuent)",
+      "loc": "Cala Tuent, Escorca, Mallorca",
+      "country": "Spain",
+      "summary": "José María Gómez Montiel (\"Jomel\") reported seeing a large luminous object in Cala Tuent next to a hooded humanoid figure; He and his companion fled. Close encounter case highly discussed and without independent corroboration, included due to its weight in Balearic ufological folklore.",
+      "sources": [
+        "Breaking News — \"UFOmania\" in Mallorca"
+      ]
+    }
+  },
+  "hotspots": [
+    {
+      "name": "Area 51 / Rachel, NV",
+      "desc": "Secret aerospace test base (Groom Lake). Epicenter of modern mythology since the statements of Bob Lazar (1989). The \"Extraterrestrial Highway\" (SR-375) surrounds it."
+    },
+    {
+      "name": "Skinwalker Ranch, UT",
+      "desc": "Uinta Basin ranch with decades of reported phenomena. Researched by NIDS and the Pentagon's AAWSAP program (2008-2010); today the subject of the History Channel series."
+    },
+    {
+      "name": "San Luis Valley, CO",
+      "desc": "Colorado Valley with continuous casuistry since the 1960s, including the first famous cattle mutilation (\"Snippy\", 1967). It even has a \"UFO Watchtower\"."
+    },
+    {
+      "name": "Hessdalen, Norway",
+      "desc": "The only hotspot with permanent scientific monitoring: automatic stations have been recording anomalous lights since 1983 (Hessdalen Project, Østfold University College)."
+    },
+    {
+      "name": "Molebka (\"Triangle M\"), Russia",
+      "desc": "The most famous \"anomalous zone\" in Russia, along the Sylva River in the Urals. Popular since the 80s; It has a monument to an alien."
+    },
+    {
+      "name": "Wycliffe Well, Australia",
+      "desc": "Self-proclaimed \"Australian UFO capital\", in the Northern Territory. Sightings reported continuously since World War 2."
+    },
+    {
+      "name": "Zone of Silence, Mexico",
+      "desc": "Desert between Durango, Chihuahua and Coahuila. The legend grew after a US Athena missile fell there in 1970. Folklore of magnetic anomalies and sightings."
+    },
+    {
+      "name": "Hudson Valley, NY",
+      "desc": "Scenario of the great wave of triangular objects of 1982-86 (5,000+ witnesses) investigated by J. Allen Hynek."
+    },
+    {
+      "name": "Bermuda Triangle",
+      "desc": "More popular myth than rigorous casuistry, but associated with Flight 19 (1945) and USO speculation. Useful as a case study of folklore."
+    },
+    {
+      "name": "Pembrokeshire (\"Welsh Triangle\")",
+      "desc": "Wave 1977 (\"Dyfed Triangle\"): Broad Haven College, Haven Fort Hotel and Coastal Farms. Documented in British MoD archives."
+    },
+    {
+      "name": "Colares, Brazil",
+      "desc": "Amazon Island of Operação Prato (1977): the only official documented military deployment to investigate light attacks on the population."
+    },
+    {
+      "name": "Catalina Channel / SOCAL",
+      "desc": "Maritime corridor between San Diego and the Channel Islands: Nimitz incidents (2004), drone swarms over destroyers (2019) and historical USO cases."
+    },
+    {
+      "name": "Mount Shasta, CA",
+      "desc": "Sacred mountain with folklore of lights and \"intraterrestrial cities\" (myth of Lemuria/Telos). Classic spiritual-contactist hotspot of the American West."
+    },
+    {
+      "name": "Es Vedra, Ibiza",
+      "desc": "Magnetic islet off the southwest coast of Ibiza, epicenter of Balearic UFO folklore. Cited in the declassified files of the Air Force; surrounded by legends about compass anomalies and lights."
+    },
+    {
+      "name": "Serra de Tramuntana / Sóller",
+      "desc": "The mountains in the northwest of Mallorca and, in particular, Sóller were the most active point of the Balearic casuistry between the 70s and 90s, with photos integrated into the official files."
+    }
+  ],
+  "disclosure": [
+    {
+      "title": "Memo Twining / Project Sign",
+      "text": "After the surge of 1947, General Nathan Twining writes that \"the phenomenon is something real and not visionary or fictitious.\" Project Sign, the USAF's first official investigation, is born."
+    },
+    {
+      "title": "\"Estimate of the Situation\"",
+      "text": "Project Sign concludes in a document (later destroyed) that the best explanation is interplanetary. General Vandenberg rejects him; Sign is replaced by the skeptical Project Grudge."
+    },
+    {
+      "title": "Project Blue Book",
+      "text": "The USAF creates Blue Book, which will compile 12,618 cases up to 1969, 701 of them never identified. The Washington D.C. wave forces the largest Pentagon press conference since the war."
+    },
+    {
+      "title": "Robertson Panel (CIA)",
+      "text": "A secret CIA panel recommends \"demystifying\" UFOs and monitoring civil groups: management of the phenomenon becomes a matter of controlling public perception."
+    },
+    {
+      "title": "Condon Committee",
+      "text": "Following the \"swamp gas\" scandal and pressure from Congressman Gerald Ford, the USAF commissions the University of Colorado with an \"independent\" study. Its negative conclusion (1968) will justify the closure of Blue Book, despite the fact that ~30% of its own cases remained unexplained."
+    },
+    {
+      "title": "Blue Book Closure",
+      "text": "USAF cancels Blue Book: no UFO evaluated represents threat or evidence of extraterrestrial technology. Officially, the US stops investigating... for decades, according to the public version."
+    },
+    {
+      "title": "It was FOIA",
+      "text": "The Freedom of Information Act allows civilian investigators (CAUS, NICAP, later Black Vault) to extract thousands of CIA, NSA, DIA and FBI documents that show continued interest despite official closure."
+    },
+    {
+      "title": "AATIP/AAWSAP",
+      "text": "At the request of Senator Harry Reid, the Pentagon funds the AAWSAP/AATIP program with $22 million, managed with Bigelow Aerospace, to study military UAP incidents. Luis Elizondo will direct it until his resignation in 2017."
+    },
+    {
+      "title": "The New York Times article",
+      "text": "On 12/16/2017, the NYT reveals AATIP and publishes the FLIR1 and Gimbal videos. Turning point: the media stigma begins to break and the TTSA organization of Tom DeLonge, Elizondo and Chris Mellon is born."
+    },
+    {
+      "title": "The Navy changes the rules",
+      "text": "The US Navy confirms that the videos show real \"unidentified aerial phenomena\" and creates new reporting protocols for pilots, admitting that stigma suppressed reporting."
+    },
+    {
+      "title": "Official declassification and UAPTF",
+      "text": "The Pentagon officially publishes FLIR1, Gimbal and GoFast and creates the UAP Task Force in the Navy. Congress requires a public report in the intelligence law."
+    },
+    {
+      "title": "ODNI report",
+      "text": "On 6/25/2021, the Office of the Director of National Intelligence publishes its preliminary assessment: of 144 military cases, only 1 explained; 18 showed \"unusual flight characteristics.\" UAPs are declared an air and national security problem."
+    },
+    {
+      "title": "AARO and first hearing in 50 years",
+      "text": "In May, Congress holds the first public hearing on UAP since 1968. The Pentagon creates AARO (All-domain Anomaly Resolution Office) under physicist Sean Kirkpatrick, with a mandate over air, sea, space and transmedium."
+    },
+    {
+      "title": "Grusch, Fravor and Graves under oath",
+      "text": "On 7/26/2023, former intelligence officer David Grusch testifies under oath that the US has \"non-human vehicle\" recovery programs, along with pilots Fravor (Nimitz) and Graves. Senator Schumer promotes the UAP Disclosure Act, only partially approved: it creates UAP files in NARA but the review board is eliminated in the negotiation."
+    },
+    {
+      "title": "AARO Historical Report and New Hearings",
+      "text": "AARO publishes its historical report (Vol. 1): it finds no verifiable evidence of reverse engineering programs, a conclusion highly contested by congressmen and witnesses. In November, a new hearing with journalist Michael Shellenberger and former official Luis Elizondo under oath. New Jersey's drone surge closes out the year showing the limits of transparency."
+    },
+    {
+      "title": "The present",
+      "text": "AARO maintains a public portal with resolved cases and statistics; NARA's UAP Records grow with declassified material; Congress continues to press whistleblower protection amendments. The question is no longer whether the phenomenon exists — official organizations themselves report hundreds of unsolved cases annually — but what it is."
+    },
+    {
+      "title": "PURSUE — mass declassification",
+      "text": "Following an executive order in February 2026, the administration launches the PURSUE system (Presidential Unsealing and Reporting System for UAP Encounters) and the WAR.GOV/UFO portal (May 8), with more than 1.7 billion visits. In three batches (May 8 and 22, June 12), documents, images and infrared videos from the CIA, FBI, NASA and the Pentagon are published. The star case: Five federal agents describe an orange \"nurse\" orb that expels red orbs. AARO recognizes that ~40% of cases remain unexplained. Despite the historical scale, many researchers criticize that the most sensitive files are missing."
+    }
+  ],
+  "glossary": [
+    [
+      "UAP",
+      "Unidentified Anomalous Phenomena. Current official term (formerly \"Unidentified Aerial Phenomena\"), expanded in 2022 to include maritime, space, and transmedium objects."
+    ],
+    [
+      "Hynek Classification",
+      "System created by J. Allen Hynek (Blue Book scientific advisor): Nocturnal Lights, Daylight Discs, Radar-Visual and Close Encounters of the 1st, 2nd and 3rd kind. The 4th kind (abductions) was added later."
+    ],
+    [
+      "Transmedium",
+      "Apparent ability of an object to move between air and water (or space) without loss of performance. Key category in the Nimitz, Aguadilla and Omaha cases."
+    ],
+    [
+      "USE",
+      "Unidentified Submerged Object: unidentified object underwater or entering/leaving the sea."
+    ],
+    [
+      "FOIA",
+      "Freedom of Information Act (1966/1974). Legal tool with which civilian investigators have declassified tens of thousands of pages from the CIA, NSA, DIA, FBI and FAA."
+    ],
+    [
+      "Blue Book",
+      "USAF project (1952–1969): 12,618 cases investigated, 701 officially \"unidentified.\" Complete archives digitized at the US National Archives."
+    ],
+    [
+      "AATIP",
+      "Advanced Aerospace Threat Identification Program: Pentagon program (2007–2012) revealed by the New York Times in 2017."
+    ],
+    [
+      "AARO",
+      "All-domain Anomaly Resolution Office (2022–): Official Department of Defense office to resolve UAP cases across all domains. Publish reports and videos on aaro.mil."
+    ],
+    [
+      "NUFORC",
+      "National UFO Reporting Center (1974–): largest civilian database in the world, ~180,000 public and searchable reports. Accepts complaints by web and telephone."
+    ],
+    [
+      "MUFON",
+      "Mutual UFO Network (1969–): International network of field investigators with standardized case investigation methodology."
+    ],
+    [
+      "GEIPAN",
+      "French official group within the CNES space agency (1977–). France is the only Western country with continuous official civil research; ~3% of their cases remain as \"PAN D\" (unexplained with good data)."
+    ],
+    [
+      "CEFAA",
+      "Anomalous Aerial Phenomena Study Committee: official body of Chilean civil aviation, pioneer in Latin America."
+    ],
+    [
+      "parallax effect",
+      "Speed/altitude illusion caused by camera shake: probable explanation for the GoFast video. Any rigorous analysis must rule it out first."
+    ],
+    [
+      "mundane hypotheses",
+      "Balloons, drones, flares, Starlink, Venus, racing cars, birds with bokeh... 90-95% of the reports are resolved this way. The scientific interest is in the residue that survives filtration."
+    ]
+  ],
+  "methodology": {
+    "cred": [
+      [
+        5,
+        "Multiple instrumental data (radar + visual + sensors), trained witnesses, declassified official documentation."
+      ],
+      [
+        4,
+        "Official documentation or multiple qualified independent witnesses; partial physical or instrumental evidence."
+      ],
+      [
+        3,
+        "Multiple credible witnesses or physical evidence analyzed, but with gaps or viable alternative explanations."
+      ],
+      [
+        2,
+        "Singular or poorly corroborated testimony; relevant but evidentially weak historical case."
+      ],
+      [
+        1,
+        "Famous case but discredited, contaminated or with a probable mundane explanation. It is included for its historical and educational value."
+      ]
+    ],
+    "notes": "UFOlogist applies the residual principle: most reports have a conventional explanation, and a rigorous catalog should say so. Each case links to its primary sources (declassified documents, national archives, period press) so you can verify for yourself. Credibility evaluates the quality of the evidence, not the \"spectacle\" of the story."
+  },
+  "tlEvents": [
+    {
+      "label": "Arnold + Roswell: the saucer era is born"
+    },
+    {
+      "label": "Big surge — Washington D.C. radars"
+    },
+    {
+      "label": "Sputnik + Levelland surge"
+    },
+    {
+      "label": "\"Swamp gas\" → Condon Report"
+    },
+    {
+      "label": "Closing of the Project Blue Book"
+    },
+    {
+      "label": "1973 wave (Pascagoula, Coyne)"
+    },
+    {
+      "label": "Rendlesham + Cash-Landrum"
+    },
+    {
+      "label": "Belgian wave + Voronezh"
+    },
+    {
+      "label": "Phoenix Lights"
+    },
+    {
+      "label": "Nimitz \"Tic Tac\" Incident"
+    },
+    {
+      "label": "Stephenville; NUFORC reporting peak"
+    },
+    {
+      "label": "NYT reveals AATIP — it was UAP"
+    },
+    {
+      "label": "ODNI Report to Congress"
+    },
+    {
+      "label": "Grusch hearing + February demolitions"
+    },
+    {
+      "label": "New Jersey Drones"
+    },
+    {
+      "label": "PURSUE Declassification — war.gov/ufo"
+    }
+  ],
+  "reportLinks": [
+    [
+      "NUFORC — report a sighting",
+      "https://nuforc.org/file-a-report/"
+    ],
+    [
+      "MUFON — Submit a report",
+      "https://mufon.com/cms-report-a-ufo/"
+    ],
+    [
+      "GEIPAN (France) — témoignage",
+      "https://www.cnes-geipan.fr/"
+    ],
+    [
+      "AARO — official reports and resolved cases",
+      "https://www.aaro.mil/"
+    ],
+    [
+      "Blue Book Archives (NARA)",
+      "https://www.archives.gov/research/military/air-force/ufos"
+    ],
+    [
+      "The Black Vault — FOIA documents",
+      "https://www.theblackvault.com/"
+    ],
+    [
+      "UK UFO Archives (National Archives)",
+      "https://www.nationalarchives.gov.uk/ufos/"
+    ],
+    [
+      "UFO files declassified from Spain",
+      "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/expedientes-ovni"
+    ]
+  ]
+};

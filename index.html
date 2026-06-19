@@ -8,29 +8,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=12" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛸</text></svg>" />
+<link rel="stylesheet" href="css/styles.css?v=13" />
+<link rel="icon" type="image/png" href="assets/ufologist-app-icon.png" />
 </head>
 <body>
 
 <!-- ======== LANDING / LOADING SCREEN ======== -->
 <div id="landing">
+  <img class="landing-poster" src="assets/ufologist-poster-earth.png" alt="" aria-hidden="true" />
   <div class="landing-stars"></div>
+  <div class="landing-vignette"></div>
   <div class="landing-inner">
-    <div class="landing-emblem">
-      <svg viewBox="0 0 100 100" class="emblem-hex" aria-hidden="true">
-        <polygon points="50,7 87,28.5 87,71.5 50,93 13,71.5 13,28.5"/>
-      </svg>
-      <span class="emblem-orbit"><i></i></span>
-      <span class="emblem-ufo">🛸</span>
-    </div>
-    <h1 class="landing-title">UFO<span>logist</span></h1>
+    <img class="landing-logo" src="assets/ufologist-logo-lockup-transparent.png" alt="UFOlogist" />
     <p class="landing-sub">by Miquel Gelabert</p>
     <p class="landing-tag">the UFO encounter atlas</p>
+    <div class="landing-rule" aria-hidden="true"></div>
     <div class="landing-progress"><div id="landing-bar"></div></div>
     <div class="landing-log" id="landing-log">Inicializando atlas orbital…</div>
     <div class="landing-count"><span id="landing-count">0</span> reportes indexados</div>
-    <button id="landing-skip" class="landing-skip">Entrar al atlas →</button>
+    <button id="landing-skip" class="landing-skip">Entrar al atlas</button>
   </div>
   <div class="landing-copy">© Miquel Gelabert 2026 · UFOlogist</div>
 </div>
@@ -38,7 +34,7 @@
 <!-- ======== TOP BAR ======== -->
 <header id="topbar">
   <div class="brand">
-    <span class="brand-icon">🛸</span>
+    <img class="brand-mark" src="assets/ufo-mark-transparent.png" alt="" aria-hidden="true" />
     <div class="brand-text">
       <h1>UFO<span>logist</span></h1>
       <p>Atlas global del fenómeno UAP · 80.000+ reportes</p>
@@ -46,16 +42,22 @@
   </div>
 
   <div class="search-wrap">
-    <input id="search" type="text" placeholder="Buscar caso, lugar o país… (ej. Nimitz, Rendlesham, España)" autocomplete="off" />
+    <input id="search" type="text" placeholder="Buscar caso o lugar…" autocomplete="off" />
     <div id="search-results" class="hidden"></div>
   </div>
 
+  <div class="lang-toggle" role="group" aria-label="Language">
+    <button type="button" data-lang="en">EN</button>
+    <button type="button" data-lang="es">ES</button>
+  </div>
+  <button id="btn-audio" class="btn-audio" type="button" title="Apagar ambiente" aria-label="Apagar ambiente" aria-pressed="true">◉</button>
+
   <div class="topbar-actions">
-    <button id="btn-add" class="btn-ghost" title="Registrar un avistamiento propio">➕ Registrar</button>
-    <button id="btn-tour" class="btn-ghost" title="Tour guiado por los casos esenciales">🧭 Expedición</button>
-    <button id="btn-stats" class="btn-ghost" title="Panel de análisis y tendencias">📊 Análisis</button>
-    <button id="btn-knowledge" class="btn-ghost" title="Centro de conocimiento">📚</button>
-    <button id="btn-about" class="btn-ghost" title="Metodología y fuentes">ⓘ</button>
+    <button id="btn-knowledge" class="btn-ghost" title="Centro de conocimiento">◎ Conocimiento</button>
+    <button id="btn-stats" class="btn-ghost" title="Panel de análisis y tendencias">⌁ Análisis</button>
+    <button id="btn-add" class="btn-ghost" title="Reportar o registrar un avistamiento propio">+ Reportar</button>
+    <button id="btn-about" class="btn-ghost" title="Información sobre UFOlogist">ⓘ Info</button>
+    <button id="btn-tour" class="btn-ghost action-utility" title="Tour guiado por los casos esenciales">⌖ Expedición</button>
   </div>
 </header>
 
@@ -238,6 +240,20 @@
   </div>
 </div>
 
+<!-- ======== APP INFO MODAL ======== -->
+<div id="app-info-overlay" class="hidden">
+  <div id="app-info-modal" class="glass">
+    <button id="btn-close-app-info" class="btn-mini close">✕</button>
+    <h2>Sobre UFOlogist</h2>
+    <p><b>UFOlogist</b> es un atlas interactivo independiente para explorar el fenómeno UAP con contexto, fuentes y una mirada crítica. La intención no es empujar una conclusión cerrada, sino ordenar el material, separar evidencia de ruido y hacer visible dónde están los patrones.</p>
+    <h3>Mensaje del autor</h3>
+    <p>He construido esta herramienta para curiosos exigentes: personas que quieren mirar los casos sin cinismo automático, pero también sin perder el criterio. Si algo te intriga, abre las fuentes, compara versiones y mantén la pregunta viva.</p>
+    <h3>Autoría y copyright</h3>
+    <p>Creado por <b>Miquel Gelabert</b>. © Miquel Gelabert 2026 · UFOlogist.</p>
+    <p class="app-info-note">Proyecto divulgativo e independiente. No afiliado a NUFORC, GEIPAN, CNES, AARO ni a ningún organismo oficial. El código se publica bajo licencia MIT. Los datos y fuentes enlazadas pertenecen a sus respectivos titulares y se usan con fines de divulgación e investigación.</p>
+  </div>
+</div>
+
 <!-- ======== MOBILE: backdrop + bottom-sheet nav ======== -->
 <div id="sheet-backdrop"></div>
 <div id="mobile-more" class="glass hidden">
@@ -245,10 +261,12 @@
   <button id="btn-close-more" class="btn-mini close">✕</button>
   <h3 class="more-title">Menú</h3>
   <div class="more-grid">
-    <button data-act="add">➕<span>Registrar</span></button>
-    <button data-act="tour">🧭<span>Expedición</span></button>
-    <button data-act="knowledge">📚<span>Conocimiento</span></button>
-    <button data-act="about">ⓘ<span>Metodología</span></button>
+    <button data-act="knowledge">◎<span>Conocimiento</span></button>
+    <button data-act="stats">⌁<span>Análisis</span></button>
+    <button data-act="add">+<span>Reportar</span></button>
+    <button data-act="about">ⓘ<span>Info</span></button>
+    <button data-act="tour">⌖<span>Expedición</span></button>
+    <button data-act="audio">◉<span>Ambiente</span></button>
   </div>
   <h3 class="more-title">Exportar selección</h3>
   <div class="more-grid">
@@ -260,16 +278,16 @@
 </div>
 
 <nav id="mobile-nav">
-  <button data-sheet="globe" class="active"><b>🌍</b>Globo</button>
-  <button data-sheet="panel-left"><b>🎛</b>Filtros</button>
-  <button data-sheet="timeline"><b>⏱</b>Tiempo</button>
-  <button data-sheet="panel-stats"><b>📊</b>Datos</button>
+  <button data-sheet="globe" class="active"><b>◎</b>Globo</button>
+  <button data-sheet="panel-left"><b>≡</b>Filtros</button>
+  <button data-sheet="timeline"><b>⌁</b>Tiempo</button>
+  <button data-sheet="panel-stats"><b>◫</b>Datos</button>
   <button data-sheet="mobile-more"><b>☰</b>Más</button>
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/h3-js@4.1.0/dist/h3-js.umd.js"></script>
-<script src="js/data.js?v=12"></script>
-<script src="js/app.js?v=12"></script>
+<script src="js/data.js?v=13"></script>
+<script src="js/app.js?v=13"></script>
 </body>
 </html>
