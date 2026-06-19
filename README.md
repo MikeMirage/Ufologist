@@ -2,7 +2,7 @@
 
 Aplicación web interactiva para explorar avistamientos OVNI/UAP documentados (1942–2024) sobre un globo 3D con mapa de calor y línea de tiempo reproducible. **80.000+ reportes geolocalizados.**
 
-🔭 **Demo en vivo:** _(se añadirá tras activar GitHub Pages)_
+🔭 **Demo en vivo:** **https://mikemirage.github.io/Ufologist/**
 
 ## Ejecutar en local
 
