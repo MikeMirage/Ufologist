@@ -119,13 +119,16 @@ const globe = Globe()($('globe'))
   })
   .onGlobeClick(({ lat, lng }) => { if (state.pickMode) pickLocation(lat, lng); });
 
-// Glowing light-dot marker (HTML/screen-space → constant pixel size at any zoom)
+// Crisp hexagon marker (HTML/screen-space → constant pixel size at any zoom).
+// Hexagonal shape rhymes with the hex-bar heatmap; sharp stroke, no diffuse glow.
 function buildMarker(d) {
   const el = document.createElement('div');
   el.className = 'globe-marker';
   const color = d.mass ? SHAPE_META[d.s].color : TYPE_META[d.type].color;
-  const cls = d.mass ? 'globe-dot mass' : (d.mine ? 'globe-dot mine' : 'globe-dot');
-  el.innerHTML = `<span class="${cls}" style="--c:${color}"></span>`;
+  const cls = 'case-hex' + (d.mass ? ' mass' : '') + (d.mine ? ' mine' : '');
+  const pip = d.mass ? '' : '<circle class="pip" cx="12" cy="12" r="2.3"/>';
+  el.innerHTML = `<svg class="${cls}" viewBox="0 0 24 24" style="--c:${color}">
+    <polygon points="12,1.6 21.5,7 21.5,17 12,22.4 2.5,17 2.5,7"/>${pip}</svg>`;
   el.title = d.mass
     ? `${SHAPE_META[d.s].label} · ${fmtDateInt(d.d)} · ${d.loc || 'ubicación geocodificada'}`
     : `${d.name} · ${d.year} · ${d.loc || ''}`;
