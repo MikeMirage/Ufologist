@@ -167,6 +167,7 @@ setTimeout(hideLoading, 5000);
 window.addEventListener('resize', () => {
   globe.width(window.innerWidth).height(window.innerHeight);
   drawHistogram(); positionHandles(); renderTimelineEvents();
+  applyMobileLayout();   // re-applies only when crossing the mobile/desktop breakpoint
 });
 
 // ---------- Filtering ----------
@@ -440,6 +441,7 @@ function openCase(id, fly) {
       <button id="cc-next">Siguiente →</button>
     </div>`;
   $('panel-case').classList.remove('hidden');
+  mobileOnCaseOpen();
   if (!c.mine) hydrateMedia(c);
   const visible = filteredCases();
   const idx = visible.findIndex(x => x.id === id);
@@ -493,6 +495,7 @@ function openMassReport(d) {
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent((d.loc || '') + ' ' + Math.floor(d.d / 10000) + ' UFO')}">🖼 Buscar imágenes</a>
     </div>`;
   $('panel-case').classList.remove('hidden');
+  mobileOnCaseOpen();
 }
 $('btn-close-case').onclick = () => {
   $('panel-case').classList.add('hidden');
@@ -1053,6 +1056,83 @@ document.addEventListener('keydown', e => {
   if (e.key === ' ' && !e.target.closest('input,textarea,select')) { e.preventDefault(); $('btn-play').click(); }
 });
 
+// ---------- Mobile: bottom-sheet navigation ----------
+const mq = window.matchMedia('(max-width: 760px)');
+function isMobile() { return mq.matches; }
+const SHEET_IDS = ['panel-left', 'timeline', 'panel-stats', 'panel-case', 'mobile-more'];
+
+function setNav(active) {
+  document.querySelectorAll('#mobile-nav button').forEach(b =>
+    b.classList.toggle('active', b.dataset.sheet === active));
+}
+function closeSheets() {
+  SHEET_IDS.forEach(id => $(id).classList.add('hidden'));
+  state.selectedCase = null;
+  $('sheet-backdrop').classList.remove('show');
+  setNav('globe');
+}
+function openSheet(id) {
+  SHEET_IDS.forEach(s => { if (s !== id) $(s).classList.add('hidden'); });
+  $('panel-left').classList.remove('collapsed');
+  $(id).classList.remove('hidden');
+  $('sheet-backdrop').classList.add('show');
+  setNav(id);
+  if (id === 'timeline') requestAnimationFrame(() => { positionHandles(); drawHistogram(); renderTimelineEvents(); });
+  if (id === 'panel-stats') renderStats();
+}
+// openCase()/openMassReport() call this so the case sheet behaves like the rest
+function mobileOnCaseOpen() {
+  if (!isMobile()) return;
+  ['panel-left', 'timeline', 'panel-stats', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
+  $('sheet-backdrop').classList.add('show');
+  setNav(null);
+}
+function mobileOnSheetClose() {
+  if (!isMobile()) return;
+  $('sheet-backdrop').classList.remove('show');
+  setNav('globe');
+}
+
+document.querySelectorAll('#mobile-nav button').forEach(b => {
+  b.onclick = () => {
+    const t = b.dataset.sheet;
+    if (t === 'globe') { closeSheets(); return; }
+    $(t).classList.contains('hidden') ? openSheet(t) : closeSheets();
+  };
+});
+$('sheet-backdrop').onclick = closeSheets;
+$('btn-close-more').onclick = closeSheets;
+
+// "Más" sheet reuses the existing (hidden on mobile) top-bar handlers
+document.querySelectorAll('#mobile-more .more-grid button').forEach(b => {
+  const map = { add: 'btn-add', tour: 'btn-tour', knowledge: 'btn-knowledge', about: 'btn-about',
+    csv: 'btn-export-csv', json: 'btn-export-json', permalink: 'btn-permalink' };
+  b.onclick = () => { const id = map[b.dataset.act]; closeSheets(); if (id) $(id).click(); };
+});
+
+// keep backdrop/nav in sync when a sheet is closed via its own ✕
+$('btn-close-stats').addEventListener('click', mobileOnSheetClose);
+$('btn-close-case').addEventListener('click', mobileOnSheetClose);
+
+let wasMobile = null;
+function applyMobileLayout() {
+  const m = isMobile();
+  if (m === wasMobile) return;   // only act when crossing the breakpoint
+  wasMobile = m;
+  document.body.classList.toggle('is-mobile', m);
+  if (m) {
+    closeSheets();
+    globe.controls().autoRotate = true;
+    globe.pointOfView({ lat: 22, lng: -30, altitude: 2.9 }, 0);
+  } else {
+    $('sheet-backdrop').classList.remove('show');
+    $('panel-left').classList.remove('hidden', 'collapsed');
+    $('timeline').classList.remove('hidden');
+    ['panel-stats', 'panel-case', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
+  }
+}
+mq.addEventListener ? mq.addEventListener('change', applyMobileLayout) : mq.addListener(applyMobileLayout);
+
 // ---------- Init ----------
 // browsers restore form values across reloads — force controls to match state
 const startCase = applyHash();
@@ -1068,6 +1148,7 @@ buildShapeFilters();
 positionHandles();
 renderTimelineEvents();
 refresh();
+applyMobileLayout();
 if (startCase) setTimeout(() => openCase(startCase, true), 800);
 setTimeout(() => { positionHandles(); drawHistogram(); renderTimelineEvents(); }, 300);
 

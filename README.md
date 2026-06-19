@@ -33,6 +33,7 @@ desde `data/nuforc.js` como respaldo cuando `fetch()` está bloqueado.
 - **Ficha de caso**: resumen riguroso, evidencia 1–5★, enlace a vista satélite (Google Maps) y fuentes originales.
 - **🎬 Multimedia por caso**: vídeos oficiales de dominio público embebidos (metraje FLIR de la Navy y de las tandas PURSUE 2026), **imagen principal de Wikipedia cargada en tiempo real** (API REST, sin hardcodear), lightbox y botones de búsqueda dirigida (YouTube / Google Imágenes) para cobertura total sin enlaces rotos.
 - **Centro de conocimiento** (📚): clasificación Hynek, cronología del disclosure en EE.UU. (1947–2026, incluida la desclasificación **PURSUE**), glosario, metodología y dónde reportar.
+- **📱 Modo móvil (≤760px):** vista vertical simplificada con globo inmersivo a pantalla completa, **barra de pestañas inferior** (Globo · Filtros · Tiempo · Datos · Más) y los paneles convertidos en **bottom sheets** que se deslizan. Se activa solo y se adapta a rotación/resize.
 
 ## Datos
 

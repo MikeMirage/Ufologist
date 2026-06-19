@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=4" />
+<link rel="stylesheet" href="css/styles.css?v=6" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛸</text></svg>" />
 </head>
 <body>
@@ -205,8 +205,37 @@
   </div>
 </div>
 
+<!-- ======== MOBILE: backdrop + bottom-sheet nav ======== -->
+<div id="sheet-backdrop"></div>
+<div id="mobile-more" class="glass hidden">
+  <div class="sheet-handle"></div>
+  <button id="btn-close-more" class="btn-mini close">✕</button>
+  <h3 class="more-title">Menú</h3>
+  <div class="more-grid">
+    <button data-act="add">➕<span>Registrar</span></button>
+    <button data-act="tour">🧭<span>Expedición</span></button>
+    <button data-act="knowledge">📚<span>Conocimiento</span></button>
+    <button data-act="about">ⓘ<span>Metodología</span></button>
+  </div>
+  <h3 class="more-title">Exportar selección</h3>
+  <div class="more-grid">
+    <button data-act="csv">⬇<span>CSV</span></button>
+    <button data-act="json">⬇<span>JSON</span></button>
+    <button data-act="permalink">🔗<span>Enlace</span></button>
+  </div>
+  <p class="hint" style="margin-top:14px">Pulsa un punto del globo para abrir su ficha. Arrastra el globo para girarlo.</p>
+</div>
+
+<nav id="mobile-nav">
+  <button data-sheet="globe" class="active"><b>🌍</b>Globo</button>
+  <button data-sheet="panel-left"><b>🎛</b>Filtros</button>
+  <button data-sheet="timeline"><b>⏱</b>Tiempo</button>
+  <button data-sheet="panel-stats"><b>📊</b>Datos</button>
+  <button data-sheet="mobile-more"><b>☰</b>Más</button>
+</nav>
+
 <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
-<script src="js/data.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/data.js?v=6"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>
