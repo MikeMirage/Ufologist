@@ -9,7 +9,7 @@
 'use strict';
 
 // ---------- State ----------
-const YEAR_MIN = 1942, YEAR_MAX = 2025;
+const YEAR_MIN = 1942, YEAR_MAX = 2026;
 const state = {
   yearFrom: YEAR_MIN,
   yearTo: YEAR_MAX,
@@ -318,6 +318,88 @@ function renderCaseList(data) {
   });
 }
 
+// ---------- Media system ----------
+function commonsURL(filename) {
+  return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(filename);
+}
+// find a Wikipedia article (lang + title) among a case's sources
+function wikiInfo(c) {
+  if (!c.sources) return null;
+  for (const s of c.sources) {
+    const m = (s[1] || '').match(/^https?:\/\/([a-z]+)\.wikipedia\.org\/wiki\/(.+)$/i);
+    if (m) return { lang: m[1].toLowerCase(), title: m[2].split('#')[0] };
+  }
+  return null;
+}
+const wikiImgCache = new Map();
+function fetchWikiImage(c) {
+  const info = wikiInfo(c);
+  if (!info) return Promise.resolve(null);
+  const key = info.lang + ':' + info.title;
+  if (wikiImgCache.has(key)) return Promise.resolve(wikiImgCache.get(key));
+  const api = `https://${info.lang}.wikipedia.org/api/rest_v1/page/summary/${info.title}`;
+  return fetch(api).then(r => r.ok ? r.json() : null).then(j => {
+    const src = j && ((j.originalimage && j.originalimage.source) || (j.thumbnail && j.thumbnail.source)) || null;
+    const val = src ? { src, page: j.content_urls && j.content_urls.desktop && j.content_urls.desktop.page } : null;
+    wikiImgCache.set(key, val);
+    return val;
+  }).catch(() => { wikiImgCache.set(key, null); return null; });
+}
+function mediaSearchQuery(c) {
+  return encodeURIComponent(c.name.replace(/\(.*?\)/g, '').trim() + ' ' + c.year + ' UFO UAP');
+}
+function renderMediaBlock(c) {
+  const items = (c.media || []).map(m => {
+    if (m.k === 'video') {
+      return `<figure class="media-item"><video class="media-video" controls preload="none"
+        poster="${m.poster || ''}" src="${commonsURL(m.commons)}#t=0.1"></video>
+        <figcaption>${m.cap || ''}</figcaption></figure>`;
+    }
+    if (m.k === 'image') {
+      return `<figure class="media-item"><img class="media-img" loading="lazy" src="${m.src}" alt="${m.cap || c.name}" data-full="${m.full || m.src}">
+        <figcaption>${m.cap || ''}</figcaption></figure>`;
+    }
+    return '';
+  }).join('');
+  const q = mediaSearchQuery(c);
+  const actions = `<div class="cc-media-actions">
+      <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">▶ Buscar vídeos</a>
+      <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}">🖼 Buscar imágenes</a>
+    </div>`;
+  return `<div class="cc-media" id="cc-media">${items}</div>${actions}`;
+}
+// async: pull the Wikipedia lead image and inject it (only if no curated media already)
+function hydrateMedia(c) {
+  if (c.media && c.media.length) return;       // curated media already shown
+  fetchWikiImage(c).then(img => {
+    if (!img || state.selectedCase !== c.id) return;
+    const wrap = $('cc-media');
+    if (!wrap) return;
+    const fig = document.createElement('figure');
+    fig.className = 'media-item';
+    fig.innerHTML = `<img class="media-img" loading="lazy" src="${img.src}" alt="${c.name}" data-full="${img.src}">
+      <figcaption>Imagen de Wikipedia${img.page ? ` · <a href="${img.page}" target="_blank" rel="noopener" class="cc-map-link">artículo ↗</a>` : ''}</figcaption>`;
+    wrap.appendChild(fig);
+  });
+}
+
+// ---------- Lightbox ----------
+const lightbox = document.createElement('div');
+lightbox.id = 'lightbox';
+lightbox.className = 'hidden';
+lightbox.innerHTML = '<img alt="" /><button class="lb-close" title="Cerrar">✕</button>';
+document.body.appendChild(lightbox);
+lightbox.addEventListener('click', () => lightbox.classList.add('hidden'));
+function openLightbox(src) {
+  lightbox.querySelector('img').src = src;
+  lightbox.classList.remove('hidden');
+}
+// delegated: any media image (curated or async-injected) opens the lightbox
+$('case-content').addEventListener('click', e => {
+  const img = e.target.closest && e.target.closest('.media-img');
+  if (img) openLightbox(img.dataset.full || img.src);
+});
+
 // ---------- Case detail ----------
 function gmaps(lat, lng) { return `https://maps.google.com/?q=${lat.toFixed(5)},${lng.toFixed(5)}&t=k`; }
 
@@ -343,6 +425,7 @@ function openCase(id, fly) {
       <div class="cc-stat"><label>Clasificación</label><span class="v">${c.type}</span></div>
     </div>
     <p class="cc-summary">${c.summary || '<i>Sin notas.</i>'}</p>
+    ${c.mine ? '' : renderMediaBlock(c)}
     ${c.sources && c.sources.length ? `<div class="cc-sources"><h4>Fuentes originales</h4>
       ${c.sources.map(s => `<a class="cc-source-link" href="${s[1]}" target="_blank" rel="noopener">${s[0]}</a>`).join('')}</div>` : ''}
     <div class="cc-actions">
@@ -354,6 +437,7 @@ function openCase(id, fly) {
       <button id="cc-next">Siguiente →</button>
     </div>`;
   $('panel-case').classList.remove('hidden');
+  if (!c.mine) hydrateMedia(c);
   const visible = filteredCases();
   const idx = visible.findIndex(x => x.id === id);
   $('cc-prev').onclick = () => { if (idx > 0) openCase(visible[idx - 1].id, true); };
@@ -400,6 +484,10 @@ function openMassReport(d) {
     Para leer el testimonio completo, busca por fecha y lugar en la base de datos de NUFORC.</p>
     <div class="cc-sources"><h4>Fuente</h4>
       <a class="cc-source-link" href="https://nuforc.org/databank/" target="_blank" rel="noopener">NUFORC Databank (buscar ${fmtDateInt(d.d)})</a>
+    </div>
+    <div class="cc-media-actions">
+      <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent((d.loc || '') + ' ' + Math.floor(d.d / 10000) + ' UFO sighting')}">▶ Buscar vídeos</a>
+      <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent((d.loc || '') + ' ' + Math.floor(d.d / 10000) + ' UFO')}">🖼 Buscar imágenes</a>
     </div>`;
   $('panel-case').classList.remove('hidden');
 }

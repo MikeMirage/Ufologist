@@ -284,7 +284,8 @@ const CASES = [
   sources:[['Wikipedia','https://en.wikipedia.org/wiki/Tinley_Park_Lights']] },
 { id:'nimitz-2004', name:'USS Nimitz — "Tic Tac" (FLIR1)', date:'2004-11-14', lat:31.0, lng:-117.6, loc:'Frente a San Diego, Pacífico', country:'EE.UU.', type:'MIL', cred:5,
   summary:'El crucero USS Princeton rastreó durante días objetos que caían de 24.000 m al nivel del mar en segundos. Los F/A-18 del comandante David Fravor y la teniente Alex Dietrich interceptaron un objeto blanco "tipo Tic Tac" sin alas que los superó en maniobra y reapareció en su punto de encuentro secreto. Vídeo FLIR1 desclasificado por el Pentágono en 2020; Fravor testificó bajo juramento ante el Congreso en 2023. El caso UAP moderno por excelencia.',
-  sources:[['Wikipedia','https://en.wikipedia.org/wiki/USS_Nimitz_UFO_incident'],['Vídeo oficial (Navy/DoD)','https://www.navair.navy.mil/foia/documents'],['NYT 2017','https://www.nytimes.com/2017/12/16/us/politics/pentagon-program-ufo-harry-reid.html']] },
+  sources:[['Wikipedia','https://en.wikipedia.org/wiki/USS_Nimitz_UFO_incident'],['Vídeo oficial (Navy/DoD)','https://www.navair.navy.mil/foia/documents'],['NYT 2017','https://www.nytimes.com/2017/12/16/us/politics/pentagon-program-ufo-harry-reid.html']],
+  media:[{k:'video', commons:'FLIR1 Official UAP Footage from the USG for Public Release.webm', cap:'Vídeo "FLIR1" — desclasificado oficialmente por el Pentágono (US Navy/DoD, dominio público)'}] },
 { id:'ohare-2006', name:'Aeropuerto O\'Hare de Chicago', date:'2006-11-07', lat:41.98, lng:-87.9, loc:'Aeropuerto O\'Hare, Chicago', country:'EE.UU.', type:'DD', cred:3,
   summary:'Empleados de United Airlines y pilotos observaron un disco metálico gris suspendido sobre la puerta C-17, que ascendió perforando un agujero nítido en las nubes. La FAA lo atribuyó a un "fenómeno meteorológico" sin investigar; la grabación de la llamada del supervisor a la torre se obtuvo vía FOIA.',
   sources:[['Wikipedia','https://en.wikipedia.org/wiki/2006_O%27Hare_International_Airport_UFO_sighting'],['Chicago Tribune','https://www.chicagotribune.com/2007/01/01/in-the-sky-a-bird-a-plane-a-ufo/']] },
@@ -313,10 +314,12 @@ const CASES = [
   sources:[['Artículo resolución (Metabunk)','https://www.metabunk.org/threads/explained-chilean-navy-infrared-video-of-ufo-ib6830-and-a350-or-a340.8313/']] },
 { id:'gimbal-2015', name:'USS Theodore Roosevelt — "Gimbal"', date:'2015-01-21', lat:30.5, lng:-79.0, loc:'Costa este, Atlántico (Florida-Georgia)', country:'EE.UU.', type:'MIL', cred:5,
   summary:'Aviadores del ala aérea del Roosevelt grabaron el vídeo "Gimbal": un objeto sin alas ni escape que rota sobre su eje contra el viento, junto a una formación de 4-6 objetos. Los pilotos Ryan Graves y otros reportaron detecciones diarias tras la mejora de los radares AESA. Desclasificado por el Pentágono en 2020; Graves testificó ante el Congreso en 2023.',
-  sources:[['Wikipedia (Pentagon UFO videos)','https://en.wikipedia.org/wiki/Pentagon_UFO_videos'],['NYT 2019','https://www.nytimes.com/2019/05/26/us/politics/ufo-sightings-navy-pilots.html']] },
+  sources:[['Wikipedia (Pentagon UFO videos)','https://en.wikipedia.org/wiki/Pentagon_UFO_videos'],['NYT 2019','https://www.nytimes.com/2019/05/26/us/politics/ufo-sightings-navy-pilots.html']],
+  media:[{k:'video', commons:'Gimbal The First Official UAP Footage from the USG for Public Release.webm', cap:'Vídeo "Gimbal" — desclasificado oficialmente por el Pentágono (US Navy/DoD, dominio público)'}] },
 { id:'gofast-2015', name:'"GoFast" (costa este)', date:'2015-01-21', lat:31.5, lng:-78.0, loc:'Costa este, Atlántico', country:'EE.UU.', type:'MIL', cred:4,
   summary:'Tercer vídeo desclasificado por el Pentágono: un objeto blanco aparentemente rasante sobre el mar captado por el ATFLIR de un F/A-18. El análisis paralático sugiere que volaba más alto y lento de lo que aparenta; el propio AARO lo considera probable efecto de paralaje. Incluido como ejemplo de análisis riguroso de datos oficiales.',
-  sources:[['Wikipedia (Pentagon UFO videos)','https://en.wikipedia.org/wiki/Pentagon_UFO_videos'],['AARO','https://www.aaro.mil/']] },
+  sources:[['Wikipedia (Pentagon UFO videos)','https://en.wikipedia.org/wiki/Pentagon_UFO_videos'],['AARO','https://www.aaro.mil/']],
+  media:[{k:'video', commons:'Go Fast Official USG Footage of UAP for Public Release.webm', cap:'Vídeo "GoFast" — desclasificado oficialmente por el Pentágono (US Navy/DoD, dominio público)'}] },
 { id:'uss-russell-2019', name:'USS Russell — "pirámides"', date:'2019-07-15', lat:33.2, lng:-119.5, loc:'Islas del Canal, California', country:'EE.UU.', type:'MIL', cred:3,
   summary:'Durante ejercicios frente a California, varios destructores fueron sobrevolados noches consecutivas por enjambres de objetos; un vídeo nocturno mostró formas "piramidales" (probable bokeh de luces parpadeantes). La Marina confirmó la autenticidad de las imágenes; la investigación interna apunta a drones no atribuidos. Caso clave del problema dron/UAP.',
   sources:[['The Drive / War Zone','https://www.twz.com/40054/navy-confirms-videos-of-unidentified-aircraft-swarming-its-warships-are-real'],['Wikipedia','https://en.wikipedia.org/wiki/List_of_reported_UFO_sightings']] },
@@ -337,6 +340,29 @@ const CASES = [
 { id:'nj-drones-2024', name:'Oleada de drones de Nueva Jersey', date:'2024-12-01', lat:40.22, lng:-74.55, loc:'Nueva Jersey (estado)', country:'EE.UU.', type:'MASS', cred:3,
   summary:'Miles de reportes de grandes "drones" nocturnos sobre Nueva Jersey y estados vecinos durante semanas, sobrevolando infraestructura crítica. El FBI recibió más de 5.000 avisos; la Casa Blanca atribuyó la mayoría a aeronaves legales mal identificadas, sin convencer a gobernadores ni congresistas. Caso de estudio de pánico, vacío informativo y límites de la atribución.',
   sources:[['AP News','https://apnews.com/hub/drones'],['Wikipedia','https://en.wikipedia.org/wiki/2024_United_States_drone_sightings']] },
+
+// ------- Desclasificación PURSUE (Pentágono, 2026) — casos con metraje oficial -------
+{ id:'harare-airport-2008', name:'Disco del aeropuerto de Harare', date:'2008-07-01', lat:-17.93, lng:31.09, loc:'Aeropuerto Internacional de Harare', country:'Zimbabue', type:'DD', cred:3,
+  summary:'Caso incluido en los archivos desclasificados por el Pentágono en 2026 (sistema PURSUE): un objeto con forma de disco, centro hueco y luces giratorias observado en el aeropuerto de Harare. El reporte fue transmitido en su día a la Sala de Situación de la Casa Blanca, detalle que revela el seguimiento de incidentes UAP internacionales.',
+  sources:[['CBS News — 3ª tanda PURSUE','https://www.cbsnews.com/news/ufo-files-pentagon-3rd-release-documents-videos/'],['Portal oficial WAR.GOV/UFO','https://www.war.gov/ufo']] },
+{ id:'pursue-western-2021', name:'Esfera del desierto (DOW-UAP-PR061)', date:'2021-04-12', lat:37.0, lng:-115.2, loc:'Oeste de EE.UU. (ubicación exacta no divulgada)', country:'EE.UU.', type:'MIL', cred:3,
+  summary:'Vídeo oficial desclasificado en 2026. Un pequeño objeto esférico luminoso sobre el desierto del oeste de EE.UU. exhibe control direccional y un aparente "comportamiento de ocultación". Catalogado por AARO como DOW-UAP-PR061. Coordenadas aproximadas a la región divulgada.',
+  sources:[['Vídeo oficial (Wikimedia Commons, dominio público)','https://commons.wikimedia.org/wiki/File:Western_USA_2021_UAP_Official_Footage_from_the_USG_for_Public_Release.webm'],['The Debrief — análisis PURSUE','https://thedebrief.org/the-pentagon-just-released-its-third-batch-of-uap-files-what-have-we-learned-from-the-pursue-releases-so-far/']],
+  media:[{k:'video', commons:'Western USA 2021 UAP Official Footage from the USG for Public Release.webm', cap:'Metraje oficial AARO — oeste de EE.UU., 2021 (dominio público, tanda PURSUE 2026)'}] },
+{ id:'pursue-midest-2022', name:'Orbe de Oriente Medio (FLIR)', date:'2022-07-12', lat:33.31, lng:44.36, loc:'Oriente Medio (región; ubicación exacta no divulgada)', country:'—', type:'MIL', cred:3,
+  summary:'Grabación infrarroja desde una plataforma militar estadounidense desclasificada por el Pentágono en 2026. Un objeto esférico se desplaza sin firma de propulsión visible. AARO no ha ofrecido una resolución pública. Coordenadas aproximadas a la región.',
+  sources:[['Vídeo oficial (Wikimedia Commons, dominio público)','https://commons.wikimedia.org/wiki/File:MiddleEast_UAP_20220712_Official_Footage_from_the_USG_for_Public_Release.webm'],['Portal oficial WAR.GOV/UFO','https://www.war.gov/ufo']],
+  media:[{k:'video', commons:'MiddleEast UAP 20220712 Official Footage from the USG for Public Release.webm', cap:'Metraje oficial AARO — Oriente Medio, 12/07/2022 (dominio público, tanda PURSUE 2026)'}] },
+{ id:'pursue-southasia-2023', name:'Orbe del sur de Asia', date:'2023-01-15', lat:27.5, lng:70.5, loc:'Sur de Asia (región; ubicación exacta no divulgada)', country:'—', type:'MIL', cred:3,
+  summary:'Uno de los vídeos infrarrojos liberados en la serie PURSUE de 2026: un objeto esférico captado por sensores militares estadounidenses sobre el sur de Asia. Sin resolución oficial publicada. Coordenadas aproximadas a la región divulgada.',
+  sources:[['Vídeo oficial (Wikimedia Commons, dominio público)','https://commons.wikimedia.org/wiki/File:SouthAsia_1_UAP_20230115_Official_Footage_from_the_USG_for_Public_Release.webm'],['Portal oficial WAR.GOV/UFO','https://www.war.gov/ufo']],
+  media:[{k:'video', commons:'SouthAsia 1 UAP 20230115 Official Footage from the USG for Public Release.webm', cap:'Metraje oficial AARO — sur de Asia, 15/01/2023 (dominio público, tanda PURSUE 2026)'}] },
+{ id:'pursue-orbs-2023', name:'Orbe "nodriza" del oeste de EE.UU.', date:'2023-10-01', lat:39.2, lng:-111.8, loc:'Oeste de EE.UU. (ubicación exacta no divulgada)', country:'EE.UU.', type:'NL', cred:3,
+  summary:'Caso estrella de la 3ª tanda PURSUE (2026): cinco agentes federales describen una gran luz naranja de la que "nacían" orbes rojos más pequeños de forma repetida. Uno preguntó a su compañero: "¿estás viendo esto?". Los orbes rojos aceleraban al instante y maniobraban en formación horizontal coordinada. Coordenadas aproximadas a la región divulgada.',
+  sources:[['CBS News — 3ª tanda PURSUE','https://www.cbsnews.com/news/ufo-files-pentagon-3rd-release-documents-videos/'],['Newsweek — 5 revelaciones','https://www.newsweek.com/ufo-files-pentagon-releases-third-batch-records-uap-pete-hegseth-trump-12064856']] },
+{ id:'colorado-springs-2022', name:'Objeto opalescente de Colorado Springs', date:'2022-01-01', lat:38.74, lng:-104.85, loc:'Cerca de Cheyenne Mountain, Colorado Springs', country:'EE.UU.', type:'DD', cred:2,
+  summary:'Incluido en los archivos PURSUE de 2026: un objeto con forma de "patata", color blanquecino opalescente y paneles articulados, observado cerca del complejo de Cheyenne Mountain. AARO lo evaluó con "baja confianza" como retrodispersión de luz solar — un buen ejemplo del principio del residuo: incluso en una tanda histórica, parte de los casos tienen explicación prosaica probable.',
+  sources:[['CBS News — 3ª tanda PURSUE','https://www.cbsnews.com/news/ufo-files-pentagon-3rd-release-documents-videos/'],['The Debrief — análisis PURSUE','https://thedebrief.org/the-pentagon-just-released-its-third-batch-of-uap-files-what-have-we-learned-from-the-pursue-releases-so-far/']] },
 ];
 
 // Disclosure timeline (US-focused) for the knowledge hub
@@ -357,6 +383,7 @@ const DISCLOSURE_TIMELINE = [
   { year:'2023', title:'Grusch, Fravor y Graves bajo juramento', text:'El 26/7/2023, el exoficial de inteligencia David Grusch testifica bajo juramento que EE.UU. posee programas de recuperación de "vehículos no humanos", junto a los pilotos Fravor (Nimitz) y Graves. El senador Schumer impulsa la UAP Disclosure Act, aprobada solo parcialmente: crea archivos UAP en NARA pero la junta de revisión es eliminada en la negociación.' },
   { year:'2024', title:'Informe histórico de AARO y nuevas audiencias', text:'AARO publica su informe histórico (Vol. 1): no halla evidencia verificable de programas de ingeniería inversa, conclusión muy contestada por congresistas y testigos. En noviembre, nueva audiencia con el periodista Michael Shellenberger y el exfuncionario Luis Elizondo bajo juramento. La oleada de drones de Nueva Jersey cierra el año mostrando los límites de la transparencia.' },
   { year:'2025', title:'El presente', text:'AARO mantiene un portal público con casos resueltos y estadísticas; los UAP Records de NARA crecen con material desclasificado; el Congreso sigue presionando con enmiendas de protección a denunciantes. La pregunta ya no es si el fenómeno existe — los propios organismos oficiales reportan cientos de casos anuales sin resolver — sino qué es.' },
+  { year:'2026', title:'PURSUE — desclasificación masiva', text:'Tras una orden ejecutiva de febrero de 2026, la administración lanza el sistema PURSUE (Presidential Unsealing and Reporting System for UAP Encounters) y el portal WAR.GOV/UFO (8 de mayo), con más de 1.700 millones de visitas. En tres tandas (8 y 22 de mayo, 12 de junio) se publican documentos, imágenes y vídeos en infrarrojo de CIA, FBI, NASA y el Pentágono. El caso estrella: cinco agentes federales describen un orbe naranja "nodriza" que expulsa orbes rojos. AARO reconoce que ~40% de los casos siguen sin explicación. Pese a la escala histórica, muchos investigadores critican que faltan los expedientes más sensibles.' },
 ];
 
 const GLOSSARY = [
@@ -435,6 +462,7 @@ const TL_EVENTS = [
   { year:2021, label:'Informe ODNI al Congreso' },
   { year:2023, label:'Audiencia Grusch + derribos de febrero' },
   { year:2024, label:'Drones de Nueva Jersey' },
+  { year:2026, label:'Desclasificación PURSUE — war.gov/ufo' },
 ];
 
 // Guided expedition through essential cases (chronological)
@@ -442,7 +470,7 @@ const TOUR_IDS = [
   'kenneth-arnold-1947', 'roswell-1947', 'washington-1952', 'levelland-1957',
   'socorro-1964', 'malmstrom-1967', 'tehran-1976', 'colares-1977',
   'rendlesham-1980', 'jal1628-1986', 'belgian-f16-1990', 'ariel-1994',
-  'phoenix-1997', 'nimitz-2004', 'gimbal-2015', 'lake-huron-2023',
+  'phoenix-1997', 'nimitz-2004', 'gimbal-2015', 'lake-huron-2023', 'pursue-orbs-2023',
 ];
 
 const REPORT_LINKS = [
