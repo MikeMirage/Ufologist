@@ -189,7 +189,9 @@ function refresh() {
   let points = [];
   if (state.layerMode !== 'heat') {
     points = curated.slice();
-    if (mass.length > 0 && mass.length <= MASS_POINT_LIMIT) points = points.concat(mass);
+    // mobile keeps only the curated dots as DOM markers (heatmap shows mass density);
+    // desktop may also show individual mass reports when the selection is small
+    if (!isMobile() && mass.length > 0 && mass.length <= MASS_POINT_LIMIT) points = points.concat(mass);
   }
   globe.htmlElementsData(points);
   globe.hexBinPointsData(state.layerMode !== 'points' ? curated.concat(mass) : []);
@@ -1115,11 +1117,22 @@ $('btn-close-stats').addEventListener('click', mobileOnSheetClose);
 $('btn-close-case').addEventListener('click', mobileOnSheetClose);
 
 let wasMobile = null;
+function applyPerfTier(m) {
+  // m = mobile. Phones: cap pixel ratio (the #1 cost on retina), drop the
+  // bump-map shader and the night-sky background sphere, and coarsen the
+  // heatmap so far fewer extruded hexagons are generated.
+  try { globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, m ? 1.5 : 2)); } catch (e) {}
+  globe.bumpImageUrl(m ? null : 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
+       .backgroundImageUrl(m ? null : 'https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
+       .backgroundColor(m ? 'rgba(0,0,0,0)' : '#000011')
+       .hexBinResolution(m ? 2 : 3);
+}
 function applyMobileLayout() {
   const m = isMobile();
   if (m === wasMobile) return;   // only act when crossing the breakpoint
   wasMobile = m;
   document.body.classList.toggle('is-mobile', m);
+  applyPerfTier(m);
   if (m) {
     closeSheets();
     globe.controls().autoRotate = true;
@@ -1130,6 +1143,7 @@ function applyMobileLayout() {
     $('timeline').classList.remove('hidden');
     ['panel-stats', 'panel-case', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
   }
+  refresh();   // rebins the heatmap at the new resolution + re-applies marker rules
 }
 mq.addEventListener ? mq.addEventListener('change', applyMobileLayout) : mq.addListener(applyMobileLayout);
 

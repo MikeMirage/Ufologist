@@ -632,9 +632,13 @@ input[type="range"]::-webkit-slider-thumb {
   .search-wrap { display: block; flex: 1; max-width: none; }
   #search { height: 34px; font-size: 16px; }   /* 16px avoids iOS zoom-on-focus */
 
-  /* globe fills the screen behind everything */
-  #globe-container { inset: 0; }
+  /* globe fills the screen behind everything; CSS bg replaces the dropped sky texture */
+  #globe-container { inset: 0; background: radial-gradient(circle at 50% 38%, #0a1428 0%, #04060e 72%); }
   #btn-expand-left, #btn-collapse-left { display: none; }
+
+  /* lighter dots + no per-frame ping animation (saves composited layers) */
+  .globe-dot::after { display: none; }
+  .globe-dot { box-shadow: 0 0 5px 1px var(--c), 0 0 10px 2px var(--c); }
 
   /* ---- bottom-sheet base (shared by all panels) ---- */
   #panel-left, #panel-case, #panel-stats, #timeline, #mobile-more {
