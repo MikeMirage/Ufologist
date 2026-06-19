@@ -363,6 +363,23 @@ const CASES = [
 { id:'colorado-springs-2022', name:'Objeto opalescente de Colorado Springs', date:'2022-01-01', lat:38.74, lng:-104.85, loc:'Cerca de Cheyenne Mountain, Colorado Springs', country:'EE.UU.', type:'DD', cred:2,
   summary:'Incluido en los archivos PURSUE de 2026: un objeto con forma de "patata", color blanquecino opalescente y paneles articulados, observado cerca del complejo de Cheyenne Mountain. AARO lo evaluó con "baja confianza" como retrodispersión de luz solar — un buen ejemplo del principio del residuo: incluso en una tanda histórica, parte de los casos tienen explicación prosaica probable.',
   sources:[['CBS News — 3ª tanda PURSUE','https://www.cbsnews.com/news/ufo-files-pentagon-3rd-release-documents-videos/'],['The Debrief — análisis PURSUE','https://thedebrief.org/the-pentagon-just-released-its-third-batch-of-uap-files-what-have-we-learned-from-the-pursue-releases-so-far/']] },
+
+// ------------------------------ España / Islas Baleares ------------------------------
+{ id:'haussmann-mallorca-1950', name:'Fotos de Haussmann (Mallorca)', date:'1950-03-26', lat:39.58, lng:3.03, loc:'Entre Montuïri y Vilafranca de Bonany, Mallorca', country:'España', type:'DD', cred:2,
+  summary:'El fotógrafo alemán afincado en Mallorca Heinrich (Enrique) Haussmann fotografió con su cámara Linhof lo que describió como un gran disco giratorio que cruzó el cielo de este a oeste emitiendo un zumbido. Publicadas en el diario Baleares, fueron de las primeras fotos de un OVNI con repercusión nacional en España. Su autenticidad se debate desde entonces; figuran en el catálogo FOTOCAT de Ballester Olmos.',
+  sources:[['Última Hora — "ovnimanía" en Mallorca','https://www.ultimahora.es/noticias/local/2023/02/19/1884911/ovnis-mallorca-hace-mas-anos-desato-ovnimania-avistamientos.html'],['UFO FOTOCAT (Ballester Olmos)','https://fotocat.blogspot.com/']] },
+{ id:'iberia435-1969', name:'Vuelo Iberia 435 (Palma–Madrid)', date:'1969-07-28', lat:39.55, lng:2.30, loc:'Sobre el Mediterráneo, al oeste de Mallorca', country:'España', type:'MIL', cred:2,
+  summary:'La tripulación de una Caravelle de Iberia (comandante Jaime Ordovás) reportó a 26.000 pies una luz blanca cegadora que adoptó forma triangular antes de desaparecer. El Ejército del Aire interrogó a los pilotos y archivó el caso; la conclusión oficial fue el planeta Venus. Ejemplo clásico del filtrado escéptico de los expedientes españoles.',
+  sources:[['Expedientes OVNI Ejército del Aire (Biblioteca de Defensa)','https://bibliotecavirtual.defensa.gob.es/BVMDefensa/es/consulta/registro.do?id=42382'],['Última Hora','https://www.ultimahora.es/noticias/local/2023/02/19/1884911/ovnis-mallorca-hace-mas-anos-desato-ovnimania-avistamientos.html']] },
+{ id:'soller-1979', name:'Fotos de Sóller (l\'Ofre)', date:'1979-11-12', lat:39.78, lng:2.74, loc:'L\'Ofre, Sóller, Serra de Tramuntana, Mallorca', country:'España', type:'NL', cred:3,
+  summary:'La misma madrugada del Caso Manises, el mecánico Pep Climent fotografió dos potentes luces rojas sobre la Serra de Tramuntana desde l\'Ofre. El caso se integró en el expediente desclasificado por el Ejército del Aire; al desclasificarse, el autor reclamó formalmente los negativos al Mando Aéreo. Sóller fue durante décadas el punto más activo de la casuística balear.',
+  sources:[['Expedientes OVNI Ejército del Aire (Biblioteca de Defensa)','https://bibliotecavirtual.defensa.gob.es/BVMDefensa/es/consulta/registro.do?id=42382'],['Última Hora','https://www.ultimahora.es/noticias/local/2023/02/19/1884911/ovnis-mallorca-hace-mas-anos-desato-ovnimania-avistamientos.html'],['Caso Manises (Wikipedia)','https://es.wikipedia.org/wiki/Incidente_ovni_de_Manises']] },
+{ id:'menorca-1989', name:'Destellos del noreste de Menorca', date:'1989-11-15', lat:40.02, lng:4.20, loc:'Noreste de Menorca', country:'España', type:'NL', cred:2,
+  summary:'Entre noviembre de 1989 y febrero de 1990, varios testigos del noreste de Menorca describieron destellos intensos que se transformaban en un objeto circular flotando a baja altura, con un movimiento de rotación sobre su propio eje. Oleada local recogida por la casuística balear.',
+  sources:[['Última Hora — avistamientos en Baleares','https://www.ultimahora.es/noticias/local/2023/02/19/1884911/ovnis-mallorca-hace-mas-anos-desato-ovnimania-avistamientos.html']] },
+{ id:'cala-tuent-1991', name:'Caso Jomel (Cala Tuent)', date:'1991-08-15', lat:39.84, lng:2.80, loc:'Cala Tuent, Escorca, Mallorca', country:'España', type:'CE3', cred:1,
+  summary:'José María Gómez Montiel ("Jomel") relató haber visto en Cala Tuent un gran objeto luminoso junto a una figura humanoide encapuchada; él y su acompañante huyeron. Caso de encuentro cercano muy discutido y sin corroboración independiente, incluido por su peso en el folclore ufológico balear.',
+  sources:[['Última Hora — "ovnimanía" en Mallorca','https://www.ultimahora.es/noticias/local/2023/02/19/1884911/ovnis-mallorca-hace-mas-anos-desato-ovnimania-avistamientos.html']] },
 ];
 
 // Disclosure timeline (US-focused) for the knowledge hub
@@ -443,6 +460,8 @@ const HOTSPOTS = [
   { name:'Colares, Brasil', lat:-0.94, lng:-48.28, desc:'Isla amazónica de la Operação Prato (1977): el único despliegue militar oficial documentado para investigar ataques de luces a la población.' },
   { name:'Canal de Catalina / SOCAL', lat:33.3, lng:-118.5, desc:'Corredor marítimo entre San Diego y las islas del Canal: incidentes Nimitz (2004), enjambres de drones sobre destructores (2019) y casuística USO histórica.' },
   { name:'Monte Shasta, CA', lat:41.41, lng:-122.19, desc:'Montaña sagrada con folclore de luces y "ciudades intraterrenas" (mito de Lemuria/Telos). Hotspot espiritual-contactista clásico del oeste americano.' },
+  { name:'Es Vedrà, Ibiza', lat:38.866, lng:1.197, desc:'Islote magnético frente a la costa suroeste de Ibiza, epicentro del folclore OVNI balear. Citado en los expedientes desclasificados del Ejército del Aire; rodeado de leyendas sobre anomalías de brújula y luces.' },
+  { name:'Serra de Tramuntana / Sóller', lat:39.78, lng:2.72, desc:'La sierra del noroeste de Mallorca y, en especial, Sóller fueron el punto más activo de la casuística balear entre los años 70 y 90, con fotos integradas en los expedientes oficiales.' },
 ];
 
 // Key events shown on the timeline (explain report spikes & context)

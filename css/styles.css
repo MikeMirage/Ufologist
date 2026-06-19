@@ -539,6 +539,40 @@ input[type="range"]::-webkit-slider-thumb {
 .cc-map-link { color: var(--accent-2); text-decoration: none; font-size: 11px; }
 .cc-map-link:hover { text-decoration: underline; }
 
+/* ==================== GLOWING DOT MARKERS ==================== */
+/* globe.gl positions the outer .globe-marker (sets its transform); the inner
+   .globe-dot owns the visuals + hover, so we never fight the layer transform.
+   Size is in px → constant on screen, never grows when zooming in. */
+.globe-marker { pointer-events: auto; will-change: transform; }
+.globe-dot {
+  position: relative; display: block;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #ffffff 0%, var(--c) 42%, rgba(0,0,0,0) 72%);
+  box-shadow: 0 0 6px 1px var(--c), 0 0 15px 4px var(--c);
+  transform-origin: center;
+  transition: transform .15s ease, filter .15s ease;
+}
+.globe-dot.mass {
+  width: 7px; height: 7px;
+  box-shadow: 0 0 4px 1px var(--c), 0 0 9px 2px var(--c);
+  opacity: 0.82;
+}
+.globe-dot.mine {
+  background: radial-gradient(circle at 50% 45%, #ffffff 0%, #ffffff 38%, rgba(0,0,0,0) 72%);
+}
+.globe-marker:hover .globe-dot { transform: scale(1.7); filter: brightness(1.25); }
+/* subtle sonar ping — curated cases only (kept off the dense mass layer) */
+.globe-dot:not(.mass)::after {
+  content: ''; position: absolute; inset: -2px; border-radius: 50%;
+  border: 1px solid var(--c);
+  animation: dot-ping 3.2s ease-out infinite;
+}
+@keyframes dot-ping {
+  0%   { transform: scale(0.55); opacity: 0.55; }
+  70%  { opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
 /* ==================== MEDIA GALLERY + LIGHTBOX ==================== */
 .cc-media { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
 .media-item { margin: 0; }

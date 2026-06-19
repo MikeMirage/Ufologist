@@ -81,7 +81,7 @@ function massFiltered() {
 }
 
 // ---------- Globe ----------
-const MASS_POINT_LIMIT = 1800;  // show individual mass points only below this count
+const MASS_POINT_LIMIT = 600;  // show individual mass dots only below this (DOM markers); else heatmap
 
 const globe = Globe()($('globe'))
   .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
@@ -89,21 +89,10 @@ const globe = Globe()($('globe'))
   .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
   .atmosphereColor('#4be1c3')
   .atmosphereAltitude(0.18)
-  .pointAltitude(d => d.mass ? 0.006 : 0.012)
-  .pointRadius(d => d.mass ? 0.22 : 0.55)
-  .pointColor(d => d.mass ? SHAPE_META[d.s].color + 'cc' : TYPE_META[d.type].color)
-  .pointLabel(d => d.mass ? `
-    <div style="font-family:'Space Grotesk',sans-serif;background:rgba(8,12,26,.92);border:1px solid rgba(120,200,255,.25);border-radius:10px;padding:7px 11px;max-width:230px;">
-      <div style="color:${SHAPE_META[d.s].color};font-size:10px;letter-spacing:1px;text-transform:uppercase;">${SHAPE_META[d.s].label} · NUFORC</div>
-      <div style="color:#e8eefc;font-weight:600;font-size:12px;margin-top:2px;">${fmtDateInt(d.d)}${d.h >= 0 ? ' · ' + String(d.h).padStart(2, '0') + 'h' : ''}</div>
-      <div style="color:#93a1c0;font-size:11px;">${d.loc || 'ubicación geocodificada'}</div>
-    </div>` : `
-    <div style="font-family:'Space Grotesk',sans-serif;background:rgba(8,12,26,.92);border:1px solid rgba(120,200,255,.25);border-radius:10px;padding:8px 12px;max-width:240px;">
-      <div style="color:${TYPE_META[d.type].color};font-size:10px;letter-spacing:1px;text-transform:uppercase;">${TYPE_META[d.type].label} · ${d.year}</div>
-      <div style="color:#e8eefc;font-weight:600;font-size:13px;margin-top:2px;">${d.name}</div>
-      <div style="color:#93a1c0;font-size:11px;">${d.loc}</div>
-    </div>`)
-  .onPointClick(d => d.mass ? openMassReport(d) : openCase(d.id, true))
+  .htmlLat(d => d.lat)
+  .htmlLng(d => d.lng)
+  .htmlAltitude(d => d.mass ? 0.007 : 0.013)
+  .htmlElement(d => buildMarker(d))
   .hexBinPointLat('lat').hexBinPointLng('lng')
   .hexBinPointWeight(1)
   .hexBinResolution(3)
@@ -129,6 +118,20 @@ const globe = Globe()($('globe'))
     globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 1.1 }, 900);
   })
   .onGlobeClick(({ lat, lng }) => { if (state.pickMode) pickLocation(lat, lng); });
+
+// Glowing light-dot marker (HTML/screen-space → constant pixel size at any zoom)
+function buildMarker(d) {
+  const el = document.createElement('div');
+  el.className = 'globe-marker';
+  const color = d.mass ? SHAPE_META[d.s].color : TYPE_META[d.type].color;
+  const cls = d.mass ? 'globe-dot mass' : (d.mine ? 'globe-dot mine' : 'globe-dot');
+  el.innerHTML = `<span class="${cls}" style="--c:${color}"></span>`;
+  el.title = d.mass
+    ? `${SHAPE_META[d.s].label} · ${fmtDateInt(d.d)} · ${d.loc || 'ubicación geocodificada'}`
+    : `${d.name} · ${d.year} · ${d.loc || ''}`;
+  el.onclick = () => d.mass ? openMassReport(d) : openCase(d.id, true);
+  return el;
+}
 
 globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.35;
@@ -187,7 +190,7 @@ function refresh() {
     points = curated.slice();
     if (mass.length > 0 && mass.length <= MASS_POINT_LIMIT) points = points.concat(mass);
   }
-  globe.pointsData(points);
+  globe.htmlElementsData(points);
   globe.hexBinPointsData(state.layerMode !== 'points' ? curated.concat(mass) : []);
   globe.labelsData(state.hotspots ? HOTSPOTS : []);
 
