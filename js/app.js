@@ -54,7 +54,7 @@ const I18N = {
     expand: 'Mostrar filtros',
     layers: 'Capas',
     both: 'Ambas',
-    heat: 'Calor',
+    heat: 'Densidad',
     cases: 'Casos',
     hotspots: 'Hotspots legendarios',
     massDb: 'Base masiva NUFORC',
@@ -164,6 +164,10 @@ const I18N = {
     mobileMore: 'Más',
     curated: 'curados',
     heatSuffix: 'densidad',
+    densityLegend: 'Densidad de encuentros',
+    densityLow: 'baja',
+    densityMid: 'media',
+    densityHigh: 'alta',
     narrowHint: 'acota para ver puntos individuales',
     sampledPointsHint: 'mostrando {shown} puntos de {total} casos filtrados',
     noResults: 'Sin resultados',
@@ -285,7 +289,7 @@ const I18N = {
     expand: 'Show filters',
     layers: 'Layers',
     both: 'Both',
-    heat: 'Heat',
+    heat: 'Density',
     cases: 'Cases',
     hotspots: 'Legendary hotspots',
     massDb: 'NUFORC mass database',
@@ -395,6 +399,10 @@ const I18N = {
     mobileMore: 'More',
     curated: 'curated',
     heatSuffix: 'density',
+    densityLegend: 'Encounter density',
+    densityLow: 'low',
+    densityMid: 'medium',
+    densityHigh: 'high',
     narrowHint: 'narrow to show individual points',
     sampledPointsHint: 'showing {shown} points from {total} filtered cases',
     noResults: 'No results',
@@ -790,6 +798,11 @@ function applyStaticI18n() {
   setButton('btn-pass', '◇', 'navPass', 'titlePass');
   setText('#btn-view-earth', t('viewEarth'));
   setText('#btn-view-orbit', t('viewOrbit'));
+  setText('#density-legend .density-title', t('densityLegend'));
+  const densityScale = document.querySelectorAll('#density-legend .density-scale span');
+  if (densityScale[0]) densityScale[0].textContent = t('densityLow');
+  if (densityScale[1]) densityScale[1].textContent = t('densityMid');
+  if (densityScale[2]) densityScale[2].textContent = t('densityHigh');
   updateAudioButton();
   document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
 
@@ -1274,11 +1287,11 @@ const EARTH_DAY_TEXTURE = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/exam
 const EARTH_NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg';
 
 const globe = Globe()($('globe'))
-  .globeImageUrl(EARTH_NIGHT_TEXTURE)
+  .globeImageUrl(EARTH_DAY_TEXTURE)
   .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
   .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
-  .atmosphereColor('#4be1c3')
-  .atmosphereAltitude(0.18)
+  .atmosphereColor('#7fd8ff')
+  .atmosphereAltitude(0.155)
   .htmlLat(d => d.lat)
   .htmlLng(d => d.lng)
   .htmlAltitude(d => {
@@ -1399,7 +1412,7 @@ function ensureWeatherHeatmapLayer() {
   weatherHeatmapMaterial = new THREE.MeshBasicMaterial({
     map: weatherHeatmapTexture,
     transparent: true,
-    opacity: 0.82,
+    opacity: 0.9,
     depthWrite: false,
     depthTest: true,
     blending: THREE.NormalBlending,
@@ -1413,11 +1426,12 @@ function ensureWeatherHeatmapLayer() {
 
 function weatherHeatColor(t) {
   const stops = [
-    [0.00, 35, 190, 255],
-    [0.30, 70, 225, 190],
-    [0.55, 255, 221, 92],
-    [0.78, 255, 128, 58],
-    [1.00, 239, 71, 111],
+    [0.00, 22, 178, 255],
+    [0.24, 0, 232, 209],
+    [0.48, 170, 239, 92],
+    [0.68, 255, 218, 70],
+    [0.84, 255, 136, 38],
+    [1.00, 243, 45, 71],
   ];
   for (let i = 0; i < stops.length - 1; i++) {
     const a = stops[i], b = stops[i + 1];
@@ -1482,7 +1496,7 @@ function drawWeatherHeatmap(points) {
   const positives = [];
   for (let i = 0; i < blurred.length; i += 2) if (blurred[i] > 0) positives.push(blurred[i]);
   positives.sort((a, b) => a - b);
-  const ref = positives.length ? positives[Math.floor(positives.length * 0.985)] || positives[positives.length - 1] : 1;
+  const ref = positives.length ? positives[Math.floor(positives.length * 0.982)] || positives[positives.length - 1] : 1;
   const ctx = weatherHeatmapCanvas.getContext('2d');
   const img = ctx.createImageData(w, h);
   const data = img.data;
@@ -1493,17 +1507,17 @@ function drawWeatherHeatmap(points) {
     const raw = blurred[i];
     if (raw > maxRaw) maxRaw = raw;
     const px = i * 4;
-    if (raw <= 0.015) {
+    if (raw <= 0.01) {
       data[px + 3] = 0;
       continue;
     }
     activePixels++;
     const t = Math.min(1, Math.log1p(raw) / logRef);
-    const c = weatherHeatColor(Math.pow(t, 0.88));
+    const c = weatherHeatColor(Math.pow(t, 0.76));
     data[px] = c[0];
     data[px + 1] = c[1];
     data[px + 2] = c[2];
-    data[px + 3] = Math.round(Math.min(0.68, 0.08 + Math.pow(t, 0.72) * 0.58) * 255);
+    data[px + 3] = Math.round(Math.min(0.66, 0.08 + Math.pow(t, 0.68) * 0.58) * 255);
   }
   ctx.putImageData(img, 0, 0);
   weatherHeatmapTexture.needsUpdate = true;
@@ -1936,7 +1950,7 @@ function setViewMode(mode) {
   setEarthSceneVisible(mode === 'earth');
   setGlobeSurfaceVisible(mode === 'earth');
   if (globe.showAtmosphere) globe.showAtmosphere(mode === 'earth');
-  globe.atmosphereAltitude(mode === 'earth' ? 0.18 : 0);
+  globe.atmosphereAltitude(mode === 'earth' ? 0.155 : 0);
   if (solarSystemGroup) solarSystemGroup.visible = mode === 'earth';
   if (orbitSystemGroup) orbitSystemGroup.visible = mode === 'orbit';
   if (mode === 'orbit') {
@@ -2017,6 +2031,8 @@ function refresh() {
   lastMassCount = mass.length;
   const heatPoints = curated.concat(mass, geipan, officialGeo);
   const showHeatLayer = state.viewMode === 'earth' && state.layerMode !== 'points';
+  document.body.dataset.viewMode = state.viewMode;
+  document.body.dataset.layerMode = state.layerMode;
   const heatTotal = mass.length + geipan.length + officialGeo.length;
   heatRef = heatTotal > 0 ? Math.max(20, heatTotal / 30) : 15;
 
