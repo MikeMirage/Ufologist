@@ -1356,8 +1356,14 @@ const WEATHER_HEATMAP_ENABLED = true;
 const WEATHER_HEATMAP_WIDTH = 512;
 const WEATHER_HEATMAP_HEIGHT = 256;
 const WEATHER_HEATMAP_MESH_ROTATION_Y = -Math.PI / 2;
+const EARTH_MIN_ALTITUDE = 0.08;
+const EARTH_MAX_ALTITUDE = 5.4;
 const EARTH_DAY_TEXTURE = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/planets/earth_atmos_2048.jpg';
+const EARTH_DAY_TEXTURE_HI = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/planets/earth_atmos_4096.jpg';
 const EARTH_NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg';
+const EARTH_TILE_URL = (x, y, l) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${l}/${y}/${x}`;
+const POLITICAL_GEOJSON_URL = 'https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json';
+const STREAMING_TILE_MAX_NODES = 361;
 
 const globe = Globe()($('globe'))
   .globeImageUrl(EARTH_DAY_TEXTURE)
@@ -1414,6 +1420,173 @@ const globe = Globe()($('globe'))
   })
   .onGlobeClick(({ lat, lng }) => { if (state.pickMode) pickLocation(lat, lng); });
 
+window.__globeTileSupport = !!globe.globeTileEngineUrl;
+window.__ufologistGlobe = globe;
+window.__ufologistGetPov = () => globe.pointOfView();
+if (globe.globeTileEngineUrl) {
+  globe.globeTileEngineUrl((x, y, l) => EARTH_TILE_URL(x, y, l));
+}
+if (globe.controls && globe.controls()) {
+  globe.controls().minDistance = 100 + EARTH_MIN_ALTITUDE * 100;
+  globe.controls().maxDistance = 100 + EARTH_MAX_ALTITUDE * 100;
+}
+
+function loadHighResolutionEarthTexture() {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    globe.globeImageUrl(EARTH_DAY_TEXTURE_HI);
+    document.body.dataset.earthTexture = 'hires';
+  };
+  img.onerror = () => { document.body.dataset.earthTexture = 'base'; };
+  img.src = EARTH_DAY_TEXTURE_HI;
+}
+
+function geoJsonLinePaths(geojson) {
+  const paths = [];
+  const pushRing = ring => {
+    if (!Array.isArray(ring) || ring.length < 2) return;
+    paths.push(ring.map(([lng, lat]) => ({ lat, lng })));
+  };
+  (geojson.features || []).forEach(feature => {
+    const g = feature.geometry || {};
+    if (g.type === 'Polygon') (g.coordinates || []).forEach(pushRing);
+    if (g.type === 'MultiPolygon') (g.coordinates || []).forEach(poly => (poly || []).forEach(pushRing));
+  });
+  return paths;
+}
+
+function loadPoliticalOverlay() {
+  if (!globe.pathsData) return;
+  fetch(POLITICAL_GEOJSON_URL)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(geojson => {
+      politicalBoundaryPaths = geoJsonLinePaths(geojson);
+      configurePoliticalOverlay();
+      document.body.dataset.politicalOverlay = 'on';
+    })
+    .catch(() => { document.body.dataset.politicalOverlay = 'unavailable'; });
+}
+
+function configurePoliticalOverlay() {
+  if (!globe.pathsData) return;
+  const g = globe
+    .pathsData(state.viewMode === 'earth' ? politicalBoundaryPaths : [])
+    .pathPoints(d => d)
+    .pathPointLat('lat')
+    .pathPointLng('lng')
+    .pathColor(() => 'rgba(205,232,255,0.34)');
+  if (g.pathStroke) g.pathStroke(0.42);
+  if (g.pathAltitude) g.pathAltitude(0.006);
+  if (g.pathTransitionDuration) g.pathTransitionDuration(0);
+  window.__ufologistPoliticalPathCount = state.viewMode === 'earth' ? politicalBoundaryPaths.length : 0;
+}
+
+function tileZoomForAltitude(altitude) {
+  const a = Number.isFinite(altitude) ? altitude : 2.3;
+  if (a > 0.92) return null;
+  if (a > 0.56) return 4;
+  if (a > 0.34) return 5;
+  if (a > 0.11) return 6;
+  return 7;
+}
+
+function lonToTileX(lng, z) {
+  const n = 2 ** z;
+  return Math.floor((((lng + 180) / 360) * n + n) % n);
+}
+
+function latToTileY(lat, z) {
+  const n = 2 ** z;
+  const clamped = Math.max(-85.0511, Math.min(85.0511, lat));
+  const rad = clamped * Math.PI / 180;
+  return Math.max(0, Math.min(n - 1, Math.floor((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2 * n)));
+}
+
+function tileYToLat(y, z) {
+  const n = Math.PI - 2 * Math.PI * y / (2 ** z);
+  return Math.atan(Math.sinh(n)) * 180 / Math.PI;
+}
+
+function tileBounds(x, y, z) {
+  const n = 2 ** z;
+  const west = x / n * 360 - 180;
+  const east = (x + 1) / n * 360 - 180;
+  const north = tileYToLat(y, z);
+  const south = tileYToLat(y + 1, z);
+  return {
+    lat: (north + south) / 2,
+    lng: (west + east) / 2,
+    width: east - west,
+    height: Math.max(0.01, north - south),
+  };
+}
+
+function streamingTileMaterial(tile) {
+  if (typeof THREE === 'undefined') return null;
+  const key = `${tile.z}/${tile.x}/${tile.y}`;
+  if (streamingTileMaterialCache.has(key)) return streamingTileMaterialCache.get(key);
+  if (!streamingTileLoader) {
+    streamingTileLoader = new THREE.TextureLoader();
+    streamingTileLoader.setCrossOrigin('anonymous');
+  }
+  const material = new THREE.MeshBasicMaterial({
+    transparent: true,
+    opacity: 0.92,
+    depthWrite: false,
+  });
+  streamingTileMaterialCache.set(key, material);
+  streamingTileLoader.load(EARTH_TILE_URL(tile.x, tile.y, tile.z), texture => {
+    texture.anisotropy = 4;
+    if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
+    material.map = texture;
+    material.needsUpdate = true;
+  });
+  return material;
+}
+
+function updateStreamingMapTiles() {
+  if (!globe.tilesData) return;
+  if (state.viewMode !== 'earth') {
+    globe.tilesData([]);
+    window.__ufologistTileState = { enabled: false, count: 0 };
+    return;
+  }
+  const pov = globe.pointOfView();
+  const z = tileZoomForAltitude(pov.altitude);
+  if (!z) {
+    globe.tilesData([]);
+    window.__ufologistTileState = { enabled: false, count: 0, altitude: pov.altitude };
+    return;
+  }
+  const n = 2 ** z;
+  const cx = lonToTileX(pov.lng || 0, z);
+  const cy = latToTileY(pov.lat || 0, z);
+  const radius = z >= 7 ? 9 : (z >= 6 ? 8 : 2);
+  const tiles = [];
+  for (let dy = -radius; dy <= radius; dy++) {
+    const y = cy + dy;
+    if (y < 0 || y >= n) continue;
+    for (let dx = -radius; dx <= radius; dx++) {
+      const x = (cx + dx + n) % n;
+      tiles.push({ z, x, y, ...tileBounds(x, y, z) });
+    }
+  }
+  const selected = tiles.slice(0, STREAMING_TILE_MAX_NODES);
+  globe
+    .tilesData(selected)
+    .tileLat('lat')
+    .tileLng('lng')
+    .tileWidth('width')
+    .tileHeight('height')
+    .tileMaterial(streamingTileMaterial);
+  if (globe.tileAltitude) globe.tileAltitude(0.004);
+  if (globe.tileUseGlobeProjection) globe.tileUseGlobeProjection(true);
+  if (globe.tileCurvatureResolution) globe.tileCurvatureResolution(6);
+  window.__ufologistTileState = { enabled: true, z, count: selected.length, altitude: pov.altitude };
+}
+window.updateStreamingMapTiles = updateStreamingMapTiles;
+
 let activeMarkerKey = null;
 let currentCaseMarkerRows = [];
 let currentCaseMarkerRender = { markers: 0, clusters: 0, expanded: 0, total: 0 };
@@ -1422,6 +1595,9 @@ let expandedClusterKey = null;
 let expandedClusterRows = [];
 let currentSelectionHintBase = '';
 let currentSelectionMarkerTotal = 0;
+let politicalBoundaryPaths = [];
+const streamingTileMaterialCache = new Map();
+let streamingTileLoader = null;
 
 function reportMarkerKey(d) {
   if (!d) return '';
@@ -1492,6 +1668,7 @@ function focusCameraOnReport(d, altitude = (isMobile() ? 1.28 : 1.08), duration 
   if (!hasCoords(d)) return;
   globe.controls().autoRotate = false;
   globe.pointOfView({ lat: d.lat, lng: d.lng, altitude }, duration);
+  setTimeout(updateWeatherHeatmapOpacity, duration + 20);
 }
 
 function activateMarker(d, el) {
@@ -1599,10 +1776,12 @@ function scheduleMarkerLodRender(delay = 120) {
 function zoomToCluster(cluster) {
   if (!cluster?.rows?.length) return;
   const currentAlt = globe.pointOfView()?.altitude || 2.3;
-  const targetAlt = Math.max(0.28, Math.min(currentAlt * 0.58, Math.max(0.34, (cluster.cellDeg || 3) / 9)));
+  const targetAlt = Math.max(EARTH_MIN_ALTITUDE, Math.min(currentAlt * 0.55, Math.max(0.1, (cluster.cellDeg || 3) / 12)));
   globe.controls().autoRotate = false;
   globe.pointOfView({ lat: cluster.lat, lng: cluster.lng, altitude: targetAlt }, 950);
   setTimeout(() => {
+    updateWeatherHeatmapOpacity();
+    updateStreamingMapTiles();
     if (cluster.count <= CASE_CLUSTER_EXPAND_LIMIT && targetAlt <= 0.85) {
       expandedClusterKey = cluster._key;
       expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
@@ -1669,7 +1848,11 @@ globe.controls().addEventListener('start', () => {
   expandedClusterKey = null;
   expandedClusterRows = [];
 });
-globe.controls().addEventListener('end', () => scheduleMarkerLodRender(90));
+globe.controls().addEventListener('end', () => {
+  updateWeatherHeatmapOpacity();
+  updateStreamingMapTiles();
+  scheduleMarkerLodRender(90);
+});
 globe.pointOfView({ lat: 30, lng: -40, altitude: 2.3 });
 if (globe.customLayerData && globe.customThreeObject) {
   globe
@@ -1682,6 +1865,9 @@ if (globe.customLayerData && globe.customThreeObject) {
       if (obj && weatherHeatmapMesh) obj.visible = weatherHeatmapMesh.visible;
     });
 }
+loadHighResolutionEarthTexture();
+loadPoliticalOverlay();
+updateStreamingMapTiles();
 
 let solarSystemGroup = null;
 let solarBodies = {};
@@ -1829,6 +2015,24 @@ function drawWeatherHeatmap(points) {
   weatherHeatmapStats = { activePixels, maxRaw: +maxRaw.toFixed(3), ref: +ref.toFixed(3), width: w, height: h };
 }
 
+function weatherHeatmapOpacityForAltitude() {
+  const altitude = globe.pointOfView?.().altitude;
+  const a = Number.isFinite(altitude) ? altitude : 2.3;
+  if (a <= 0.14) return 0.08;
+  if (a <= 0.22) return 0.16;
+  if (a <= 0.34) return 0.28;
+  if (a <= 0.55) return 0.48;
+  if (a <= 0.85) return 0.68;
+  return 0.9;
+}
+
+function updateWeatherHeatmapOpacity() {
+  if (!weatherHeatmapMaterial) return;
+  weatherHeatmapMaterial.opacity = weatherHeatmapOpacityForAltitude();
+  window.__ufologistWeatherOpacity = () => weatherHeatmapMaterial.opacity;
+}
+window.updateWeatherHeatmapOpacity = updateWeatherHeatmapOpacity;
+
 function updateWeatherHeatmap(points, visible) {
   ensureWeatherHeatmapLayer();
   const supported = !!weatherHeatmapMesh && !!(globe.customLayerData && globe.customThreeObject);
@@ -1843,6 +2047,7 @@ function updateWeatherHeatmap(points, visible) {
     return;
   }
   weatherHeatmapMesh.visible = !!visible && points.length > 0 && supported;
+  updateWeatherHeatmapOpacity();
   if (globe.customLayerData) globe.customLayerData(weatherHeatmapMesh.visible ? [{ id: 'weather-heatmap' }] : []);
   setWeatherHeatmapDebug({
     Enabled: WEATHER_HEATMAP_ENABLED,
@@ -2235,10 +2440,14 @@ function applySolarContext(ctx) {
 function zoomGlobe(direction) {
   const pov = globe.pointOfView();
   const current = Number.isFinite(pov.altitude) ? pov.altitude : 2.3;
-  const factor = direction > 0 ? 0.78 : 1.28;
-  const altitude = Math.max(0.32, Math.min(4.2, current * factor));
+  const factor = direction > 0 ? 0.62 : 1.42;
+  const altitude = Math.max(EARTH_MIN_ALTITUDE, Math.min(EARTH_MAX_ALTITUDE, current * factor));
   globe.controls().autoRotate = false;
   globe.pointOfView({ lat: pov.lat, lng: pov.lng, altitude }, 420);
+  setTimeout(() => {
+    updateWeatherHeatmapOpacity();
+    updateStreamingMapTiles();
+  }, 430);
   scheduleMarkerLodRender(460);
 }
 $('btn-zoom-in').onclick = () => zoomGlobe(1);
@@ -2253,6 +2462,8 @@ function setViewMode(mode) {
   document.querySelectorAll('#view-toggle button').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === mode);
   });
+  configurePoliticalOverlay();
+  updateStreamingMapTiles();
   setEarthSceneVisible(mode === 'earth');
   setGlobeSurfaceVisible(mode === 'earth');
   if (globe.showAtmosphere) globe.showAtmosphere(mode === 'earth');
