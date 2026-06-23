@@ -1597,6 +1597,7 @@ let markerLodTimer = null;
 let expandedClusterKey = null;
 let expandedClusterRows = [];
 let expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
+let preserveClusterDrilldownUntil = 0;
 let currentSelectionHintBase = '';
 let currentSelectionMarkerTotal = 0;
 let politicalBoundaryPaths = [];
@@ -1668,11 +1669,20 @@ function hideMarkerHover() {
   if (card) card.classList.remove('visible');
 }
 
-function focusCameraOnReport(d, altitude = (isMobile() ? 1.28 : 1.08), duration = 950) {
+function focusCameraOnReport(d, altitude = (isMobile() ? 1.28 : 1.08), duration = 950, mode = 'navigate') {
   if (!hasCoords(d)) return;
+  const currentAlt = globe.pointOfView?.().altitude;
+  const targetAltitude = mode === 'inspect' && Number.isFinite(currentAlt)
+    ? Math.max(EARTH_MIN_ALTITUDE, Math.min(currentAlt, altitude))
+    : altitude;
+  if (mode === 'inspect') preserveClusterDrilldownUntil = performance.now() + duration + 350;
   globe.controls().autoRotate = false;
-  globe.pointOfView({ lat: d.lat, lng: d.lng, altitude }, duration);
-  setTimeout(updateWeatherHeatmapOpacity, duration + 20);
+  globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: targetAltitude }, duration);
+  setTimeout(() => {
+    updateWeatherHeatmapOpacity();
+    updateStreamingMapTiles();
+    if (mode === 'inspect') renderCaseMarkersFromCurrent();
+  }, duration + 20);
 }
 
 function activateMarker(d, el) {
@@ -1846,7 +1856,7 @@ function openClusterBrowser(cluster) {
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
   $('case-content').querySelectorAll('.cluster-case-row').forEach(btn => {
-    btn.onclick = () => openReportFromMarker(rows[+btn.dataset.i], true);
+    btn.onclick = () => openReportFromMarker(rows[+btn.dataset.i], 'inspect');
   });
 }
 
@@ -1907,7 +1917,7 @@ function buildMarker(d) {
     }
     activateMarker(d, el);
     hideMarkerHover();
-    d.official ? openOfficialReport(d, true) : (d.geipan ? openGeipanReport(d, true) : (d.mass ? openMassReport(d, true) : openCase(d.id, true)));
+    openReportFromMarker(d, 'inspect');
   };
   return el;
 }
@@ -1916,6 +1926,7 @@ globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.35;
 globe.controls().addEventListener('start', () => {
   globe.controls().autoRotate = false;
+  if (performance.now() < preserveClusterDrilldownUntil) return;
   expandedClusterKey = null;
   expandedClusterRows = [];
   expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
@@ -3135,7 +3146,8 @@ function openCase(id, fly) {
     toast(t('deletedSighting'));
   };
   if (fly) {
-    focusCameraOnReport(c, isMobile() ? 1.35 : 1.14, 950);
+    const inspect = fly === 'inspect';
+    focusCameraOnReport(c, isMobile() ? 1.35 : 1.14, inspect ? 520 : 950, inspect ? 'inspect' : 'navigate');
   }
   renderCaseList(visible, officialFiltered());
   scheduleHashUpdate();
@@ -3177,7 +3189,10 @@ function openMassReport(d, fly = false) {
     </div>`;
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
-  if (fly) focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
+  if (fly) {
+    const inspect = fly === 'inspect';
+    focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, inspect ? 520 : 950, inspect ? 'inspect' : 'navigate');
+  }
 }
 
 function openGeipanReport(d, fly = false) {
@@ -3214,7 +3229,10 @@ function openGeipanReport(d, fly = false) {
     </div>`;
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
-  if (fly) focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
+  if (fly) {
+    const inspect = fly === 'inspect';
+    focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, inspect ? 520 : 950, inspect ? 'inspect' : 'navigate');
+  }
 }
 
 function openOfficialReport(d, fly) {
@@ -3261,7 +3279,8 @@ function openOfficialReport(d, fly) {
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
   if (fly && coords) {
-    focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
+    const inspect = fly === 'inspect';
+    focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, inspect ? 520 : 950, inspect ? 'inspect' : 'navigate');
   }
 }
 $('btn-close-case').onclick = () => {
