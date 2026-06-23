@@ -54,7 +54,7 @@ const I18N = {
     expand: 'Mostrar filtros',
     layers: 'Capas',
     both: 'Ambas',
-    heat: 'Calor',
+    heat: 'Densidad',
     cases: 'Casos',
     hotspots: 'Hotspots legendarios',
     massDb: 'Base masiva NUFORC',
@@ -164,6 +164,10 @@ const I18N = {
     mobileMore: 'Más',
     curated: 'curados',
     heatSuffix: 'densidad',
+    densityLegend: 'Densidad de encuentros',
+    densityLow: 'baja',
+    densityMid: 'media',
+    densityHigh: 'alta',
     narrowHint: 'acota para ver puntos individuales',
     sampledPointsHint: 'mostrando {shown} puntos de {total} casos filtrados',
     noResults: 'Sin resultados',
@@ -285,7 +289,7 @@ const I18N = {
     expand: 'Show filters',
     layers: 'Layers',
     both: 'Both',
-    heat: 'Heat',
+    heat: 'Density',
     cases: 'Cases',
     hotspots: 'Legendary hotspots',
     massDb: 'NUFORC mass database',
@@ -395,6 +399,10 @@ const I18N = {
     mobileMore: 'More',
     curated: 'curated',
     heatSuffix: 'density',
+    densityLegend: 'Encounter density',
+    densityLow: 'low',
+    densityMid: 'medium',
+    densityHigh: 'high',
     narrowHint: 'narrow to show individual points',
     sampledPointsHint: 'showing {shown} points from {total} filtered cases',
     noResults: 'No results',
@@ -790,6 +798,11 @@ function applyStaticI18n() {
   setButton('btn-pass', '◇', 'navPass', 'titlePass');
   setText('#btn-view-earth', t('viewEarth'));
   setText('#btn-view-orbit', t('viewOrbit'));
+  setText('#density-legend .density-title', t('densityLegend'));
+  const densityScale = document.querySelectorAll('#density-legend .density-scale span');
+  if (densityScale[0]) densityScale[0].textContent = t('densityLow');
+  if (densityScale[1]) densityScale[1].textContent = t('densityMid');
+  if (densityScale[2]) densityScale[2].textContent = t('densityHigh');
   updateAudioButton();
   document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
 
@@ -1140,17 +1153,9 @@ function deterministicSample(rows, limit) {
     .slice(0, limit)
     .map(x => x.row);
 }
-function sourcePointData(mass, geipan, officialGeo) {
-  if (state.layerMode === 'points') {
-    const limit = isMobile() ? MOBILE_CASE_POINT_LIMIT : CASE_POINT_LIMIT;
-    return deterministicSample(mass.concat(geipan, officialGeo), limit);
-  }
-  const pointLimit = isMobile() ? MOBILE_POINT_LIMIT : MASS_POINT_LIMIT;
-  let rows = [];
-  if (mass.length > 0 && mass.length <= pointLimit) rows = rows.concat(mass);
-  if (geipan.length > 0 && geipan.length <= pointLimit) rows = rows.concat(geipan);
-  if (officialGeo.length > 0 && officialGeo.length <= pointLimit) rows = rows.concat(officialGeo);
-  return rows;
+function sourceMarkerData(mass, geipan, officialGeo) {
+  const limit = isMobile() ? MOBILE_CASE_MARKER_LIMIT : CASE_MARKER_LIMIT;
+  return deterministicSample(mass.concat(geipan, officialGeo), limit);
 }
 
 // ---------- Mass DB (NUFORC) ----------
@@ -1263,22 +1268,21 @@ function officialFiltered() {
 }
 
 // ---------- Globe ----------
-const MASS_POINT_LIMIT = 2400; // show individual mass dots only below this (WebGL points); else heatmap
-const MOBILE_POINT_LIMIT = 900; // portrait/mobile still gets clickable WebGL points after filtering
-const CASE_POINT_LIMIT = 9000; // cases view: deterministic WebGL sample from all filtered source rows
-const MOBILE_CASE_POINT_LIMIT = 2600;
+const CASE_MARKER_LIMIT = 9000; // deterministic UI-marker sample from all filtered source rows
+const MOBILE_CASE_MARKER_LIMIT = 2600;
 const WEATHER_HEATMAP_ENABLED = true;
 const WEATHER_HEATMAP_WIDTH = 512;
 const WEATHER_HEATMAP_HEIGHT = 256;
+const WEATHER_HEATMAP_MESH_ROTATION_Y = -Math.PI / 2;
 const EARTH_DAY_TEXTURE = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/planets/earth_atmos_2048.jpg';
 const EARTH_NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg';
 
 const globe = Globe()($('globe'))
-  .globeImageUrl(EARTH_NIGHT_TEXTURE)
+  .globeImageUrl(EARTH_DAY_TEXTURE)
   .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
   .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
-  .atmosphereColor('#4be1c3')
-  .atmosphereAltitude(0.18)
+  .atmosphereColor('#7fd8ff')
+  .atmosphereAltitude(0.155)
   .htmlLat(d => d.lat)
   .htmlLng(d => d.lng)
   .htmlAltitude(d => {
@@ -1327,27 +1331,105 @@ const globe = Globe()($('globe'))
   })
   .onGlobeClick(({ lat, lng }) => { if (state.pickMode) pickLocation(lat, lng); });
 
-// Crisp hexagon marker (HTML/screen-space → constant pixel size at any zoom).
-// Hexagonal shape rhymes with the hex-bar heatmap; sharp stroke, no diffuse glow.
+let activeMarkerKey = null;
+
+function reportMarkerKey(d) {
+  if (!d) return '';
+  if (d.id) return String(d.id);
+  if (d.official) return `official:${d.sid || d.source}:${d.date || d.year}:${d.lat}:${d.lng}:${d.title || ''}`;
+  if (d.geipan) return `geipan:${d.d}:${d.lat}:${d.lng}:${d.ci}`;
+  if (d.mass) return `nuforc:${d.d}:${d.h}:${d.lat}:${d.lng}:${d.s}`;
+  return `${d.lat}:${d.lng}`;
+}
+
+function markerPrimaryText(d) {
+  if (d.geipan) return `GEIPAN ${GEIPAN_META[d.ci].code}`;
+  if (d.official) return d.source || t('officialCase');
+  if (d.mass) return shapeLabel(d.s);
+  return caseName(d);
+}
+
+function markerSecondaryText(d) {
+  if (d.geipan) return `${fmtDateInt(d.d)} · ${d.zone || t('france')}`;
+  if (d.official) return `${d.date || d.year || '—'} · ${d.loc || d.country || t('officialNoCoords')}`;
+  if (d.mass) return `${fmtDateInt(d.d)} · ${d.loc || t('geocodedLocation')}`;
+  return `${d.year} · ${caseLoc(d) || ''}`;
+}
+
+function ensureMarkerHoverCard() {
+  let card = $('globe-hover-card');
+  if (card) return card;
+  card = document.createElement('div');
+  card.id = 'globe-hover-card';
+  document.body.appendChild(card);
+  return card;
+}
+
+function moveMarkerHoverCard(ev) {
+  const card = $('globe-hover-card');
+  if (!card || !ev) return;
+  const pad = 18;
+  const w = card.offsetWidth || 240;
+  const h = card.offsetHeight || 70;
+  let x = ev.clientX + 16;
+  let y = ev.clientY + 16;
+  if (x + w + pad > window.innerWidth) x = ev.clientX - w - 16;
+  if (y + h + pad > window.innerHeight) y = ev.clientY - h - 16;
+  card.style.transform = `translate3d(${Math.max(pad, x)}px, ${Math.max(pad, y)}px, 0)`;
+}
+
+function showMarkerHover(d, ev) {
+  const card = ensureMarkerHoverCard();
+  card.innerHTML = `<b>${esc(markerPrimaryText(d))}</b><span>${esc(markerSecondaryText(d))}</span>`;
+  card.classList.add('visible');
+  moveMarkerHoverCard(ev);
+}
+
+function hideMarkerHover() {
+  const card = $('globe-hover-card');
+  if (card) card.classList.remove('visible');
+}
+
+function focusCameraOnReport(d, altitude = (isMobile() ? 1.28 : 1.08), duration = 950) {
+  if (!hasCoords(d)) return;
+  globe.controls().autoRotate = false;
+  globe.pointOfView({ lat: d.lat, lng: d.lng, altitude }, duration);
+}
+
+function activateMarker(d, el) {
+  activeMarkerKey = reportMarkerKey(d);
+  document.querySelectorAll('.globe-marker.is-active').forEach(node => node.classList.remove('is-active'));
+  if (el) el.classList.add('is-active');
+}
+
+// Crisp UI marker (HTML/screen-space -> constant pixel size at any zoom).
 function buildMarker(d) {
   const el = document.createElement('div');
-  el.className = 'globe-marker';
-  const isMassLike = d.mass || d.geipan || d.official;
+  const key = reportMarkerKey(d);
+  el.className = 'globe-marker' + (activeMarkerKey === key ? ' is-active' : '');
   const color = reportVisualColor(d);
-  const reveal = revealCases && !isMassLike;
-  const cls = 'case-hex' + (isMassLike ? ' mass' : '') + (d.mine ? ' mine' : '') + (reveal ? ' reveal' : '');
-  const pip = isMassLike ? '' : '<circle class="pip" cx="12" cy="12" r="2.3"/>';
+  const reveal = revealCases && !(d.mass || d.geipan || d.official);
+  const cls = 'case-hex' + (d.mine ? ' mine' : '') + (reveal ? ' reveal' : '');
+  const pip = '<circle class="pip" cx="12" cy="12" r="2.2"/>';
   const delay = reveal ? `;animation-delay:${Math.round(((d.lng + 180) / 360) * 1500)}ms` : '';
   el.innerHTML = `<svg class="${cls}" viewBox="0 0 24 24" style="--c:${color}${delay}">
-    <polygon points="12,1.6 21.5,7 21.5,17 12,22.4 2.5,17 2.5,7"/>${pip}</svg>`;
-  el.title = d.geipan
-    ? `GEIPAN ${GEIPAN_META[d.ci].code} · ${fmtDateInt(d.d)} · ${d.zone || t('france')}`
-    : d.official
-      ? `${d.source} · ${d.date || d.year} · ${d.loc || d.country || t('officialNoCoords')}`
-    : d.mass
-      ? `${shapeLabel(d.s)} · ${fmtDateInt(d.d)} · ${d.loc || t('geocodedLocation')}`
-      : `${caseName(d)} · ${d.year} · ${caseLoc(d) || ''}`;
-  el.onclick = () => d.official ? openOfficialReport(d, true) : (d.geipan ? openGeipanReport(d) : (d.mass ? openMassReport(d) : openCase(d.id, true)));
+    <polygon points="12,1.8 20.8,6.9 20.8,17.1 12,22.2 3.2,17.1 3.2,6.9"/>${pip}</svg>`;
+  el.setAttribute('aria-label', `${markerPrimaryText(d)} · ${markerSecondaryText(d)}`);
+  el.onmouseenter = ev => {
+    el.classList.add('is-hovered');
+    showMarkerHover(d, ev);
+  };
+  el.onmousemove = moveMarkerHoverCard;
+  el.onmouseleave = () => {
+    el.classList.remove('is-hovered');
+    hideMarkerHover();
+  };
+  el.onclick = ev => {
+    ev.stopPropagation();
+    activateMarker(d, el);
+    hideMarkerHover();
+    d.official ? openOfficialReport(d, true) : (d.geipan ? openGeipanReport(d, true) : (d.mass ? openMassReport(d, true) : openCase(d.id, true)));
+  };
   return el;
 }
 
@@ -1399,7 +1481,7 @@ function ensureWeatherHeatmapLayer() {
   weatherHeatmapMaterial = new THREE.MeshBasicMaterial({
     map: weatherHeatmapTexture,
     transparent: true,
-    opacity: 0.82,
+    opacity: 0.9,
     depthWrite: false,
     depthTest: true,
     blending: THREE.NormalBlending,
@@ -1407,17 +1489,19 @@ function ensureWeatherHeatmapLayer() {
   const geo = new THREE.SphereGeometry(100.7, 128, 64);
   weatherHeatmapMesh = new THREE.Mesh(geo, weatherHeatmapMaterial);
   weatherHeatmapMesh.name = 'ufo-weather-heatmap';
+  weatherHeatmapMesh.rotation.y = WEATHER_HEATMAP_MESH_ROTATION_Y;
   weatherHeatmapMesh.renderOrder = 4;
   weatherHeatmapMesh.visible = false;
 }
 
 function weatherHeatColor(t) {
   const stops = [
-    [0.00, 35, 190, 255],
-    [0.30, 70, 225, 190],
-    [0.55, 255, 221, 92],
-    [0.78, 255, 128, 58],
-    [1.00, 239, 71, 111],
+    [0.00, 22, 178, 255],
+    [0.24, 0, 232, 209],
+    [0.48, 170, 239, 92],
+    [0.68, 255, 218, 70],
+    [0.84, 255, 136, 38],
+    [1.00, 243, 45, 71],
   ];
   for (let i = 0; i < stops.length - 1; i++) {
     const a = stops[i], b = stops[i + 1];
@@ -1471,7 +1555,8 @@ function drawWeatherHeatmap(points) {
   const density = new Float32Array(w * h);
   points.forEach(p => {
     if (!hasCoords(p)) return;
-    const x = Math.floor(((p.lng + 180) / 360) * w);
+    const u = ((((p.lng + 180) % 360) + 360) % 360) / 360;
+    const x = Math.floor(u * w);
     const y = Math.floor(((90 - p.lat) / 180) * h);
     if (x < 0 || x >= w || y < 0 || y >= h) return;
     density[y * w + x] += 1;
@@ -1482,7 +1567,7 @@ function drawWeatherHeatmap(points) {
   const positives = [];
   for (let i = 0; i < blurred.length; i += 2) if (blurred[i] > 0) positives.push(blurred[i]);
   positives.sort((a, b) => a - b);
-  const ref = positives.length ? positives[Math.floor(positives.length * 0.985)] || positives[positives.length - 1] : 1;
+  const ref = positives.length ? positives[Math.floor(positives.length * 0.982)] || positives[positives.length - 1] : 1;
   const ctx = weatherHeatmapCanvas.getContext('2d');
   const img = ctx.createImageData(w, h);
   const data = img.data;
@@ -1493,17 +1578,17 @@ function drawWeatherHeatmap(points) {
     const raw = blurred[i];
     if (raw > maxRaw) maxRaw = raw;
     const px = i * 4;
-    if (raw <= 0.015) {
+    if (raw <= 0.01) {
       data[px + 3] = 0;
       continue;
     }
     activePixels++;
     const t = Math.min(1, Math.log1p(raw) / logRef);
-    const c = weatherHeatColor(Math.pow(t, 0.88));
+    const c = weatherHeatColor(Math.pow(t, 0.76));
     data[px] = c[0];
     data[px + 1] = c[1];
     data[px + 2] = c[2];
-    data[px + 3] = Math.round(Math.min(0.68, 0.08 + Math.pow(t, 0.72) * 0.58) * 255);
+    data[px + 3] = Math.round(Math.min(0.66, 0.08 + Math.pow(t, 0.68) * 0.58) * 255);
   }
   ctx.putImageData(img, 0, 0);
   weatherHeatmapTexture.needsUpdate = true;
@@ -1936,7 +2021,7 @@ function setViewMode(mode) {
   setEarthSceneVisible(mode === 'earth');
   setGlobeSurfaceVisible(mode === 'earth');
   if (globe.showAtmosphere) globe.showAtmosphere(mode === 'earth');
-  globe.atmosphereAltitude(mode === 'earth' ? 0.18 : 0);
+  globe.atmosphereAltitude(mode === 'earth' ? 0.155 : 0);
   if (solarSystemGroup) solarSystemGroup.visible = mode === 'earth';
   if (orbitSystemGroup) orbitSystemGroup.visible = mode === 'orbit';
   if (mode === 'orbit') {
@@ -2017,19 +2102,21 @@ function refresh() {
   lastMassCount = mass.length;
   const heatPoints = curated.concat(mass, geipan, officialGeo);
   const showHeatLayer = state.viewMode === 'earth' && state.layerMode !== 'points';
+  document.body.dataset.viewMode = state.viewMode;
+  document.body.dataset.layerMode = state.layerMode;
   const heatTotal = mass.length + geipan.length + officialGeo.length;
   heatRef = heatTotal > 0 ? Math.max(20, heatTotal / 30) : 15;
 
   let htmlPoints = [];
-  let webglPoints = [];
+  let sourceMarkers = [];
   if (state.viewMode === 'earth' && state.layerMode !== 'heat' && casesReady) {
-    htmlPoints = curated.slice();
-    webglPoints = sourcePointData(mass, geipan, officialGeo);
+    sourceMarkers = sourceMarkerData(mass, geipan, officialGeo);
+    htmlPoints = curated.concat(sourceMarkers);
   }
   globe.htmlElementsData(htmlPoints);
-  globe.pointsData(webglPoints);
+  globe.pointsData([]);
   updateWeatherHeatmap(heatPoints, WEATHER_HEATMAP_ENABLED && showHeatLayer);
-  globe.hexBinPointsData(!WEATHER_HEATMAP_ENABLED && showHeatLayer ? heatPoints : []);
+  globe.hexBinPointsData([]);
   const labels = (state.viewMode === 'earth' && state.hotspots ? HOTSPOTS.slice() : []);
   globe.labelsData(labels);
 
@@ -2042,19 +2129,14 @@ function refresh() {
   renderGeoContextCounts();
   $('case-count').textContent = fmtNum(curated.length + mass.length + geipan.length + official.length);
   const parts = [`${fmtNum(curated.length)} ${t('curated')}`];
-  const sourceModeSuffix = n => state.layerMode !== 'points' && n > MASS_POINT_LIMIT ? ` (${t('heatSuffix')})` : '';
-  if (mass.length) parts.push(`${fmtNum(mass.length)} NUFORC${sourceModeSuffix(mass.length)}`);
-  if (geipan.length) parts.push(`${fmtNum(geipan.length)} GEIPAN${sourceModeSuffix(geipan.length)}`);
+  if (mass.length) parts.push(`${fmtNum(mass.length)} NUFORC`);
+  if (geipan.length) parts.push(`${fmtNum(geipan.length)} GEIPAN`);
   if (official.length) parts.push(`${fmtNum(official.length)} ${t('officialShort')}${officialGeo.length !== official.length ? ` (${fmtNum(officialGeo.length)} ${t('mapShort')})` : ''}`);
-  const pointLimit = isMobile() ? MOBILE_POINT_LIMIT : MASS_POINT_LIMIT;
   const sourceTotal = mass.length + geipan.length + officialGeo.length;
-  const sampledHint = state.layerMode === 'points' && webglPoints.length < sourceTotal
-    ? ` · ${t('sampledPointsHint', { shown: fmtNum(webglPoints.length), total: fmtNum(sourceTotal) })}`
+  const sampledHint = state.layerMode !== 'heat' && sourceMarkers.length < sourceTotal
+    ? ` · ${t('sampledPointsHint', { shown: fmtNum(sourceMarkers.length), total: fmtNum(sourceTotal) })}`
     : '';
-  const narrowHint = state.layerMode !== 'points' && (mass.length > pointLimit || geipan.length > pointLimit || officialGeo.length > pointLimit)
-    ? ` · ${t('narrowHint')}`
-    : '';
-  $('mass-count-hint').textContent = parts.join(' + ') + sampledHint + narrowHint;
+  $('mass-count-hint').textContent = parts.join(' + ') + sampledHint;
   $('year-from').textContent = state.yearFrom;
   $('year-to').textContent = state.yearTo;
   drawHistogram();
@@ -2533,14 +2615,13 @@ function openCase(id, fly) {
     toast(t('deletedSighting'));
   };
   if (fly) {
-    globe.controls().autoRotate = false;
-    globe.pointOfView({ lat: c.lat, lng: c.lng, altitude: 1.4 }, 900);
+    focusCameraOnReport(c, isMobile() ? 1.35 : 1.14, 950);
   }
   renderCaseList(visible, officialFiltered());
   scheduleHashUpdate();
 }
 
-function openMassReport(d) {
+function openMassReport(d, fly = false) {
   closeStats();
   state.selectedCase = null;
   const s = SHAPE_META[d.s];
@@ -2576,9 +2657,10 @@ function openMassReport(d) {
     </div>`;
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
+  if (fly) focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
 }
 
-function openGeipanReport(d) {
+function openGeipanReport(d, fly = false) {
   closeStats();
   state.selectedCase = null;
   const g = GEIPAN_META[d.ci];
@@ -2612,6 +2694,7 @@ function openGeipanReport(d) {
     </div>`;
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
+  if (fly) focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
 }
 
 function openOfficialReport(d, fly) {
@@ -2658,8 +2741,7 @@ function openOfficialReport(d, fly) {
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
   if (fly && coords) {
-    globe.controls().autoRotate = false;
-    globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 0.9 }, 800);
+    focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
   }
 }
 $('btn-close-case').onclick = () => {

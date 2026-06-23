@@ -1,0 +1,50 @@
+name: Branch Preview
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - gh-pages
+
+permissions:
+  contents: write
+
+concurrency:
+  group: branch-preview-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  publish-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          path: source
+          lfs: true
+
+      - name: Checkout Pages source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build static branch preview
+        run: |
+          branch="${GITHUB_REF_NAME}"
+          slug="$(printf '%s' "$branch" | tr '/' '-' | tr -cd '[:alnum:]._-')"
+          bash source/scripts/build-branch-preview.sh source pages "$slug"
+
+      - name: Commit preview to main
+        working-directory: pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add preview
+          if git diff --cached --quiet; then
+            echo "Preview already up to date."
+            exit 0
+          fi
+          git commit -m "Publish preview for ${GITHUB_REF_NAME}"
+          git push origin HEAD:main
