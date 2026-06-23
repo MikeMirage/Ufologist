@@ -1283,6 +1283,7 @@ const MOBILE_CASE_POINT_LIMIT = 2600;
 const WEATHER_HEATMAP_ENABLED = true;
 const WEATHER_HEATMAP_WIDTH = 512;
 const WEATHER_HEATMAP_HEIGHT = 256;
+const WEATHER_HEATMAP_MESH_ROTATION_Y = -Math.PI / 2;
 const EARTH_DAY_TEXTURE = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/planets/earth_atmos_2048.jpg';
 const EARTH_NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg';
 
@@ -1340,27 +1341,106 @@ const globe = Globe()($('globe'))
   })
   .onGlobeClick(({ lat, lng }) => { if (state.pickMode) pickLocation(lat, lng); });
 
-// Crisp hexagon marker (HTML/screen-space → constant pixel size at any zoom).
-// Hexagonal shape rhymes with the hex-bar heatmap; sharp stroke, no diffuse glow.
+let activeMarkerKey = null;
+
+function reportMarkerKey(d) {
+  if (!d) return '';
+  if (d.id) return String(d.id);
+  if (d.official) return `official:${d.sid || d.source}:${d.date || d.year}:${d.lat}:${d.lng}:${d.title || ''}`;
+  if (d.geipan) return `geipan:${d.d}:${d.lat}:${d.lng}:${d.ci}`;
+  if (d.mass) return `nuforc:${d.d}:${d.h}:${d.lat}:${d.lng}:${d.s}`;
+  return `${d.lat}:${d.lng}`;
+}
+
+function markerPrimaryText(d) {
+  if (d.geipan) return `GEIPAN ${GEIPAN_META[d.ci].code}`;
+  if (d.official) return d.source || t('officialCase');
+  if (d.mass) return shapeLabel(d.s);
+  return caseName(d);
+}
+
+function markerSecondaryText(d) {
+  if (d.geipan) return `${fmtDateInt(d.d)} · ${d.zone || t('france')}`;
+  if (d.official) return `${d.date || d.year || '—'} · ${d.loc || d.country || t('officialNoCoords')}`;
+  if (d.mass) return `${fmtDateInt(d.d)} · ${d.loc || t('geocodedLocation')}`;
+  return `${d.year} · ${caseLoc(d) || ''}`;
+}
+
+function ensureMarkerHoverCard() {
+  let card = $('globe-hover-card');
+  if (card) return card;
+  card = document.createElement('div');
+  card.id = 'globe-hover-card';
+  document.body.appendChild(card);
+  return card;
+}
+
+function moveMarkerHoverCard(ev) {
+  const card = $('globe-hover-card');
+  if (!card || !ev) return;
+  const pad = 18;
+  const w = card.offsetWidth || 240;
+  const h = card.offsetHeight || 70;
+  let x = ev.clientX + 16;
+  let y = ev.clientY + 16;
+  if (x + w + pad > window.innerWidth) x = ev.clientX - w - 16;
+  if (y + h + pad > window.innerHeight) y = ev.clientY - h - 16;
+  card.style.transform = `translate3d(${Math.max(pad, x)}px, ${Math.max(pad, y)}px, 0)`;
+}
+
+function showMarkerHover(d, ev) {
+  const card = ensureMarkerHoverCard();
+  card.innerHTML = `<b>${esc(markerPrimaryText(d))}</b><span>${esc(markerSecondaryText(d))}</span>`;
+  card.classList.add('visible');
+  moveMarkerHoverCard(ev);
+}
+
+function hideMarkerHover() {
+  const card = $('globe-hover-card');
+  if (card) card.classList.remove('visible');
+}
+
+function focusCameraOnReport(d, altitude = (isMobile() ? 1.28 : 1.08), duration = 950) {
+  if (!hasCoords(d)) return;
+  globe.controls().autoRotate = false;
+  globe.pointOfView({ lat: d.lat, lng: d.lng, altitude }, duration);
+}
+
+function activateMarker(d, el) {
+  activeMarkerKey = reportMarkerKey(d);
+  document.querySelectorAll('.globe-marker.is-active').forEach(node => node.classList.remove('is-active'));
+  if (el) el.classList.add('is-active');
+}
+
+// Crisp diamond marker (HTML/screen-space -> constant pixel size at any zoom).
 function buildMarker(d) {
   const el = document.createElement('div');
-  el.className = 'globe-marker';
+  const key = reportMarkerKey(d);
+  el.className = 'globe-marker' + (activeMarkerKey === key ? ' is-active' : '');
   const isMassLike = d.mass || d.geipan || d.official;
   const color = reportVisualColor(d);
   const reveal = revealCases && !isMassLike;
   const cls = 'case-hex' + (isMassLike ? ' mass' : '') + (d.mine ? ' mine' : '') + (reveal ? ' reveal' : '');
-  const pip = isMassLike ? '' : '<circle class="pip" cx="12" cy="12" r="2.3"/>';
+  const pip = '<circle class="pip" cx="12" cy="12" r="2.2"/>';
   const delay = reveal ? `;animation-delay:${Math.round(((d.lng + 180) / 360) * 1500)}ms` : '';
   el.innerHTML = `<svg class="${cls}" viewBox="0 0 24 24" style="--c:${color}${delay}">
-    <polygon points="12,1.6 21.5,7 21.5,17 12,22.4 2.5,17 2.5,7"/>${pip}</svg>`;
-  el.title = d.geipan
-    ? `GEIPAN ${GEIPAN_META[d.ci].code} · ${fmtDateInt(d.d)} · ${d.zone || t('france')}`
-    : d.official
-      ? `${d.source} · ${d.date || d.year} · ${d.loc || d.country || t('officialNoCoords')}`
-    : d.mass
-      ? `${shapeLabel(d.s)} · ${fmtDateInt(d.d)} · ${d.loc || t('geocodedLocation')}`
-      : `${caseName(d)} · ${d.year} · ${caseLoc(d) || ''}`;
-  el.onclick = () => d.official ? openOfficialReport(d, true) : (d.geipan ? openGeipanReport(d) : (d.mass ? openMassReport(d) : openCase(d.id, true)));
+    <polygon points="12,1.7 22.3,12 12,22.3 1.7,12"/>${pip}</svg>`;
+  el.setAttribute('aria-label', `${markerPrimaryText(d)} · ${markerSecondaryText(d)}`);
+  el.onmouseenter = ev => {
+    el.classList.add('is-hovered');
+    showMarkerHover(d, ev);
+  };
+  el.onmousemove = moveMarkerHoverCard;
+  el.onmouseleave = () => {
+    el.classList.remove('is-hovered');
+    hideMarkerHover();
+  };
+  el.onclick = ev => {
+    ev.stopPropagation();
+    activateMarker(d, el);
+    hideMarkerHover();
+    d.official ? openOfficialReport(d, true) : (d.geipan ? openGeipanReport(d, true) : (d.mass ? openMassReport(d, true) : openCase(d.id, true)));
+  };
   return el;
 }
 
@@ -1420,6 +1500,7 @@ function ensureWeatherHeatmapLayer() {
   const geo = new THREE.SphereGeometry(100.7, 128, 64);
   weatherHeatmapMesh = new THREE.Mesh(geo, weatherHeatmapMaterial);
   weatherHeatmapMesh.name = 'ufo-weather-heatmap';
+  weatherHeatmapMesh.rotation.y = WEATHER_HEATMAP_MESH_ROTATION_Y;
   weatherHeatmapMesh.renderOrder = 4;
   weatherHeatmapMesh.visible = false;
 }
@@ -1485,7 +1566,8 @@ function drawWeatherHeatmap(points) {
   const density = new Float32Array(w * h);
   points.forEach(p => {
     if (!hasCoords(p)) return;
-    const x = Math.floor(((p.lng + 180) / 360) * w);
+    const u = ((((p.lng + 180) % 360) + 360) % 360) / 360;
+    const x = Math.floor(u * w);
     const y = Math.floor(((90 - p.lat) / 180) * h);
     if (x < 0 || x >= w || y < 0 || y >= h) return;
     density[y * w + x] += 1;
@@ -2039,11 +2121,11 @@ function refresh() {
   let htmlPoints = [];
   let webglPoints = [];
   if (state.viewMode === 'earth' && state.layerMode !== 'heat' && casesReady) {
-    htmlPoints = curated.slice();
     webglPoints = sourcePointData(mass, geipan, officialGeo);
+    htmlPoints = curated.concat(webglPoints);
   }
   globe.htmlElementsData(htmlPoints);
-  globe.pointsData(webglPoints);
+  globe.pointsData([]);
   updateWeatherHeatmap(heatPoints, WEATHER_HEATMAP_ENABLED && showHeatLayer);
   globe.hexBinPointsData(!WEATHER_HEATMAP_ENABLED && showHeatLayer ? heatPoints : []);
   const labels = (state.viewMode === 'earth' && state.hotspots ? HOTSPOTS.slice() : []);
@@ -2549,14 +2631,13 @@ function openCase(id, fly) {
     toast(t('deletedSighting'));
   };
   if (fly) {
-    globe.controls().autoRotate = false;
-    globe.pointOfView({ lat: c.lat, lng: c.lng, altitude: 1.4 }, 900);
+    focusCameraOnReport(c, isMobile() ? 1.35 : 1.14, 950);
   }
   renderCaseList(visible, officialFiltered());
   scheduleHashUpdate();
 }
 
-function openMassReport(d) {
+function openMassReport(d, fly = false) {
   closeStats();
   state.selectedCase = null;
   const s = SHAPE_META[d.s];
@@ -2592,9 +2673,10 @@ function openMassReport(d) {
     </div>`;
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
+  if (fly) focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
 }
 
-function openGeipanReport(d) {
+function openGeipanReport(d, fly = false) {
   closeStats();
   state.selectedCase = null;
   const g = GEIPAN_META[d.ci];
@@ -2628,6 +2710,7 @@ function openGeipanReport(d) {
     </div>`;
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
+  if (fly) focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
 }
 
 function openOfficialReport(d, fly) {
@@ -2674,8 +2757,7 @@ function openOfficialReport(d, fly) {
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
   if (fly && coords) {
-    globe.controls().autoRotate = false;
-    globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 0.9 }, 800);
+    focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, 950);
   }
 }
 $('btn-close-case').onclick = () => {

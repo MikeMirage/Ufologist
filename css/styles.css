@@ -1175,24 +1175,72 @@ input[type="range"]::-webkit-slider-thumb {
   .landing-logo, .landing-sub, .landing-tag, .landing-rule, .landing-stars { animation: none; }
 }
 
-/* ==================== HEXAGON CASE MARKERS ==================== */
+/* ==================== DIAMOND CASE MARKERS ==================== */
 /* globe.gl positions the outer .globe-marker (sets its transform); the inner
-   .case-hex SVG owns the visuals + hover, so we never fight the layer transform.
-   Size is in px → constant on screen, never grows when zooming in.
-   Hexagon shape rhymes with the hex-bar heatmap; crisp stroke, no diffuse glow. */
-.globe-marker { pointer-events: auto; will-change: transform; }
+   .case-hex SVG owns the visuals + hover, so we never fight the layer transform. */
+.globe-marker { pointer-events: auto; will-change: transform; cursor: pointer; }
 .case-hex {
-  display: block; width: 17px; height: 17px; overflow: visible;
+  display: block; width: 16px; height: 16px; overflow: visible;
   filter: drop-shadow(0 0 2px rgba(0,0,0,.95)) drop-shadow(0 0 6px rgba(24,215,255,.16));
-  transform-origin: center; transition: transform .15s ease;
+  transform-origin: center; transition: transform .15s ease, filter .15s ease;
 }
 .case-hex polygon { fill: var(--c); fill-opacity: .92; stroke: #f8fbff; stroke-opacity: .96; stroke-width: 2.15; }
 .case-hex .pip { fill: #fff; }
-.case-hex.mass { width: 11px; }
-.case-hex.mass polygon { fill-opacity: .72; stroke-opacity: .62; stroke-width: 1.7; }
+.case-hex.mass { width: 12px; height: 12px; }
+.case-hex.mass polygon { fill-opacity: .76; stroke-opacity: .66; stroke-width: 1.85; }
+.case-hex.mass .pip { opacity: .72; }
 .case-hex.mine polygon { fill: #fff; fill-opacity: .95; stroke: #cdd8ef; }
-.globe-marker:hover .case-hex { transform: scale(1.5); }
-.globe-marker:hover .case-hex polygon { fill-opacity: 1; }
+.globe-marker:hover .case-hex,
+.globe-marker.is-hovered .case-hex {
+  transform: scale(1.55);
+  filter: drop-shadow(0 0 2px rgba(0,0,0,.95)) drop-shadow(0 0 9px color-mix(in srgb, var(--c) 65%, transparent));
+}
+.globe-marker:hover .case-hex polygon,
+.globe-marker.is-hovered .case-hex polygon { fill-opacity: 1; stroke-opacity: 1; }
+.globe-marker.is-active .case-hex {
+  transform: scale(1.8);
+  filter: drop-shadow(0 0 2px rgba(0,0,0,.98)) drop-shadow(0 0 12px color-mix(in srgb, var(--c) 76%, transparent));
+}
+.globe-marker.is-active .case-hex polygon {
+  stroke: #fff;
+  stroke-width: 2.75;
+  fill-opacity: 1;
+}
+#globe-hover-card {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 230;
+  width: max-content;
+  max-width: 280px;
+  padding: 8px 10px;
+  border: 1px solid rgba(149,213,255,.34);
+  border-radius: 8px;
+  background: rgba(4, 11, 19, .92);
+  color: var(--txt);
+  box-shadow: 0 14px 40px rgba(0,0,0,.44), inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .1s ease;
+}
+#globe-hover-card.visible { opacity: 1; }
+#globe-hover-card b {
+  display: block;
+  color: rgba(244,247,251,.96);
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 1.25;
+}
+#globe-hover-card span {
+  display: block;
+  margin-top: 3px;
+  color: rgba(205,217,229,.78);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.35;
+}
 
 /* ==================== MEDIA GALLERY + LIGHTBOX ==================== */
 .cc-media { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
