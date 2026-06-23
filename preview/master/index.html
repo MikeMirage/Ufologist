@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UFOlogist — Atlas global del fenómeno UAP</title>
+<meta name="description" content="Atlas interactivo de avistamientos OVNI/UAP documentados: globo 3D, 80.000+ reportes, mapa de calor, línea de tiempo y fuentes originales." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css?v=22" />
+<link rel="icon" type="image/png" href="assets/ufologist-app-icon.png" />
+</head>
+<body>
+
+<!-- ======== LANDING / LOADING SCREEN ======== -->
+<div id="landing">
+  <img class="landing-poster" src="assets/brand/landing/observing-milky-way.jpg" alt="" aria-hidden="true" />
+  <div class="landing-stars"></div>
+  <div class="landing-vignette"></div>
+  <div class="landing-inner">
+    <div class="landing-logo-anchor">
+      <img class="landing-logo" src="assets/ufologist-logo-lockup-transparent.png" alt="UFOlogist" />
+    </div>
+    <div class="landing-brand-meta">
+      <p class="landing-sub">by Miquel Gelabert</p>
+      <p class="landing-tag">Observing the Unknown.</p>
+      <div class="landing-rule" aria-hidden="true"></div>
+    </div>
+    <div class="landing-runtime">
+      <div class="landing-progress"><div id="landing-bar"></div></div>
+      <div class="landing-log" id="landing-log">Inicializando atlas orbital…</div>
+      <div class="landing-count"><span id="landing-count">0</span> reportes indexados</div>
+      <button id="landing-skip" class="landing-skip">Entrar al atlas</button>
+    </div>
+  </div>
+  <div class="landing-copy">© Miquel Gelabert 2026 · UFOlogist</div>
+</div>
+
+<!-- ======== TOP BAR ======== -->
+<header id="topbar">
+  <div class="brand">
+    <img class="brand-mark" src="assets/ufologist-mark-current.png" alt="" aria-hidden="true" />
+    <div class="brand-text">
+      <h1>UFO<span>logist</span></h1>
+      <p>Observing the Unknown.</p>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <input id="search" type="text" placeholder="Buscar caso o lugar…" autocomplete="off" />
+    <div id="search-results" class="hidden"></div>
+  </div>
+
+  <div class="lang-toggle" role="group" aria-label="Language">
+    <button type="button" data-lang="en">EN</button>
+    <button type="button" data-lang="es">ES</button>
+  </div>
+  <button id="btn-audio" class="btn-audio" type="button" title="Apagar ambiente" aria-label="Apagar ambiente" aria-pressed="true">◉</button>
+
+  <div class="topbar-actions">
+    <button id="btn-knowledge" class="btn-ghost" title="Centro de conocimiento">◎ Conocimiento</button>
+    <button id="btn-stats" class="btn-ghost" title="Panel de análisis y tendencias">⌁ Análisis</button>
+    <button id="btn-add" class="btn-ghost" title="Reportar o registrar un avistamiento propio">+ Reportar</button>
+    <button id="btn-about" class="btn-ghost" title="Información sobre UFOlogist">ⓘ Info</button>
+    <button id="btn-tour" class="btn-ghost action-utility" title="Tour guiado por los casos esenciales">⌖ Expedición</button>
+    <button id="btn-pass" class="btn-ghost btn-pass" title="Research Pass">◇ Pass</button>
+  </div>
+</header>
+
+<!-- ======== GLOBE ======== -->
+<main id="globe-container">
+  <div id="globe"></div>
+  <div id="density-legend" class="glass" aria-hidden="true">
+    <div class="density-title">Densidad de encuentros</div>
+    <div class="density-ramp"></div>
+    <div class="density-scale"><span>baja</span><span>media</span><span>alta</span></div>
+  </div>
+  <div id="view-toggle" class="glass" aria-label="Modo de vista">
+    <button id="btn-view-earth" type="button" class="active" data-view="earth">Tierra</button>
+    <button id="btn-view-orbit" type="button" data-view="orbit">Órbita</button>
+  </div>
+  <div id="globe-zoom" class="glass" aria-label="Controles de zoom del globo">
+    <button id="btn-zoom-in" type="button" title="Acercar" aria-label="Acercar">+</button>
+    <button id="btn-zoom-out" type="button" title="Alejar" aria-label="Alejar">-</button>
+  </div>
+  <div id="loading">
+    <div class="loader-orb"></div>
+    <p>Inicializando atlas orbital…</p>
+  </div>
+</main>
+
+<!-- ======== PICK MODE HINT ======== -->
+<div id="pick-hint" class="glass hidden">🎯 Haz clic en el globo en el lugar exacto del avistamiento <button id="pick-cancel" class="btn-link">cancelar</button></div>
+
+<!-- ======== TOAST ======== -->
+<div id="toast" class="hidden"></div>
+
+<!-- ======== LEFT PANEL: FILTERS ======== -->
+<aside id="panel-left" class="glass">
+  <div class="panel-head">
+    <h2>Filtros</h2>
+    <button id="btn-collapse-left" class="btn-mini" title="Plegar">«</button>
+  </div>
+
+  <div class="panel-scroll">
+    <section class="filter-block">
+      <h3>Capas</h3>
+      <div class="seg-control" id="layer-mode">
+        <button data-mode="both" class="active">Ambas</button>
+        <button data-mode="heat">Densidad</button>
+        <button data-mode="points">Casos</button>
+      </div>
+      <label class="switch-row"><input type="checkbox" id="hotspots-toggle" /><span>🔥 Hotspots legendarios</span></label>
+    </section>
+
+    <section class="filter-block">
+      <h3>Base masiva NUFORC <span id="mass-status" class="count-pill">cargando…</span></h3>
+      <label class="switch-row"><input type="checkbox" id="mass-toggle" checked /><span>80.332 reportes geolocalizados (1906–2014)</span></label>
+      <div id="shape-filters"></div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Base GEIPAN · Francia <span id="geipan-status" class="count-pill">cargando…</span></h3>
+      <label class="switch-row"><input type="checkbox" id="geipan-toggle" checked /><span>Casos oficiales del CNES (1937–2018)</span></label>
+      <div id="geipan-filters"></div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Archivos oficiales <span id="official-status" class="count-pill">cargando…</span></h3>
+      <label class="switch-row"><input type="checkbox" id="official-toggle" checked /><span>Candidatos normalizados en revisión</span></label>
+      <p class="hint" id="official-hint">Incluye casos aún no publicados: NARA, UK MoD, España, Chile y Argentina.</p>
+      <div id="official-filters"></div>
+    </section>
+
+    <section class="filter-block">
+      <h3 id="geo-quality-title">Precisión geográfica</h3>
+      <p class="hint" id="geo-quality-hint">Separa coordenadas reportadas, locales, regionales y amplias para no mezclar patrones fuertes con ubicaciones aproximadas.</p>
+      <div id="geo-quality-filters">
+        <span class="shape-pill" data-geo-quality="reported"><span class="sdot" style="background:#f8fbff"></span>Reportada <span class="q-count"></span></span>
+        <span class="shape-pill" data-geo-quality="local"><span class="sdot" style="background:#4be1c3"></span>Local <span class="q-count"></span></span>
+        <span class="shape-pill" data-geo-quality="regional"><span class="sdot" style="background:#8ecae6"></span>Regional <span class="q-count"></span></span>
+        <span class="shape-pill" data-geo-quality="broad"><span class="sdot" style="background:#b388ff"></span>Amplia <span class="q-count"></span></span>
+      </div>
+    </section>
+
+    <section class="filter-block">
+      <h3 id="geo-context-title">Contexto geográfico</h3>
+      <p class="hint" id="geo-context-hint">Filtra encuentros cerca de bases militares, sobre agua/mar, en costa o claramente interiores.</p>
+      <div id="geo-context-filters">
+        <span class="shape-pill" data-geo-context="military"><span class="sdot" style="background:#ef476f"></span>Base militar <span class="x-count"></span></span>
+        <span class="shape-pill" data-geo-context="water"><span class="sdot" style="background:#118ab2"></span>Mar / agua <span class="x-count"></span></span>
+        <span class="shape-pill" data-geo-context="coastal"><span class="sdot" style="background:#8ecae6"></span>Costa <span class="x-count"></span></span>
+        <span class="shape-pill" data-geo-context="inland"><span class="sdot" style="background:#80ed99"></span>Interior <span class="x-count"></span></span>
+      </div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Franja horaria</h3>
+      <div class="seg-control small" id="tod-filter" title="Filtra los reportes por hora del avistamiento">
+        <button data-tod="all" class="active">24 h</button>
+        <button data-tod="day">☀ Día</button>
+        <button data-tod="night">☾ Noche</button>
+      </div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Tipo de caso curado <button id="types-all" class="btn-link">todos</button><button id="types-none" class="btn-link">ninguno</button></h3>
+      <div id="type-filters"></div>
+    </section>
+
+    <section class="filter-block">
+      <h3>Credibilidad mínima</h3>
+      <div class="cred-filter" id="cred-filter">
+        <input type="range" id="cred-range" min="1" max="5" value="1" step="1" />
+        <div class="cred-stars" id="cred-stars">★☆☆☆☆</div>
+      </div>
+      <p class="hint">5★ = radar + testigos militares + documentación oficial</p>
+    </section>
+
+    <section class="filter-block">
+      <h3>Selección <span id="case-count" class="count-pill">0</span></h3>
+      <p class="hint" id="mass-count-hint"></p>
+      <div class="export-row">
+        <button id="btn-export-csv" class="btn-ghost small" title="Exportar selección filtrada">⬇ CSV</button>
+        <button id="btn-export-json" class="btn-ghost small" title="Exportar selección filtrada">⬇ JSON</button>
+        <button id="btn-permalink" class="btn-ghost small" title="Copiar enlace con los filtros actuales">🔗 Enlace</button>
+      </div>
+      <div id="case-list"></div>
+    </section>
+  </div>
+</aside>
+<button id="btn-expand-left" class="edge-tab glass hidden" title="Mostrar filtros">»</button>
+
+<!-- ======== RIGHT PANEL: CASE DETAIL ======== -->
+<aside id="panel-case" class="glass hidden">
+  <button id="btn-close-case" class="btn-mini close">✕</button>
+  <div id="case-content"></div>
+</aside>
+
+<!-- ======== RIGHT PANEL: STATS ======== -->
+<aside id="panel-stats" class="glass hidden">
+  <button id="btn-close-stats" class="btn-mini close">✕</button>
+  <h2 class="stats-title">📊 Análisis de la selección</h2>
+  <div id="stats-content"></div>
+</aside>
+
+<!-- ======== TOUR CARD ======== -->
+<div id="tour-card" class="glass hidden">
+  <div class="tour-head">
+    <span id="tour-progress">1/14</span>
+    <span id="tour-title">—</span>
+    <button id="tour-close" class="btn-mini">✕</button>
+  </div>
+  <p id="tour-text"></p>
+  <div class="tour-bar"><div id="tour-bar-fill"></div></div>
+  <div class="tour-controls">
+    <button id="tour-prev" class="btn-ghost small">⏮ Anterior</button>
+    <button id="tour-pause" class="btn-ghost small">⏸ Pausa</button>
+    <button id="tour-next" class="btn-ghost small">Siguiente ⏭</button>
+  </div>
+</div>
+
+<!-- ======== BOTTOM: TIMELINE ======== -->
+<footer id="timeline" class="glass">
+  <div class="tl-controls">
+    <button id="btn-play" class="btn-play" title="Reproducir línea de tiempo (espacio)">▶</button>
+    <div class="seg-control small" id="play-mode">
+      <button data-pmode="cumulative" class="active" title="Acumula los casos desde el inicio">Acumulado</button>
+      <button data-pmode="window" title="Ventana móvil de 10 años">Ventana 10a</button>
+    </div>
+    <div class="tl-speed">
+      <label>Velocidad</label>
+      <input type="range" id="speed" min="1" max="10" value="4" />
+    </div>
+  </div>
+
+  <div class="tl-main">
+    <div class="tl-year-display"><span id="year-from">1942</span><span class="tl-sep">—</span><span id="year-to">2025</span></div>
+    <div class="tl-canvas-wrap">
+      <canvas id="tl-canvas"></canvas>
+      <div id="tl-events"></div>
+      <div id="tl-range">
+        <div id="tl-fill"></div>
+        <div id="handle-min" class="tl-handle" tabindex="0"></div>
+        <div id="handle-max" class="tl-handle" tabindex="0"></div>
+      </div>
+    </div>
+    <div class="tl-axis" id="tl-axis"></div>
+  </div>
+</footer>
+
+<!-- ======== SIGHTING FORM ======== -->
+<div id="sight-overlay" class="hidden">
+  <div id="sight-form" class="glass">
+    <button id="sight-close" class="btn-mini close">✕</button>
+    <h3>➕ Registrar avistamiento</h3>
+    <p class="hint">Se guarda solo en tu navegador (cuaderno de campo local).</p>
+    <label>Título *<input type="text" id="sf-name" placeholder="Luz pulsante sobre la sierra" /></label>
+    <div class="sf-row">
+      <label>Fecha *<input type="date" id="sf-date" /></label>
+      <label>Hora<input type="time" id="sf-time" /></label>
+    </div>
+    <div class="sf-row">
+      <label>Latitud<input type="number" id="sf-lat" step="0.0001" /></label>
+      <label>Longitud<input type="number" id="sf-lng" step="0.0001" /></label>
+    </div>
+    <label>Forma observada
+      <select id="sf-shape"></select>
+    </label>
+    <label>Notas<textarea id="sf-notes" rows="3" placeholder="Duración, dirección, color, testigos, condiciones…"></textarea></label>
+    <button id="sf-save" class="btn-ghost">💾 Guardar en mi cuaderno</button>
+  </div>
+</div>
+
+<!-- ======== KNOWLEDGE MODAL ======== -->
+<div id="modal-overlay" class="hidden">
+  <div id="modal" class="glass">
+    <button id="btn-close-modal" class="btn-mini close">✕</button>
+    <nav id="modal-tabs">
+      <button data-tab="hynek" class="active">Clasificación</button>
+      <button data-tab="anatomy">Anatomía</button>
+      <button data-tab="disclosure">Disclosure USA</button>
+      <button data-tab="glossary">Glosario</button>
+      <button data-tab="method">Metodología</button>
+      <button data-tab="sources">Fuentes</button>
+      <button data-tab="report">Reportar</button>
+    </nav>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ======== APP INFO MODAL ======== -->
+<div id="app-info-overlay" class="hidden">
+  <div id="app-info-modal" class="glass">
+    <button id="btn-close-app-info" class="btn-mini close">✕</button>
+    <h2>Sobre UFOlogist</h2>
+    <p><b>UFOlogist</b> es un atlas interactivo independiente para explorar el fenómeno UAP con contexto, fuentes y una mirada crítica. La intención no es empujar una conclusión cerrada, sino ordenar el material, separar evidencia de ruido y hacer visible dónde están los patrones.</p>
+    <h3>Mensaje del autor</h3>
+    <p>He construido esta herramienta para curiosos exigentes: personas que quieren mirar los casos sin cinismo automático, pero también sin perder el criterio. Si algo te intriga, abre las fuentes, compara versiones y mantén la pregunta viva.</p>
+    <h3>Autoría y copyright</h3>
+    <p>Creado por <b>Miquel Gelabert</b>. © Miquel Gelabert 2026 · UFOlogist.</p>
+    <p class="app-info-note">Proyecto divulgativo e independiente. No afiliado a NUFORC, GEIPAN, CNES, AARO ni a ningún organismo oficial. El código se publica bajo licencia MIT. Los datos y fuentes enlazadas pertenecen a sus respectivos titulares y se usan con fines de divulgación e investigación.</p>
+  </div>
+</div>
+
+<!-- ======== RESEARCH PASS MODAL ======== -->
+<div id="pass-overlay" class="hidden">
+  <div id="pass-modal" class="glass">
+    <button id="btn-close-pass" class="btn-mini close">✕</button>
+    <p class="pass-eyebrow">UFOlogist Research Pass</p>
+    <h2>Financia herramientas de investigación, no un muro de pago.</h2>
+    <p class="pass-intro">El atlas seguirá abierto. El pass está pensado para quienes quieran apoyar el proyecto y recibir utilidades avanzadas cuando estén listas.</p>
+    <div class="pass-grid">
+      <article>
+        <span>01</span>
+        <b>Exportaciones limpias</b>
+        <p>CSV/JSON extendidos, paquetes por caso y bibliografía preparada para investigación.</p>
+      </article>
+      <article>
+        <span>02</span>
+        <b>Cuadernos avanzados</b>
+        <p>Colecciones, notas cruzadas, seguimiento de fuentes y preparación para sincronización.</p>
+      </article>
+      <article>
+        <span>03</span>
+        <b>Alertas y dossiers</b>
+        <p>Notificaciones de nuevas fuentes, comparativas por oleada y dossiers descargables.</p>
+      </article>
+    </div>
+    <div class="pass-plans" role="group" aria-label="Research Pass plan">
+      <button type="button" class="active" data-plan="monthly">4 €/mes</button>
+      <button type="button" data-plan="yearly">29 €/año</button>
+      <button type="button" data-plan="founder">Fundador</button>
+    </div>
+    <form id="pass-form" class="pass-form">
+      <label>Email<input id="pass-email" type="email" placeholder="tu@email.com" autocomplete="email" /></label>
+      <button type="submit" class="btn-ghost">Solicitar acceso</button>
+    </form>
+    <p class="pass-note">Sin popups, sin bloqueo de datos, sin publicidad invasiva. Primero se valida interés; después se puede conectar Stripe o Lemon Squeezy.</p>
+  </div>
+</div>
+
+<!-- ======== MOBILE: backdrop + bottom-sheet nav ======== -->
+<div id="sheet-backdrop"></div>
+<div id="mobile-more" class="glass hidden">
+  <div class="sheet-handle"></div>
+  <button id="btn-close-more" class="btn-mini close">✕</button>
+  <h3 class="more-title">Menú</h3>
+  <div class="more-grid">
+    <button data-act="knowledge">◎<span>Conocimiento</span></button>
+    <button data-act="stats">⌁<span>Análisis</span></button>
+    <button data-act="add">+<span>Reportar</span></button>
+    <button data-act="about">ⓘ<span>Info</span></button>
+    <button data-act="tour">⌖<span>Expedición</span></button>
+    <button data-act="pass">◇<span>Pass</span></button>
+    <button data-act="audio">◉<span>Ambiente</span></button>
+  </div>
+  <h3 class="more-title">Exportar selección</h3>
+  <div class="more-grid">
+    <button data-act="csv">⬇<span>CSV</span></button>
+    <button data-act="json">⬇<span>JSON</span></button>
+    <button data-act="permalink">🔗<span>Enlace</span></button>
+  </div>
+  <p class="hint" style="margin-top:14px">Pulsa un punto del globo para abrir su ficha. Arrastra el globo para girarlo.</p>
+</div>
+
+<nav id="mobile-nav">
+  <button data-sheet="globe" class="active"><b>◎</b>Globo</button>
+  <button data-sheet="panel-left"><b>≡</b>Filtros</button>
+  <button data-sheet="timeline"><b>⌁</b>Tiempo</button>
+  <button data-sheet="panel-stats"><b>◫</b>Datos</button>
+  <button data-sheet="mobile-more"><b>☰</b>Más</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/h3-js@4.1.0/dist/h3-js.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<script src="js/data.js?v=13"></script>
+<script src="js/astro.js?v=1"></script>
+<script src="js/app.js?v=38"></script>
+</body>
+</html>
