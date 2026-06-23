@@ -163,8 +163,8 @@ const I18N = {
     mobileData: 'Datos',
     mobileMore: 'Más',
     curated: 'curados',
-    heatSuffix: 'calor',
-    narrowHint: 'acota a <=600 para ver puntos',
+    heatSuffix: 'densidad',
+    narrowHint: 'acota para ver puntos individuales',
     sampledPointsHint: 'mostrando {shown} puntos de {total} casos filtrados',
     noResults: 'Sin resultados',
     myNotebook: 'mi cuaderno',
@@ -394,8 +394,8 @@ const I18N = {
     mobileData: 'Data',
     mobileMore: 'More',
     curated: 'curated',
-    heatSuffix: 'heat',
-    narrowHint: 'narrow to <=600 to show points',
+    heatSuffix: 'density',
+    narrowHint: 'narrow to show individual points',
     sampledPointsHint: 'showing {shown} points from {total} filtered cases',
     noResults: 'No results',
     myNotebook: 'my notebook',
@@ -1083,13 +1083,13 @@ journal.forEach(j => { j.year = +j.date.slice(0, 4); j.mine = true; j.type = 'MI
 function saveJournal() { localStorage.setItem(JOURNAL_KEY, JSON.stringify(journal)); }
 function allCuratedPool() { return CASES.concat(journal); }
 
-// ---------- Entry reveal + hex-cap altitudes ----------
-let casesReady = false;   // gate: heatmap draws first, cases revealed after the landing
+// ---------- Entry reveal + case cap altitudes ----------
+let casesReady = false;   // gate: density layer draws first, cases revealed after the landing
 let revealCases = false;  // active during the sweep-in animation
 let officialData = null;  // normalized official/archive candidates loaded from compact JSON
 
-// Place each curated case at the top of its heatmap column (H3 bin), matching the
-// hex-bar height so the hexagon sits like the column's lid in hybrid view.
+// Legacy H3 column support: keep curated cases aligned with old bar heights when
+// the weather-density layer is disabled.
 function computeCapAltitudes() {
   if (typeof h3 === 'undefined' || !h3.latLngToCell) return;
   const res = (window.matchMedia('(max-width: 760px)').matches) ? 2 : 3;
@@ -1104,11 +1104,11 @@ function computeCapAltitudes() {
   const capT = w => Math.min(1, Math.log10(1 + w) / Math.log10(1 + capRef));
   allCuratedPool().forEach(c => {
     const w = weight.get(h3.latLngToCell(c.lat, c.lng, res)) || 1;
-    c._capAlt = capT(w) * 0.17 + 0.012 + 0.006;   // top face + small lift so it caps the bar
+    c._capAlt = capT(w) * 0.17 + 0.012 + 0.006;   // top face + small lift for H3 columns
   });
 }
 
-// Reveal the case hexagons with a longitude sweep, after the heatmap is drawn.
+// Reveal the case hexagons with a longitude sweep, after the density layer is drawn.
 function revealCasesSweep() {
   if (casesReady) return;
   casesReady = true;
@@ -1267,6 +1267,9 @@ const MASS_POINT_LIMIT = 2400; // show individual mass dots only below this (Web
 const MOBILE_POINT_LIMIT = 900; // portrait/mobile still gets clickable WebGL points after filtering
 const CASE_POINT_LIMIT = 9000; // cases view: deterministic WebGL sample from all filtered source rows
 const MOBILE_CASE_POINT_LIMIT = 2600;
+const WEATHER_HEATMAP_ENABLED = true;
+const WEATHER_HEATMAP_WIDTH = 512;
+const WEATHER_HEATMAP_HEIGHT = 256;
 const EARTH_DAY_TEXTURE = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/planets/earth_atmos_2048.jpg';
 const EARTH_NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg';
 
@@ -1282,7 +1285,7 @@ const globe = Globe()($('globe'))
     // hybrid view: curated case hexagons ride on top of their heatmap column
     // (like the lid of the 3D hex). Mass/GEIPAN points and "only cases" view stay low.
     if (d.mass || d.geipan) return 0.007;
-    if (state.layerMode === 'both' && d._capAlt != null) return d._capAlt;
+    if (!WEATHER_HEATMAP_ENABLED && state.layerMode === 'both' && d._capAlt != null) return d._capAlt;
     return 0.013;
   })
   .htmlElement(d => buildMarker(d))
@@ -1352,11 +1355,200 @@ globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.35;
 globe.controls().addEventListener('start', () => { globe.controls().autoRotate = false; });
 globe.pointOfView({ lat: 30, lng: -40, altitude: 2.3 });
+if (globe.customLayerData && globe.customThreeObject) {
+  globe
+    .customLayerData([])
+    .customThreeObject(() => {
+      ensureWeatherHeatmapLayer();
+      return weatherHeatmapMesh;
+    })
+    .customThreeObjectUpdate(obj => {
+      if (obj && weatherHeatmapMesh) obj.visible = weatherHeatmapMesh.visible;
+    });
+}
 
 let solarSystemGroup = null;
 let solarBodies = {};
 let currentAstroContext = null;
 let orbitSystemGroup = null;
+
+let weatherHeatmapMesh = null;
+let weatherHeatmapCanvas = null;
+let weatherHeatmapTexture = null;
+let weatherHeatmapMaterial = null;
+let weatherHeatmapLastSignature = '';
+let weatherHeatmapStats = null;
+
+function setWeatherHeatmapDebug(extra = {}) {
+  const root = document.documentElement;
+  Object.entries(extra).forEach(([key, value]) => {
+    root.dataset[`weatherHeatmap${key}`] = String(value);
+  });
+}
+
+function ensureWeatherHeatmapLayer() {
+  if (!WEATHER_HEATMAP_ENABLED || weatherHeatmapMesh || typeof THREE === 'undefined') return;
+  weatherHeatmapCanvas = document.createElement('canvas');
+  weatherHeatmapCanvas.width = WEATHER_HEATMAP_WIDTH;
+  weatherHeatmapCanvas.height = WEATHER_HEATMAP_HEIGHT;
+  weatherHeatmapTexture = new THREE.CanvasTexture(weatherHeatmapCanvas);
+  weatherHeatmapTexture.wrapS = THREE.RepeatWrapping;
+  weatherHeatmapTexture.wrapT = THREE.ClampToEdgeWrapping;
+  weatherHeatmapTexture.anisotropy = 2;
+  if ('colorSpace' in weatherHeatmapTexture && THREE.SRGBColorSpace) weatherHeatmapTexture.colorSpace = THREE.SRGBColorSpace;
+  weatherHeatmapMaterial = new THREE.MeshBasicMaterial({
+    map: weatherHeatmapTexture,
+    transparent: true,
+    opacity: 0.82,
+    depthWrite: false,
+    depthTest: true,
+    blending: THREE.NormalBlending,
+  });
+  const geo = new THREE.SphereGeometry(100.7, 128, 64);
+  weatherHeatmapMesh = new THREE.Mesh(geo, weatherHeatmapMaterial);
+  weatherHeatmapMesh.name = 'ufo-weather-heatmap';
+  weatherHeatmapMesh.renderOrder = 4;
+  weatherHeatmapMesh.visible = false;
+}
+
+function weatherHeatColor(t) {
+  const stops = [
+    [0.00, 35, 190, 255],
+    [0.30, 70, 225, 190],
+    [0.55, 255, 221, 92],
+    [0.78, 255, 128, 58],
+    [1.00, 239, 71, 111],
+  ];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const a = stops[i], b = stops[i + 1];
+    if (t <= b[0]) {
+      const f = (t - a[0]) / Math.max(0.0001, b[0] - a[0]);
+      return [
+        Math.round(a[1] + (b[1] - a[1]) * f),
+        Math.round(a[2] + (b[2] - a[2]) * f),
+        Math.round(a[3] + (b[3] - a[3]) * f),
+      ];
+    }
+  }
+  return [239, 71, 111];
+}
+
+function blurDensity(src, w, h, radius) {
+  const tmp = new Float32Array(src.length);
+  const dst = new Float32Array(src.length);
+  for (let y = 0; y < h; y++) {
+    const row = y * w;
+    for (let x = 0; x < w; x++) {
+      let sum = 0, weight = 0;
+      for (let k = -radius; k <= radius; k++) {
+        const xx = (x + k + w) % w;
+        const f = radius + 1 - Math.abs(k);
+        sum += src[row + xx] * f;
+        weight += f;
+      }
+      tmp[row + x] = sum / weight;
+    }
+  }
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      let sum = 0, weight = 0;
+      for (let k = -radius; k <= radius; k++) {
+        const yy = Math.max(0, Math.min(h - 1, y + k));
+        const f = radius + 1 - Math.abs(k);
+        sum += tmp[yy * w + x] * f;
+        weight += f;
+      }
+      dst[y * w + x] = sum / weight;
+    }
+  }
+  return dst;
+}
+
+function drawWeatherHeatmap(points) {
+  ensureWeatherHeatmapLayer();
+  if (!weatherHeatmapCanvas || !weatherHeatmapTexture) return;
+  const w = WEATHER_HEATMAP_WIDTH, h = WEATHER_HEATMAP_HEIGHT;
+  const density = new Float32Array(w * h);
+  points.forEach(p => {
+    if (!hasCoords(p)) return;
+    const x = Math.floor(((p.lng + 180) / 360) * w);
+    const y = Math.floor(((90 - p.lat) / 180) * h);
+    if (x < 0 || x >= w || y < 0 || y >= h) return;
+    density[y * w + x] += 1;
+  });
+  let blurred = blurDensity(density, w, h, isMobile() ? 4 : 6);
+  blurred = blurDensity(blurred, w, h, isMobile() ? 3 : 5);
+
+  const positives = [];
+  for (let i = 0; i < blurred.length; i += 2) if (blurred[i] > 0) positives.push(blurred[i]);
+  positives.sort((a, b) => a - b);
+  const ref = positives.length ? positives[Math.floor(positives.length * 0.985)] || positives[positives.length - 1] : 1;
+  const ctx = weatherHeatmapCanvas.getContext('2d');
+  const img = ctx.createImageData(w, h);
+  const data = img.data;
+  const logRef = Math.log1p(Math.max(1, ref));
+  let activePixels = 0;
+  let maxRaw = 0;
+  for (let i = 0; i < blurred.length; i++) {
+    const raw = blurred[i];
+    if (raw > maxRaw) maxRaw = raw;
+    const px = i * 4;
+    if (raw <= 0.015) {
+      data[px + 3] = 0;
+      continue;
+    }
+    activePixels++;
+    const t = Math.min(1, Math.log1p(raw) / logRef);
+    const c = weatherHeatColor(Math.pow(t, 0.88));
+    data[px] = c[0];
+    data[px + 1] = c[1];
+    data[px + 2] = c[2];
+    data[px + 3] = Math.round(Math.min(0.68, 0.08 + Math.pow(t, 0.72) * 0.58) * 255);
+  }
+  ctx.putImageData(img, 0, 0);
+  weatherHeatmapTexture.needsUpdate = true;
+  weatherHeatmapStats = { activePixels, maxRaw: +maxRaw.toFixed(3), ref: +ref.toFixed(3), width: w, height: h };
+}
+
+function updateWeatherHeatmap(points, visible) {
+  ensureWeatherHeatmapLayer();
+  const supported = !!weatherHeatmapMesh && !!(globe.customLayerData && globe.customThreeObject);
+  if (!weatherHeatmapMesh) {
+    setWeatherHeatmapDebug({
+      Enabled: WEATHER_HEATMAP_ENABLED,
+      Visible: false,
+      Supported: supported,
+      Points: points.length,
+      ActivePixels: weatherHeatmapStats?.activePixels || 0,
+    });
+    return;
+  }
+  weatherHeatmapMesh.visible = !!visible && points.length > 0 && supported;
+  if (globe.customLayerData) globe.customLayerData(weatherHeatmapMesh.visible ? [{ id: 'weather-heatmap' }] : []);
+  setWeatherHeatmapDebug({
+    Enabled: WEATHER_HEATMAP_ENABLED,
+    Visible: weatherHeatmapMesh.visible,
+    Supported: supported,
+    Points: points.length,
+    ActivePixels: weatherHeatmapStats?.activePixels || 0,
+  });
+  if (!weatherHeatmapMesh.visible) return;
+  const signature = [
+    state.viewMode, state.layerMode, state.yearFrom, state.yearTo, points.length,
+    [...state.types].join(','), [...state.shapes].join(','), [...state.geipanClasses].join(','),
+    [...state.officialSources].join(','), [...state.geoQuality].join(','), [...state.geoContexts].join(','),
+    state.massOn ? 1 : 0, state.geipanOn ? 1 : 0, state.officialOn ? 1 : 0, state.tod,
+    isMobile() ? 'm' : 'd',
+  ].join('|');
+  if (signature === weatherHeatmapLastSignature) return;
+  weatherHeatmapLastSignature = signature;
+  drawWeatherHeatmap(points);
+  setWeatherHeatmapDebug({
+    ActivePixels: weatherHeatmapStats?.activePixels || 0,
+    MaxRaw: weatherHeatmapStats?.maxRaw || 0,
+    Ref: weatherHeatmapStats?.ref || 0,
+  });
+}
 let orbitBodies = {};
 let orbitLines = {};
 let orbitLabels = {};
@@ -1823,6 +2015,8 @@ function refresh() {
   const official = officialFiltered();
   const officialGeo = official.filter(hasCoords);
   lastMassCount = mass.length;
+  const heatPoints = curated.concat(mass, geipan, officialGeo);
+  const showHeatLayer = state.viewMode === 'earth' && state.layerMode !== 'points';
   const heatTotal = mass.length + geipan.length + officialGeo.length;
   heatRef = heatTotal > 0 ? Math.max(20, heatTotal / 30) : 15;
 
@@ -1834,7 +2028,8 @@ function refresh() {
   }
   globe.htmlElementsData(htmlPoints);
   globe.pointsData(webglPoints);
-  globe.hexBinPointsData(state.viewMode === 'earth' && state.layerMode !== 'points' ? curated.concat(mass, geipan, officialGeo) : []);
+  updateWeatherHeatmap(heatPoints, WEATHER_HEATMAP_ENABLED && showHeatLayer);
+  globe.hexBinPointsData(!WEATHER_HEATMAP_ENABLED && showHeatLayer ? heatPoints : []);
   const labels = (state.viewMode === 'earth' && state.hotspots ? HOTSPOTS.slice() : []);
   globe.labelsData(labels);
 
