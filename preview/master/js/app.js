@@ -1224,7 +1224,7 @@ function makeCluster(rows, key, cellDeg, inFocus) {
 }
 
 function expandedRowsForCluster(cluster) {
-  const rows = deterministicSample(cluster.rows, CASE_CLUSTER_EXPAND_LIMIT);
+  const rows = deterministicSample(cluster.rows, cluster.expandLimit || CASE_CLUSTER_EXPAND_LIMIT);
   const radius = Math.max(0.035, Math.min(0.32, (cluster.cellDeg || 1) * 0.16));
   return rows.map((r, i) => {
     const a = (i / Math.max(1, rows.length)) * Math.PI * 2;
@@ -1352,6 +1352,9 @@ function officialFiltered() {
 const CASE_MARKER_NODE_BUDGET = 1600; // max DOM markers/clusters in desktop globe view
 const MOBILE_CASE_MARKER_NODE_BUDGET = 720;
 const CASE_CLUSTER_EXPAND_LIMIT = 18;
+const CASE_CLUSTER_DRILLDOWN_LIMIT = 140;
+const MOBILE_CASE_CLUSTER_DRILLDOWN_LIMIT = 72;
+const CASE_CLUSTER_LIST_LIMIT = 220;
 const WEATHER_HEATMAP_ENABLED = true;
 const WEATHER_HEATMAP_WIDTH = 512;
 const WEATHER_HEATMAP_HEIGHT = 256;
@@ -1593,6 +1596,7 @@ let currentCaseMarkerRender = { markers: 0, clusters: 0, expanded: 0, total: 0 }
 let markerLodTimer = null;
 let expandedClusterKey = null;
 let expandedClusterRows = [];
+let expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
 let currentSelectionHintBase = '';
 let currentSelectionMarkerTotal = 0;
 let politicalBoundaryPaths = [];
@@ -1689,6 +1693,7 @@ function clusterCaseMarkers(rows) {
     ...(expandedClusterRows[0]?._clusterMeta || {}),
     rows: expandedClusterRows,
     count: expandedClusterRows.length,
+    expandLimit: expandedClusterLimit,
   }) : [];
 
   function build(cellMultiplier = 1) {
@@ -1785,19 +1790,85 @@ function zoomToCluster(cluster) {
     if (cluster.count <= CASE_CLUSTER_EXPAND_LIMIT && targetAlt <= 0.85) {
       expandedClusterKey = cluster._key;
       expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
+      expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
     }
     renderCaseMarkersFromCurrent();
   }, 980);
+}
+
+function openReportFromMarker(d, fly = true) {
+  if (!d) return;
+  d.official ? openOfficialReport(d, fly) : (d.geipan ? openGeipanReport(d, fly) : (d.mass ? openMassReport(d, fly) : openCase(d.id, fly)));
+}
+
+function markerListDate(d) {
+  if (d.mass || d.geipan) return fmtDateInt(d.d);
+  return d.date || d.year || '—';
+}
+
+function markerListLocation(d) {
+  if (d.geipan) return d.zone || t('france');
+  if (d.official) return d.loc || d.country || t('officialNoCoords');
+  if (d.mass) return d.loc || t('geocodedLocation');
+  return `${caseLoc(d) || ''}${caseCountry(d) ? `, ${caseCountry(d)}` : ''}`;
+}
+
+function openClusterBrowser(cluster) {
+  if (!cluster?.rows?.length) return;
+  closeStats();
+  state.selectedCase = null;
+  const rows = deterministicSample(cluster.rows, CASE_CLUSTER_LIST_LIMIT);
+  const hidden = Math.max(0, cluster.rows.length - rows.length);
+  const years = cluster.yearMin && cluster.yearMax
+    ? (cluster.yearMin === cluster.yearMax ? cluster.yearMin : `${cluster.yearMin}-${cluster.yearMax}`)
+    : '—';
+  $('case-content').innerHTML = `
+    <span class="cc-type-badge cluster-badge">
+      <span class="dot" style="width:8px;height:8px;border-radius:50%;background:${cluster.color}"></span>${currentLang === 'en' ? 'Area group' : 'Grupo de zona'}</span>
+    <h2 class="cc-title">${fmtNum(cluster.count)} ${currentLang === 'en' ? 'encounters in this area' : 'encuentros en esta zona'}</h2>
+    <p class="cc-loc">📍 ${cluster.lat.toFixed(3)}, ${cluster.lng.toFixed(3)} · ${years}</p>
+    <p class="cc-summary">${currentLang === 'en'
+      ? 'The group is expanded on the globe. Open any row to see the full case record.'
+      : 'El grupo queda desplegado sobre el globo. Abre cualquier fila para ver la ficha completa del caso.'}</p>
+    <div class="cluster-case-list">
+      ${rows.map((r, i) => `
+        <button class="cluster-case-row" data-i="${i}">
+          <span class="ci-dot" style="background:${reportVisualColor(r)}"></span>
+          <span class="cluster-case-copy">
+            <b>${esc(markerPrimaryText(r))}</b>
+            <small>${esc(markerListDate(r))} · ${esc(markerListLocation(r))}</small>
+          </span>
+        </button>`).join('')}
+    </div>
+    ${hidden ? `<p class="hint">${currentLang === 'en'
+      ? `${fmtNum(hidden)} more filtered records are in this group. Zoom or narrow the filters to inspect all of them.`
+      : `${fmtNum(hidden)} registros filtrados más están en este grupo. Acércate o ajusta filtros para inspeccionarlos todos.`}</p>` : ''}`;
+  $('panel-case').classList.remove('hidden');
+  mobileOnCaseOpen();
+  $('case-content').querySelectorAll('.cluster-case-row').forEach(btn => {
+    btn.onclick = () => openReportFromMarker(rows[+btn.dataset.i], true);
+  });
 }
 
 function handleClusterClick(cluster, el) {
   activateMarker(cluster, el);
   hideMarkerHover();
   const currentAlt = globe.pointOfView()?.altitude || 2.3;
+  const drillLimit = isMobile() ? MOBILE_CASE_CLUSTER_DRILLDOWN_LIMIT : CASE_CLUSTER_DRILLDOWN_LIMIT;
+  const nearDrilldown = currentAlt <= 0.24 || cluster.cellDeg <= 0.9;
   if (cluster.count <= CASE_CLUSTER_EXPAND_LIMIT && currentAlt <= 0.85) {
     expandedClusterKey = cluster._key;
     expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
+    expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
     renderCaseMarkersFromCurrent();
+    return;
+  }
+  if (nearDrilldown) {
+    expandedClusterKey = cluster._key;
+    expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
+    expandedClusterLimit = drillLimit;
+    renderCaseMarkersFromCurrent();
+    openClusterBrowser(cluster);
     return;
   }
   zoomToCluster(cluster);
@@ -1847,6 +1918,7 @@ globe.controls().addEventListener('start', () => {
   globe.controls().autoRotate = false;
   expandedClusterKey = null;
   expandedClusterRows = [];
+  expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
 });
 globe.controls().addEventListener('end', () => {
   updateWeatherHeatmapOpacity();
@@ -2557,6 +2629,7 @@ function refresh() {
   currentCaseMarkerRender = { markers: 0, clusters: 0, expanded: 0, total: 0 };
   expandedClusterKey = null;
   expandedClusterRows = [];
+  expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
   if (state.viewMode === 'earth' && state.layerMode !== 'heat' && casesReady) {
     currentCaseMarkerRows = curated.concat(mass, geipan, officialGeo);
   }
