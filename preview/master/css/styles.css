@@ -284,7 +284,7 @@ body[data-view-mode="orbit"] #density-legend {
   top: auto;
   bottom: calc(16px + 136px + 12px);
   transform: translateX(-50%);
-  z-index: 62;
+  z-index: 260;
   display: flex;
   flex-direction: row;
   gap: 3px;
@@ -1190,6 +1190,31 @@ input[type="range"]::-webkit-slider-thumb {
 .case-hex polygon { fill: var(--c); fill-opacity: .92; stroke: #f8fbff; stroke-opacity: .96; stroke-width: 2.15; }
 .case-hex .pip { fill: #fff; }
 .case-hex.mine polygon { fill: #fff; fill-opacity: .95; stroke: #cdd8ef; }
+.case-hex.cluster {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,.95)) drop-shadow(0 0 10px rgba(24,215,255,.24));
+}
+.case-hex.cluster polygon {
+  fill-opacity: .78;
+  stroke: rgba(248,251,255,.98);
+  stroke-width: 1.85;
+}
+.case-hex .cluster-count {
+  fill: #ffffff;
+  font-family: var(--font-display);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: rgba(0,0,0,.78);
+  stroke-width: 2.1px;
+}
+.case-hex.expanded {
+  filter: drop-shadow(0 0 2px rgba(0,0,0,.95)) drop-shadow(0 0 8px rgba(255,209,102,.26));
+}
 .globe-marker:hover .case-hex,
 .globe-marker.is-hovered .case-hex {
   transform: scale(1.55);
@@ -1393,7 +1418,7 @@ input[type="range"]::-webkit-slider-thumb {
     right: auto;
     bottom: calc(72px + env(safe-area-inset-bottom));
     transform: translateX(-50%);
-    z-index: 88;
+    z-index: 260;
   }
   #globe-zoom button {
     width: 42px;

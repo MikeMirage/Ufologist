@@ -1153,9 +1153,90 @@ function deterministicSample(rows, limit) {
     .slice(0, limit)
     .map(x => x.row);
 }
-function sourceMarkerData(mass, geipan, officialGeo) {
-  const limit = isMobile() ? MOBILE_CASE_MARKER_LIMIT : CASE_MARKER_LIMIT;
-  return deterministicSample(mass.concat(geipan, officialGeo), limit);
+function circularMeanLng(rows) {
+  let sx = 0, cx = 0;
+  rows.forEach(r => {
+    const a = (r.lng || 0) * Math.PI / 180;
+    sx += Math.sin(a);
+    cx += Math.cos(a);
+  });
+  return Math.atan2(sx, cx) * 180 / Math.PI;
+}
+
+function angularDistanceDeg(a, b) {
+  const lat1 = (a.lat || 0) * Math.PI / 180;
+  const lat2 = (b.lat || 0) * Math.PI / 180;
+  const dLat = lat2 - lat1;
+  const dLng = ((b.lng || 0) - (a.lng || 0)) * Math.PI / 180;
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * Math.asin(Math.min(1, Math.sqrt(s))) * 180 / Math.PI;
+}
+
+function markerLodCellDegrees(altitude) {
+  const a = Number.isFinite(altitude) ? altitude : 2.3;
+  const m = isMobile();
+  if (a > 2.2) return m ? 18 : 12;
+  if (a > 1.55) return m ? 12 : 8;
+  if (a > 1.08) return m ? 8 : 5;
+  if (a > 0.78) return m ? 5 : 3;
+  if (a > 0.55) return m ? 3 : 1.6;
+  if (a > 0.38) return m ? 1.6 : 0.8;
+  return m ? 0.9 : 0.45;
+}
+
+function markerFocusRadiusDeg(altitude) {
+  const a = Number.isFinite(altitude) ? altitude : 2.3;
+  if (a > 2.2) return 999;
+  if (a > 1.55) return 74;
+  if (a > 1.08) return 48;
+  if (a > 0.78) return 30;
+  if (a > 0.55) return 19;
+  if (a > 0.38) return 12;
+  return 8;
+}
+
+function clusterColor(rows) {
+  const counts = new Map();
+  rows.forEach(r => {
+    const c = reportVisualColor(r);
+    counts.set(c, (counts.get(c) || 0) + 1);
+  });
+  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || '#18d7ff';
+}
+
+function makeCluster(rows, key, cellDeg, inFocus) {
+  const lat = rows.reduce((sum, r) => sum + r.lat, 0) / rows.length;
+  const lng = circularMeanLng(rows);
+  const years = rows.map(r => r.year).filter(Number.isFinite);
+  return {
+    cluster: true,
+    _key: `cluster:${key}:${rows.length}`,
+    lat,
+    lng,
+    count: rows.length,
+    rows,
+    cellDeg,
+    inFocus,
+    color: clusterColor(rows),
+    yearMin: years.length ? Math.min(...years) : null,
+    yearMax: years.length ? Math.max(...years) : null,
+  };
+}
+
+function expandedRowsForCluster(cluster) {
+  const rows = deterministicSample(cluster.rows, CASE_CLUSTER_EXPAND_LIMIT);
+  const radius = Math.max(0.035, Math.min(0.32, (cluster.cellDeg || 1) * 0.16));
+  return rows.map((r, i) => {
+    const a = (i / Math.max(1, rows.length)) * Math.PI * 2;
+    const latScale = 1;
+    const lngScale = 1 / Math.max(0.22, Math.cos((cluster.lat || 0) * Math.PI / 180));
+    return {
+      ...r,
+      _displayLat: Math.max(-89.8, Math.min(89.8, cluster.lat + Math.sin(a) * radius * latScale)),
+      _displayLng: cluster.lng + Math.cos(a) * radius * lngScale,
+      _expandedFrom: cluster._key,
+    };
+  });
 }
 
 // ---------- Mass DB (NUFORC) ----------
@@ -1268,8 +1349,9 @@ function officialFiltered() {
 }
 
 // ---------- Globe ----------
-const CASE_MARKER_LIMIT = 9000; // deterministic UI-marker sample from all filtered source rows
-const MOBILE_CASE_MARKER_LIMIT = 2600;
+const CASE_MARKER_NODE_BUDGET = 1600; // max DOM markers/clusters in desktop globe view
+const MOBILE_CASE_MARKER_NODE_BUDGET = 720;
+const CASE_CLUSTER_EXPAND_LIMIT = 18;
 const WEATHER_HEATMAP_ENABLED = true;
 const WEATHER_HEATMAP_WIDTH = 512;
 const WEATHER_HEATMAP_HEIGHT = 256;
@@ -1283,9 +1365,10 @@ const globe = Globe()($('globe'))
   .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
   .atmosphereColor('#7fd8ff')
   .atmosphereAltitude(0.155)
-  .htmlLat(d => d.lat)
-  .htmlLng(d => d.lng)
+  .htmlLat(d => d._displayLat ?? d.lat)
+  .htmlLng(d => d._displayLng ?? d.lng)
   .htmlAltitude(d => {
+    if (d.cluster) return 0.016;
     // hybrid view: curated case hexagons ride on top of their heatmap column
     // (like the lid of the 3D hex). Mass/GEIPAN points and "only cases" view stay low.
     if (d.mass || d.geipan) return 0.007;
@@ -1332,9 +1415,17 @@ const globe = Globe()($('globe'))
   .onGlobeClick(({ lat, lng }) => { if (state.pickMode) pickLocation(lat, lng); });
 
 let activeMarkerKey = null;
+let currentCaseMarkerRows = [];
+let currentCaseMarkerRender = { markers: 0, clusters: 0, expanded: 0, total: 0 };
+let markerLodTimer = null;
+let expandedClusterKey = null;
+let expandedClusterRows = [];
+let currentSelectionHintBase = '';
+let currentSelectionMarkerTotal = 0;
 
 function reportMarkerKey(d) {
   if (!d) return '';
+  if (d.cluster) return d._key;
   if (d.id) return String(d.id);
   if (d.official) return `official:${d.sid || d.source}:${d.date || d.year}:${d.lat}:${d.lng}:${d.title || ''}`;
   if (d.geipan) return `geipan:${d.d}:${d.lat}:${d.lng}:${d.ci}`;
@@ -1343,6 +1434,7 @@ function reportMarkerKey(d) {
 }
 
 function markerPrimaryText(d) {
+  if (d.cluster) return currentLang === 'en' ? `${fmtNum(d.count)} sightings` : `${fmtNum(d.count)} encuentros`;
   if (d.geipan) return `GEIPAN ${GEIPAN_META[d.ci].code}`;
   if (d.official) return d.source || t('officialCase');
   if (d.mass) return shapeLabel(d.s);
@@ -1350,6 +1442,12 @@ function markerPrimaryText(d) {
 }
 
 function markerSecondaryText(d) {
+  if (d.cluster) {
+    const years = d.yearMin && d.yearMax ? (d.yearMin === d.yearMax ? d.yearMin : `${d.yearMin}-${d.yearMax}`) : '—';
+    return currentLang === 'en'
+      ? `${years} · click to zoom into this area`
+      : `${years} · clic para acercarte a esta zona`;
+  }
   if (d.geipan) return `${fmtDateInt(d.d)} · ${d.zone || t('france')}`;
   if (d.official) return `${d.date || d.year || '—'} · ${d.loc || d.country || t('officialNoCoords')}`;
   if (d.mass) return `${fmtDateInt(d.d)} · ${d.loc || t('geocodedLocation')}`;
@@ -1402,18 +1500,145 @@ function activateMarker(d, el) {
   if (el) el.classList.add('is-active');
 }
 
+function clusterCaseMarkers(rows) {
+  if (!rows.length) return { markers: [], clusters: 0, expanded: 0, total: 0 };
+  const pov = globe.pointOfView ? globe.pointOfView() : { lat: 20, lng: -40, altitude: 2.3 };
+  const budget = isMobile() ? MOBILE_CASE_MARKER_NODE_BUDGET : CASE_MARKER_NODE_BUDGET;
+  const focus = { lat: Number.isFinite(pov.lat) ? pov.lat : 20, lng: Number.isFinite(pov.lng) ? pov.lng : -40 };
+  const baseCell = markerLodCellDegrees(pov.altitude);
+  const focusRadius = markerFocusRadiusDeg(pov.altitude);
+  const expandedKeys = new Set(expandedClusterRows.map(pointSampleKey));
+  const expanded = expandedClusterRows.length ? expandedRowsForCluster({
+    ...(expandedClusterRows[0]?._clusterMeta || {}),
+    rows: expandedClusterRows,
+    count: expandedClusterRows.length,
+  }) : [];
+
+  function build(cellMultiplier = 1) {
+    const groups = new Map();
+    const add = (r, inFocus) => {
+      const cell = (inFocus ? baseCell : Math.max(baseCell * 4, 8)) * cellMultiplier;
+      const latBand = Math.floor((r.lat + 90) / cell);
+      const lngBand = Math.floor((r.lng + 180) / cell);
+      const key = `${inFocus ? 'f' : 'g'}:${cell.toFixed(3)}:${latBand}:${lngBand}`;
+      if (!groups.has(key)) groups.set(key, { key, cell, inFocus, rows: [] });
+      groups.get(key).rows.push(r);
+    };
+    rows.forEach(r => {
+      if (expandedKeys.has(pointSampleKey(r))) return;
+      const inFocus = focusRadius >= 360 || angularDistanceDeg(focus, r) <= focusRadius;
+      add(r, inFocus);
+    });
+    const markers = expanded.slice();
+    let clusters = 0;
+    groups.forEach(g => {
+      if (g.rows.length === 1 && g.inFocus && g.cell <= 1.7) {
+        markers.push(g.rows[0]);
+      } else {
+        clusters++;
+        markers.push(makeCluster(g.rows, g.key, g.cell, g.inFocus));
+      }
+    });
+    return { markers, clusters, expanded: expanded.length, total: rows.length };
+  }
+
+  let multiplier = 1;
+  let result = build(multiplier);
+  while (result.markers.length > budget && multiplier < 10) {
+    multiplier *= 1.45;
+    result = build(multiplier);
+  }
+  if (result.markers.length > budget) {
+    const expandedMarkers = result.markers.filter(m => m._expandedFrom);
+    const clusters = result.markers.filter(m => m.cluster);
+    const singles = result.markers.filter(m => !m.cluster && !m._expandedFrom);
+    result.markers = expandedMarkers
+      .concat(clusters.slice(0, Math.max(0, budget - expandedMarkers.length)))
+      .concat(singles.slice(0, Math.max(0, budget - expandedMarkers.length - clusters.length)))
+      .slice(0, budget);
+    result.clusters = result.markers.filter(m => m.cluster).length;
+  }
+  return result;
+}
+
+function renderCaseMarkersFromCurrent() {
+  if (!(state.viewMode === 'earth' && state.layerMode !== 'heat' && casesReady)) {
+    currentCaseMarkerRender = { markers: 0, clusters: 0, expanded: 0, total: currentCaseMarkerRows.length };
+    globe.htmlElementsData([]);
+    updateSelectionHint();
+    return currentCaseMarkerRender;
+  }
+  const result = clusterCaseMarkers(currentCaseMarkerRows);
+  currentCaseMarkerRender = {
+    markers: result.markers.length,
+    clusters: result.clusters,
+    expanded: result.expanded,
+    total: result.total,
+  };
+  globe.htmlElementsData(result.markers);
+  window.__ufologistMarkerLod = currentCaseMarkerRender;
+  updateSelectionHint();
+  return currentCaseMarkerRender;
+}
+
+function updateSelectionHint() {
+  const el = $('mass-count-hint');
+  if (!el || !currentSelectionHintBase) return;
+  const info = currentCaseMarkerRender;
+  const lodHint = state.layerMode !== 'heat' && info.markers < currentSelectionMarkerTotal
+    ? ` · ${t('sampledPointsHint', { shown: fmtNum(info.markers), total: fmtNum(currentSelectionMarkerTotal) })}${info.clusters ? ` · ${fmtNum(info.clusters)} ${currentLang === 'en' ? 'groups' : 'grupos'}` : ''}`
+    : '';
+  el.textContent = currentSelectionHintBase + lodHint;
+}
+
+function scheduleMarkerLodRender(delay = 120) {
+  clearTimeout(markerLodTimer);
+  markerLodTimer = setTimeout(() => { renderCaseMarkersFromCurrent(); }, delay);
+}
+
+function zoomToCluster(cluster) {
+  if (!cluster?.rows?.length) return;
+  const currentAlt = globe.pointOfView()?.altitude || 2.3;
+  const targetAlt = Math.max(0.28, Math.min(currentAlt * 0.58, Math.max(0.34, (cluster.cellDeg || 3) / 9)));
+  globe.controls().autoRotate = false;
+  globe.pointOfView({ lat: cluster.lat, lng: cluster.lng, altitude: targetAlt }, 950);
+  setTimeout(() => {
+    if (cluster.count <= CASE_CLUSTER_EXPAND_LIMIT && targetAlt <= 0.85) {
+      expandedClusterKey = cluster._key;
+      expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
+    }
+    renderCaseMarkersFromCurrent();
+  }, 980);
+}
+
+function handleClusterClick(cluster, el) {
+  activateMarker(cluster, el);
+  hideMarkerHover();
+  const currentAlt = globe.pointOfView()?.altitude || 2.3;
+  if (cluster.count <= CASE_CLUSTER_EXPAND_LIMIT && currentAlt <= 0.85) {
+    expandedClusterKey = cluster._key;
+    expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
+    renderCaseMarkersFromCurrent();
+    return;
+  }
+  zoomToCluster(cluster);
+}
+
 // Crisp UI marker (HTML/screen-space -> constant pixel size at any zoom).
 function buildMarker(d) {
   const el = document.createElement('div');
   const key = reportMarkerKey(d);
   el.className = 'globe-marker' + (activeMarkerKey === key ? ' is-active' : '');
-  const color = reportVisualColor(d);
-  const reveal = revealCases && !(d.mass || d.geipan || d.official);
-  const cls = 'case-hex' + (d.mine ? ' mine' : '') + (reveal ? ' reveal' : '');
+  const color = d.cluster ? d.color : reportVisualColor(d);
+  const reveal = revealCases && !(d.cluster || d.mass || d.geipan || d.official);
+  const cls = 'case-hex' + (d.cluster ? ' cluster' : '') + (d.mine ? ' mine' : '') + (d._expandedFrom ? ' expanded' : '') + (reveal ? ' reveal' : '');
   const pip = '<circle class="pip" cx="12" cy="12" r="2.2"/>';
   const delay = reveal ? `;animation-delay:${Math.round(((d.lng + 180) / 360) * 1500)}ms` : '';
+  const clusterText = d.cluster
+    ? `<text class="cluster-count" x="12" y="13.8">${d.count >= 1000 ? Math.round(d.count / 1000) + 'k' : d.count}</text>`
+    : pip;
   el.innerHTML = `<svg class="${cls}" viewBox="0 0 24 24" style="--c:${color}${delay}">
-    <polygon points="12,1.8 20.8,6.9 20.8,17.1 12,22.2 3.2,17.1 3.2,6.9"/>${pip}</svg>`;
+    <polygon points="12,1.8 20.8,6.9 20.8,17.1 12,22.2 3.2,17.1 3.2,6.9"/>${clusterText}</svg>`;
   el.setAttribute('aria-label', `${markerPrimaryText(d)} · ${markerSecondaryText(d)}`);
   el.onmouseenter = ev => {
     el.classList.add('is-hovered');
@@ -1426,6 +1651,10 @@ function buildMarker(d) {
   };
   el.onclick = ev => {
     ev.stopPropagation();
+    if (d.cluster) {
+      handleClusterClick(d, el);
+      return;
+    }
     activateMarker(d, el);
     hideMarkerHover();
     d.official ? openOfficialReport(d, true) : (d.geipan ? openGeipanReport(d, true) : (d.mass ? openMassReport(d, true) : openCase(d.id, true)));
@@ -1435,7 +1664,12 @@ function buildMarker(d) {
 
 globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.35;
-globe.controls().addEventListener('start', () => { globe.controls().autoRotate = false; });
+globe.controls().addEventListener('start', () => {
+  globe.controls().autoRotate = false;
+  expandedClusterKey = null;
+  expandedClusterRows = [];
+});
+globe.controls().addEventListener('end', () => scheduleMarkerLodRender(90));
 globe.pointOfView({ lat: 30, lng: -40, altitude: 2.3 });
 if (globe.customLayerData && globe.customThreeObject) {
   globe
@@ -2002,9 +2236,10 @@ function zoomGlobe(direction) {
   const pov = globe.pointOfView();
   const current = Number.isFinite(pov.altitude) ? pov.altitude : 2.3;
   const factor = direction > 0 ? 0.78 : 1.28;
-  const altitude = Math.max(0.55, Math.min(4.2, current * factor));
+  const altitude = Math.max(0.32, Math.min(4.2, current * factor));
   globe.controls().autoRotate = false;
   globe.pointOfView({ lat: pov.lat, lng: pov.lng, altitude }, 420);
+  scheduleMarkerLodRender(460);
 }
 $('btn-zoom-in').onclick = () => zoomGlobe(1);
 $('btn-zoom-out').onclick = () => zoomGlobe(-1);
@@ -2107,13 +2342,14 @@ function refresh() {
   const heatTotal = mass.length + geipan.length + officialGeo.length;
   heatRef = heatTotal > 0 ? Math.max(20, heatTotal / 30) : 15;
 
-  let htmlPoints = [];
-  let sourceMarkers = [];
+  currentCaseMarkerRows = [];
+  currentCaseMarkerRender = { markers: 0, clusters: 0, expanded: 0, total: 0 };
+  expandedClusterKey = null;
+  expandedClusterRows = [];
   if (state.viewMode === 'earth' && state.layerMode !== 'heat' && casesReady) {
-    sourceMarkers = sourceMarkerData(mass, geipan, officialGeo);
-    htmlPoints = curated.concat(sourceMarkers);
+    currentCaseMarkerRows = curated.concat(mass, geipan, officialGeo);
   }
-  globe.htmlElementsData(htmlPoints);
+  const markerInfo = renderCaseMarkersFromCurrent();
   globe.pointsData([]);
   updateWeatherHeatmap(heatPoints, WEATHER_HEATMAP_ENABLED && showHeatLayer);
   globe.hexBinPointsData([]);
@@ -2133,10 +2369,10 @@ function refresh() {
   if (geipan.length) parts.push(`${fmtNum(geipan.length)} GEIPAN`);
   if (official.length) parts.push(`${fmtNum(official.length)} ${t('officialShort')}${officialGeo.length !== official.length ? ` (${fmtNum(officialGeo.length)} ${t('mapShort')})` : ''}`);
   const sourceTotal = mass.length + geipan.length + officialGeo.length;
-  const sampledHint = state.layerMode !== 'heat' && sourceMarkers.length < sourceTotal
-    ? ` · ${t('sampledPointsHint', { shown: fmtNum(sourceMarkers.length), total: fmtNum(sourceTotal) })}`
-    : '';
-  $('mass-count-hint').textContent = parts.join(' + ') + sampledHint;
+  currentSelectionHintBase = parts.join(' + ');
+  currentSelectionMarkerTotal = curated.length + sourceTotal;
+  currentCaseMarkerRender = markerInfo;
+  updateSelectionHint();
   $('year-from').textContent = state.yearFrom;
   $('year-to').textContent = state.yearTo;
   drawHistogram();
