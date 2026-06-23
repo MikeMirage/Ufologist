@@ -1153,17 +1153,9 @@ function deterministicSample(rows, limit) {
     .slice(0, limit)
     .map(x => x.row);
 }
-function sourcePointData(mass, geipan, officialGeo) {
-  if (state.layerMode === 'points') {
-    const limit = isMobile() ? MOBILE_CASE_POINT_LIMIT : CASE_POINT_LIMIT;
-    return deterministicSample(mass.concat(geipan, officialGeo), limit);
-  }
-  const pointLimit = isMobile() ? MOBILE_POINT_LIMIT : MASS_POINT_LIMIT;
-  let rows = [];
-  if (mass.length > 0 && mass.length <= pointLimit) rows = rows.concat(mass);
-  if (geipan.length > 0 && geipan.length <= pointLimit) rows = rows.concat(geipan);
-  if (officialGeo.length > 0 && officialGeo.length <= pointLimit) rows = rows.concat(officialGeo);
-  return rows;
+function sourceMarkerData(mass, geipan, officialGeo) {
+  const limit = isMobile() ? MOBILE_CASE_MARKER_LIMIT : CASE_MARKER_LIMIT;
+  return deterministicSample(mass.concat(geipan, officialGeo), limit);
 }
 
 // ---------- Mass DB (NUFORC) ----------
@@ -1276,10 +1268,8 @@ function officialFiltered() {
 }
 
 // ---------- Globe ----------
-const MASS_POINT_LIMIT = 2400; // show individual mass dots only below this (WebGL points); else heatmap
-const MOBILE_POINT_LIMIT = 900; // portrait/mobile still gets clickable WebGL points after filtering
-const CASE_POINT_LIMIT = 9000; // cases view: deterministic WebGL sample from all filtered source rows
-const MOBILE_CASE_POINT_LIMIT = 2600;
+const CASE_MARKER_LIMIT = 9000; // deterministic UI-marker sample from all filtered source rows
+const MOBILE_CASE_MARKER_LIMIT = 2600;
 const WEATHER_HEATMAP_ENABLED = true;
 const WEATHER_HEATMAP_WIDTH = 512;
 const WEATHER_HEATMAP_HEIGHT = 256;
@@ -1412,19 +1402,18 @@ function activateMarker(d, el) {
   if (el) el.classList.add('is-active');
 }
 
-// Crisp diamond marker (HTML/screen-space -> constant pixel size at any zoom).
+// Crisp UI marker (HTML/screen-space -> constant pixel size at any zoom).
 function buildMarker(d) {
   const el = document.createElement('div');
   const key = reportMarkerKey(d);
   el.className = 'globe-marker' + (activeMarkerKey === key ? ' is-active' : '');
-  const isMassLike = d.mass || d.geipan || d.official;
   const color = reportVisualColor(d);
-  const reveal = revealCases && !isMassLike;
-  const cls = 'case-hex' + (isMassLike ? ' mass' : '') + (d.mine ? ' mine' : '') + (reveal ? ' reveal' : '');
+  const reveal = revealCases && !(d.mass || d.geipan || d.official);
+  const cls = 'case-hex' + (d.mine ? ' mine' : '') + (reveal ? ' reveal' : '');
   const pip = '<circle class="pip" cx="12" cy="12" r="2.2"/>';
   const delay = reveal ? `;animation-delay:${Math.round(((d.lng + 180) / 360) * 1500)}ms` : '';
   el.innerHTML = `<svg class="${cls}" viewBox="0 0 24 24" style="--c:${color}${delay}">
-    <polygon points="12,1.7 22.3,12 12,22.3 1.7,12"/>${pip}</svg>`;
+    <polygon points="12,1.8 20.8,6.9 20.8,17.1 12,22.2 3.2,17.1 3.2,6.9"/>${pip}</svg>`;
   el.setAttribute('aria-label', `${markerPrimaryText(d)} · ${markerSecondaryText(d)}`);
   el.onmouseenter = ev => {
     el.classList.add('is-hovered');
@@ -2119,15 +2108,15 @@ function refresh() {
   heatRef = heatTotal > 0 ? Math.max(20, heatTotal / 30) : 15;
 
   let htmlPoints = [];
-  let webglPoints = [];
+  let sourceMarkers = [];
   if (state.viewMode === 'earth' && state.layerMode !== 'heat' && casesReady) {
-    webglPoints = sourcePointData(mass, geipan, officialGeo);
-    htmlPoints = curated.concat(webglPoints);
+    sourceMarkers = sourceMarkerData(mass, geipan, officialGeo);
+    htmlPoints = curated.concat(sourceMarkers);
   }
   globe.htmlElementsData(htmlPoints);
   globe.pointsData([]);
   updateWeatherHeatmap(heatPoints, WEATHER_HEATMAP_ENABLED && showHeatLayer);
-  globe.hexBinPointsData(!WEATHER_HEATMAP_ENABLED && showHeatLayer ? heatPoints : []);
+  globe.hexBinPointsData([]);
   const labels = (state.viewMode === 'earth' && state.hotspots ? HOTSPOTS.slice() : []);
   globe.labelsData(labels);
 
@@ -2140,19 +2129,14 @@ function refresh() {
   renderGeoContextCounts();
   $('case-count').textContent = fmtNum(curated.length + mass.length + geipan.length + official.length);
   const parts = [`${fmtNum(curated.length)} ${t('curated')}`];
-  const sourceModeSuffix = n => state.layerMode !== 'points' && n > MASS_POINT_LIMIT ? ` (${t('heatSuffix')})` : '';
-  if (mass.length) parts.push(`${fmtNum(mass.length)} NUFORC${sourceModeSuffix(mass.length)}`);
-  if (geipan.length) parts.push(`${fmtNum(geipan.length)} GEIPAN${sourceModeSuffix(geipan.length)}`);
+  if (mass.length) parts.push(`${fmtNum(mass.length)} NUFORC`);
+  if (geipan.length) parts.push(`${fmtNum(geipan.length)} GEIPAN`);
   if (official.length) parts.push(`${fmtNum(official.length)} ${t('officialShort')}${officialGeo.length !== official.length ? ` (${fmtNum(officialGeo.length)} ${t('mapShort')})` : ''}`);
-  const pointLimit = isMobile() ? MOBILE_POINT_LIMIT : MASS_POINT_LIMIT;
   const sourceTotal = mass.length + geipan.length + officialGeo.length;
-  const sampledHint = state.layerMode === 'points' && webglPoints.length < sourceTotal
-    ? ` · ${t('sampledPointsHint', { shown: fmtNum(webglPoints.length), total: fmtNum(sourceTotal) })}`
+  const sampledHint = state.layerMode !== 'heat' && sourceMarkers.length < sourceTotal
+    ? ` · ${t('sampledPointsHint', { shown: fmtNum(sourceMarkers.length), total: fmtNum(sourceTotal) })}`
     : '';
-  const narrowHint = state.layerMode !== 'points' && (mass.length > pointLimit || geipan.length > pointLimit || officialGeo.length > pointLimit)
-    ? ` · ${t('narrowHint')}`
-    : '';
-  $('mass-count-hint').textContent = parts.join(' + ') + sampledHint + narrowHint;
+  $('mass-count-hint').textContent = parts.join(' + ') + sampledHint;
   $('year-from').textContent = state.yearFrom;
   $('year-to').textContent = state.yearTo;
   drawHistogram();
