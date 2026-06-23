@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="profile" href="http://gmpg.org/xfn/11">
+  <title>SEFAA &#8211; Sección de Estudios de Fenómenos Aéreos Anómalos</title>
+<meta name='robots' content='max-image-preview:large' />
+<link rel='preload' href='https://fonts.googleapis.com/css?family=Source%2BSans%2BPro%3A400%2C700%7CLato%3A400%2C700&#038;subset=latin&#038;display=swap' as='style' onload="this.onload=null;this.rel='stylesheet'" type='text/css' media='all' crossorigin='anonymous'>
+<link rel='preconnect' href='https://fonts.googleapis.com' crossorigin='anonymous'>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin='anonymous'>
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel='preconnect' href='https://fonts.googleapis.com' />
+<link rel='preconnect' href='https://fonts.gstatic.com' />
+<link rel="alternate" type="application/rss+xml" title="SEFAA &raquo; Feed" href="https://sefaa.dgac.gob.cl/feed/" />
+<link rel="alternate" type="application/rss+xml" title="SEFAA &raquo; Feed de los comentarios" href="https://sefaa.dgac.gob.cl/comments/feed/" />
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://sefaa.dgac.gob.cl/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsefaa.dgac.gob.cl%2F" />
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://sefaa.dgac.gob.cl/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsefaa.dgac.gob.cl%2F&#038;format=xml" />
+<style id='wp-img-auto-sizes-contain-inline-css' type='text/css'>
+img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
+/*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+</style>
+<link rel='stylesheet' id='sbi_styles-css' href='https://sefaa.dgac.gob.cl/wp-content/plugins/instagram-feed/css/sbi-styles.min.css?ver=6.11.1' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css' type='text/css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+/*# sourceURL=wp-emoji-styles-inline-css */
+</style>
+<style id='wp-block-library-inline-css' type='text/css'>
+:root{--wp-block-synced-color:#7a00df;--wp-block-synced-color--rgb:122,0,223;--wp-bound-block-color:var(--wp-block-synced-color);--wp-editor-canvas-background:#ddd;--wp-admin-theme-color:#007cba;--wp-admin-theme-color--rgb:0,124,186;--wp-admin-theme-color-darker-10:#006ba1;--wp-admin-theme-color-darker-10--rgb:0,107,160.5;--wp-admin-theme-color-darker-20:#005a87;--wp-admin-theme-color-darker-20--rgb:0,90,135;--wp-admin-border-width-focus:2px}@media (min-resolution:192dpi){:root{--wp-admin-border-width-focus:1.5px}}.wp-element-button{cursor:pointer}:root .has-very-light-gray-background-color{background-color:#eee}:root .has-very-dark-gray-background-color{background-color:#313131}:root .has-very-light-gray-color{color:#eee}:root .has-very-dark-gray-color{color:#313131}:root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background{background:linear-gradient(135deg,#00d084,#0693e3)}:root .has-purple-crush-gradient-background{background:linear-gradient(135deg,#34e2e4,#4721fb 50%,#ab1dfe)}:root .has-hazy-dawn-gradient-background{background:linear-gradient(135deg,#faaca8,#dad0ec)}:root .has-subdued-olive-gradient-background{background:linear-gradient(135deg,#fafae1,#67a671)}:root .has-atomic-cream-gradient-background{background:linear-gradient(135deg,#fdd79a,#004a59)}:root .has-nightshade-gradient-background{background:linear-gradient(135deg,#330968,#31cdcf)}:root .has-midnight-gradient-background{background:linear-gradient(135deg,#020381,#2874fc)}:root{--wp--preset--font-size--normal:16px;--wp--preset--font-size--huge:42px}.has-regular-font-size{font-size:1em}.has-larger-font-size{font-size:2.625em}.has-normal-font-size{font-size:var(--wp--preset--font-size--normal)}.has-huge-font-size{font-size:var(--wp--preset--font-size--huge)}.has-text-align-center{text-align:center}.has-text-align-left{text-align:left}.has-text-align-right{text-align:right}.has-fit-text{white-space:nowrap!important}#end-resizable-editor-section{display:none}.aligncenter{clear:both}.items-justified-left{justify-content:flex-start}.items-justified-center{justify-content:center}.items-justified-right{justify-content:flex-end}.items-justified-space-between{justify-content:space-between}.screen-reader-text{border:0;clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;word-wrap:normal!important}.screen-reader-text:focus{background-color:#ddd;clip-path:none;color:#444;display:block;font-size:1em;height:auto;left:5px;line-height:normal;padding:15px 23px 14px;text-decoration:none;top:5px;width:auto;z-index:100000}html :where(.has-border-color){border-style:solid}html :where([style*=border-top-color]){border-top-style:solid}html :where([style*=border-right-color]){border-right-style:solid}html :where([style*=border-bottom-color]){border-bottom-style:solid}html :where([style*=border-left-color]){border-left-style:solid}html :where([style*=border-width]){border-style:solid}html :where([style*=border-top-width]){border-top-style:solid}html :where([style*=border-right-width]){border-right-style:solid}html :where([style*=border-bottom-width]){border-bottom-style:solid}html :where([style*=border-left-width]){border-left-style:solid}html :where(img[class*=wp-image-]){height:auto;max-width:100%}:where(figure){margin:0 0 1em}html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:var(--wp-admin--admin-bar--height,0px)}@media screen and (max-width:600px){html :where(.is-position-sticky){--wp-admin--admin-bar--position-offset:0px}}
+
+/*# sourceURL=wp-block-library-inline-css */
+</style><style id='wp-block-button-inline-css' type='text/css'>
+.wp-block-button__link{align-content:center;box-sizing:border-box;cursor:pointer;display:inline-block;height:100%;text-align:center;word-break:break-word}.wp-block-button__link.aligncenter{text-align:center}.wp-block-button__link.alignright{text-align:right}:where(.wp-block-button__link){border-radius:9999px;box-shadow:none;padding:calc(.667em + 2px) calc(1.333em + 2px);text-decoration:none}.wp-block-button[style*=text-decoration] .wp-block-button__link{text-decoration:inherit}.wp-block-buttons>.wp-block-button.has-custom-width{max-width:none}.wp-block-buttons>.wp-block-button.has-custom-width .wp-block-button__link{width:100%}.wp-block-buttons>.wp-block-button.has-custom-font-size .wp-block-button__link{font-size:inherit}.wp-block-buttons>.wp-block-button.wp-block-button__width-25{width:calc(25% - var(--wp--style--block-gap, .5em)*.75)}.wp-block-buttons>.wp-block-button.wp-block-button__width-50{width:calc(50% - var(--wp--style--block-gap, .5em)*.5)}.wp-block-buttons>.wp-block-button.wp-block-button__width-75{width:calc(75% - var(--wp--style--block-gap, .5em)*.25)}.wp-block-buttons>.wp-block-button.wp-block-button__width-100{flex-basis:100%;width:100%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-25{width:25%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-50{width:50%}.wp-block-buttons.is-vertical>.wp-block-button.wp-block-button__width-75{width:75%}.wp-block-button.is-style-squared,.wp-block-button__link.wp-block-button.is-style-squared{border-radius:0}.wp-block-button.no-border-radius,.wp-block-button__link.no-border-radius{border-radius:0!important}:root :where(.wp-block-button .wp-block-button__link.is-style-outline),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link){border:2px solid;padding:.667em 1.333em}:root :where(.wp-block-button .wp-block-button__link.is-style-outline:not(.has-text-color)),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link:not(.has-text-color)){color:currentColor}:root :where(.wp-block-button .wp-block-button__link.is-style-outline:not(.has-background)),:root :where(.wp-block-button.is-style-outline>.wp-block-button__link:not(.has-background)){background-color:initial;background-image:none}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/button/style.min.css */
+</style>
+<link rel='stylesheet' id='wp-block-gallery-css' href='https://sefaa.dgac.gob.cl/wp-includes/blocks/gallery/style.min.css?ver=9ebcc260c71eba850dd1160f178deec5' type='text/css' media='all' />
+<style id='wp-block-gallery-theme-inline-css' type='text/css'>
+.blocks-gallery-caption{color:#555;font-size:13px;text-align:center}.is-dark-theme .blocks-gallery-caption{color:#ffffffa6}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/gallery/theme.min.css */
+</style>
+<style id='wp-block-heading-inline-css' type='text/css'>
+h1:where(.wp-block-heading).has-background,h2:where(.wp-block-heading).has-background,h3:where(.wp-block-heading).has-background,h4:where(.wp-block-heading).has-background,h5:where(.wp-block-heading).has-background,h6:where(.wp-block-heading).has-background{padding:1.25em 2.375em}h1.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h1.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h2.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h2.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h3.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h3.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h4.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h4.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h5.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h5.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]),h6.has-text-align-left[style*=writing-mode]:where([style*=vertical-lr]),h6.has-text-align-right[style*=writing-mode]:where([style*=vertical-rl]){rotate:180deg}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/heading/style.min.css */
+</style>
+<style id='wp-block-image-inline-css' type='text/css'>
+.wp-block-image>a,.wp-block-image>figure>a{display:inline-block}.wp-block-image img{box-sizing:border-box;height:auto;max-width:100%;vertical-align:bottom}@media not (prefers-reduced-motion){.wp-block-image img.hide{visibility:hidden}.wp-block-image img.show{animation:show-content-image .4s}}.wp-block-image[style*=border-radius] img,.wp-block-image[style*=border-radius]>a{border-radius:inherit}.wp-block-image.has-custom-border img{box-sizing:border-box}.wp-block-image.aligncenter{text-align:center}.wp-block-image.alignfull>a,.wp-block-image.alignwide>a{width:100%}.wp-block-image.alignfull img,.wp-block-image.alignwide img{height:auto;width:100%}.wp-block-image .aligncenter,.wp-block-image .alignleft,.wp-block-image .alignright,.wp-block-image.aligncenter,.wp-block-image.alignleft,.wp-block-image.alignright{display:table}.wp-block-image .aligncenter>figcaption,.wp-block-image .alignleft>figcaption,.wp-block-image .alignright>figcaption,.wp-block-image.aligncenter>figcaption,.wp-block-image.alignleft>figcaption,.wp-block-image.alignright>figcaption{caption-side:bottom;display:table-caption}.wp-block-image .alignleft{float:left;margin:.5em 1em .5em 0}.wp-block-image .alignright{float:right;margin:.5em 0 .5em 1em}.wp-block-image .aligncenter{margin-left:auto;margin-right:auto}.wp-block-image :where(figcaption){margin-bottom:1em;margin-top:.5em}.wp-block-image.is-style-circle-mask img{border-radius:9999px}@supports ((-webkit-mask-image:none) or (mask-image:none)) or (-webkit-mask-image:none){.wp-block-image.is-style-circle-mask img{border-radius:0;-webkit-mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-image:url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="50"/></svg>');mask-mode:alpha;-webkit-mask-position:center;mask-position:center;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:contain;mask-size:contain}}:root :where(.wp-block-image.is-style-rounded img,.wp-block-image .is-style-rounded img){border-radius:9999px}.wp-block-image figure{margin:0}.wp-lightbox-container{display:flex;flex-direction:column;position:relative}.wp-lightbox-container img{cursor:zoom-in}.wp-lightbox-container img:hover+button{opacity:1}.wp-lightbox-container button{align-items:center;backdrop-filter:blur(16px) saturate(180%);background-color:#5a5a5a40;border:none;border-radius:4px;cursor:zoom-in;display:flex;height:20px;justify-content:center;opacity:0;padding:0;position:absolute;right:16px;text-align:center;top:16px;width:20px;z-index:100}@media not (prefers-reduced-motion){.wp-lightbox-container button{transition:opacity .2s ease}}.wp-lightbox-container button:focus-visible{outline:3px auto #5a5a5a40;outline:3px auto -webkit-focus-ring-color;outline-offset:3px}.wp-lightbox-container button:hover{cursor:pointer;opacity:1}.wp-lightbox-container button:focus{opacity:1}.wp-lightbox-container button:focus,.wp-lightbox-container button:hover,.wp-lightbox-container button:not(:hover):not(:active):not(.has-background){background-color:#5a5a5a40;border:none}.wp-lightbox-overlay{box-sizing:border-box;cursor:zoom-out;height:100vh;left:0;overflow:hidden;position:fixed;top:0;visibility:hidden;width:100%;z-index:100000}.wp-lightbox-overlay .close-button{align-items:center;cursor:pointer;display:flex;justify-content:center;min-height:40px;min-width:40px;padding:0;position:absolute;right:calc(env(safe-area-inset-right) + 16px);top:calc(env(safe-area-inset-top) + 16px);z-index:5000000}.wp-lightbox-overlay .close-button:focus,.wp-lightbox-overlay .close-button:hover,.wp-lightbox-overlay .close-button:not(:hover):not(:active):not(.has-background){background:none;border:none}.wp-lightbox-overlay .lightbox-image-container{height:var(--wp--lightbox-container-height);left:50%;overflow:hidden;position:absolute;top:50%;transform:translate(-50%,-50%);transform-origin:top left;width:var(--wp--lightbox-container-width);z-index:9999999999}.wp-lightbox-overlay .wp-block-image{align-items:center;box-sizing:border-box;display:flex;height:100%;justify-content:center;margin:0;position:relative;transform-origin:0 0;width:100%;z-index:3000000}.wp-lightbox-overlay .wp-block-image img{height:var(--wp--lightbox-image-height);min-height:var(--wp--lightbox-image-height);min-width:var(--wp--lightbox-image-width);width:var(--wp--lightbox-image-width)}.wp-lightbox-overlay .wp-block-image figcaption{display:none}.wp-lightbox-overlay button{background:none;border:none}.wp-lightbox-overlay .scrim{background-color:#fff;height:100%;opacity:.9;position:absolute;width:100%;z-index:2000000}.wp-lightbox-overlay.active{visibility:visible}@media not (prefers-reduced-motion){.wp-lightbox-overlay.active{animation:turn-on-visibility .25s both}.wp-lightbox-overlay.active img{animation:turn-on-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active){animation:turn-off-visibility .35s both}.wp-lightbox-overlay.show-closing-animation:not(.active) img{animation:turn-off-visibility .25s both}.wp-lightbox-overlay.zoom.active{animation:none;opacity:1;visibility:visible}.wp-lightbox-overlay.zoom.active .lightbox-image-container{animation:lightbox-zoom-in .4s}.wp-lightbox-overlay.zoom.active .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.active .scrim{animation:turn-on-visibility .4s forwards}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active){animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container{animation:lightbox-zoom-out .4s}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .lightbox-image-container img{animation:none}.wp-lightbox-overlay.zoom.show-closing-animation:not(.active) .scrim{animation:turn-off-visibility .4s forwards}}@keyframes show-content-image{0%{visibility:hidden}99%{visibility:hidden}to{visibility:visible}}@keyframes turn-on-visibility{0%{opacity:0}to{opacity:1}}@keyframes turn-off-visibility{0%{opacity:1;visibility:visible}99%{opacity:0;visibility:visible}to{opacity:0;visibility:hidden}}@keyframes lightbox-zoom-in{0%{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale))}to{transform:translate(-50%,-50%) scale(1)}}@keyframes lightbox-zoom-out{0%{transform:translate(-50%,-50%) scale(1);visibility:visible}99%{visibility:visible}to{transform:translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale));visibility:hidden}}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/image/style.min.css */
+</style>
+<style id='wp-block-image-theme-inline-css' type='text/css'>
+:root :where(.wp-block-image figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme :root :where(.wp-block-image figcaption){color:#ffffffa6}.wp-block-image{margin:0 0 1em}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/image/theme.min.css */
+</style>
+<style id='wp-block-buttons-inline-css' type='text/css'>
+.wp-block-buttons{box-sizing:border-box}.wp-block-buttons.is-vertical{flex-direction:column}.wp-block-buttons.is-vertical>.wp-block-button:last-child{margin-bottom:0}.wp-block-buttons>.wp-block-button{display:inline-block;margin:0}.wp-block-buttons.is-content-justification-left{justify-content:flex-start}.wp-block-buttons.is-content-justification-left.is-vertical{align-items:flex-start}.wp-block-buttons.is-content-justification-center{justify-content:center}.wp-block-buttons.is-content-justification-center.is-vertical{align-items:center}.wp-block-buttons.is-content-justification-right{justify-content:flex-end}.wp-block-buttons.is-content-justification-right.is-vertical{align-items:flex-end}.wp-block-buttons.is-content-justification-space-between{justify-content:space-between}.wp-block-buttons.aligncenter{text-align:center}.wp-block-buttons:not(.is-content-justification-space-between,.is-content-justification-right,.is-content-justification-left,.is-content-justification-center) .wp-block-button.aligncenter{margin-left:auto;margin-right:auto;width:100%}.wp-block-buttons[style*=text-decoration] .wp-block-button,.wp-block-buttons[style*=text-decoration] .wp-block-button__link{text-decoration:inherit}.wp-block-buttons.has-custom-font-size .wp-block-button__link{font-size:inherit}.wp-block-buttons .wp-block-button__link{width:100%}.wp-block-button.aligncenter{text-align:center}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/buttons/style.min.css */
+</style>
+<style id='wp-block-video-inline-css' type='text/css'>
+.wp-block-video{box-sizing:border-box}.wp-block-video video{height:auto;vertical-align:middle;width:100%}@supports (position:sticky){.wp-block-video [poster]{object-fit:cover}}.wp-block-video.aligncenter{text-align:center}.wp-block-video :where(figcaption){margin-bottom:1em;margin-top:.5em}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/video/style.min.css */
+</style>
+<style id='wp-block-video-theme-inline-css' type='text/css'>
+.wp-block-video :where(figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-video :where(figcaption){color:#ffffffa6}.wp-block-video{margin:0 0 1em}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/video/theme.min.css */
+</style>
+<style id='wp-block-columns-inline-css' type='text/css'>
+.wp-block-columns{box-sizing:border-box;display:flex;flex-wrap:wrap!important}@media (min-width:782px){.wp-block-columns{flex-wrap:nowrap!important}}.wp-block-columns{align-items:normal!important}.wp-block-columns.are-vertically-aligned-top{align-items:flex-start}.wp-block-columns.are-vertically-aligned-center{align-items:center}.wp-block-columns.are-vertically-aligned-bottom{align-items:flex-end}@media (max-width:781px){.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column{flex-basis:100%!important}}@media (min-width:782px){.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column{flex-basis:0;flex-grow:1}.wp-block-columns:not(.is-not-stacked-on-mobile)>.wp-block-column[style*=flex-basis]{flex-grow:0}}.wp-block-columns.is-not-stacked-on-mobile{flex-wrap:nowrap!important}.wp-block-columns.is-not-stacked-on-mobile>.wp-block-column{flex-basis:0;flex-grow:1}.wp-block-columns.is-not-stacked-on-mobile>.wp-block-column[style*=flex-basis]{flex-grow:0}:where(.wp-block-columns){margin-bottom:1.75em}:where(.wp-block-columns.has-background){padding:1.25em 2.375em}.wp-block-column{flex-grow:1;min-width:0;overflow-wrap:break-word;word-break:break-word}.wp-block-column.is-vertically-aligned-top{align-self:flex-start}.wp-block-column.is-vertically-aligned-center{align-self:center}.wp-block-column.is-vertically-aligned-bottom{align-self:flex-end}.wp-block-column.is-vertically-aligned-stretch{align-self:stretch}.wp-block-column.is-vertically-aligned-bottom,.wp-block-column.is-vertically-aligned-center,.wp-block-column.is-vertically-aligned-top{width:100%}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/columns/style.min.css */
+</style>
+<style id='wp-block-group-inline-css' type='text/css'>
+.wp-block-group{box-sizing:border-box}:where(.wp-block-group.wp-block-group-is-layout-constrained){position:relative}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/group/style.min.css */
+</style>
+<style id='wp-block-group-theme-inline-css' type='text/css'>
+:where(.wp-block-group.has-background){padding:1.25em 2.375em}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/group/theme.min.css */
+</style>
+<style id='wp-block-paragraph-inline-css' type='text/css'>
+.is-small-text{font-size:.875em}.is-regular-text{font-size:1em}.is-large-text{font-size:2.25em}.is-larger-text{font-size:3em}.has-drop-cap:not(:focus):first-letter{float:left;font-size:8.4em;font-style:normal;font-weight:100;line-height:.68;margin:.05em .1em 0 0;text-transform:uppercase}body.rtl .has-drop-cap:not(:focus):first-letter{float:none;margin-left:.1em}p.has-drop-cap.has-background{overflow:hidden}:root :where(p.has-background){padding:1.25em 2.375em}:where(p.has-text-color:not(.has-link-color)) a{color:inherit}p.has-text-align-left[style*="writing-mode:vertical-lr"],p.has-text-align-right[style*="writing-mode:vertical-rl"]{rotate:180deg}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/paragraph/style.min.css */
+</style>
+<style id='wp-block-social-links-inline-css' type='text/css'>
+.wp-block-social-links{background:none;box-sizing:border-box;margin-left:0;padding-left:0;padding-right:0;text-indent:0}.wp-block-social-links .wp-social-link a,.wp-block-social-links .wp-social-link a:hover{border-bottom:0;box-shadow:none;text-decoration:none}.wp-block-social-links .wp-social-link svg{height:1em;width:1em}.wp-block-social-links .wp-social-link span:not(.screen-reader-text){font-size:.65em;margin-left:.5em;margin-right:.5em}.wp-block-social-links.has-small-icon-size{font-size:16px}.wp-block-social-links,.wp-block-social-links.has-normal-icon-size{font-size:24px}.wp-block-social-links.has-large-icon-size{font-size:36px}.wp-block-social-links.has-huge-icon-size{font-size:48px}.wp-block-social-links.aligncenter{display:flex;justify-content:center}.wp-block-social-links.alignright{justify-content:flex-end}.wp-block-social-link{border-radius:9999px;display:block}@media not (prefers-reduced-motion){.wp-block-social-link{transition:transform .1s ease}}.wp-block-social-link{height:auto}.wp-block-social-link a{align-items:center;display:flex;line-height:0}.wp-block-social-link:hover{transform:scale(1.1)}.wp-block-social-links .wp-block-social-link.wp-social-link{display:inline-block;margin:0;padding:0}.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor svg,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:active,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:hover,.wp-block-social-links .wp-block-social-link.wp-social-link .wp-block-social-link-anchor:visited{color:currentColor;fill:currentColor}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link{background-color:#f0f0f0;color:#444}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-amazon{background-color:#f90;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-bandcamp{background-color:#1ea0c3;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-behance{background-color:#0757fe;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-bluesky{background-color:#0a7aff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-codepen{background-color:#1e1f26;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-deviantart{background-color:#02e49b;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-discord{background-color:#5865f2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-dribbble{background-color:#e94c89;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-dropbox{background-color:#4280ff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-etsy{background-color:#f45800;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-facebook{background-color:#0866ff;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-fivehundredpx{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-flickr{background-color:#0461dd;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-foursquare{background-color:#e65678;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-github{background-color:#24292d;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-goodreads{background-color:#eceadd;color:#382110}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-google{background-color:#ea4434;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-gravatar{background-color:#1d4fc4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-instagram{background-color:#f00075;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-lastfm{background-color:#e21b24;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-linkedin{background-color:#0d66c2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-mastodon{background-color:#3288d4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-medium{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-meetup{background-color:#f6405f;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-patreon{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-pinterest{background-color:#e60122;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-pocket{background-color:#ef4155;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-reddit{background-color:#ff4500;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-skype{background-color:#0478d7;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-snapchat{background-color:#fefc00;color:#fff;stroke:#000}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-soundcloud{background-color:#ff5600;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-spotify{background-color:#1bd760;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-telegram{background-color:#2aabee;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-threads{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-tiktok{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-tumblr{background-color:#011835;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-twitch{background-color:#6440a4;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-twitter{background-color:#1da1f2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-vimeo{background-color:#1eb7ea;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-vk{background-color:#4680c2;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-wordpress{background-color:#3499cd;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-whatsapp{background-color:#25d366;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-x{background-color:#000;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-yelp{background-color:#d32422;color:#fff}:where(.wp-block-social-links:not(.is-style-logos-only)) .wp-social-link-youtube{background-color:red;color:#fff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link{background:none}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link svg{height:1.25em;width:1.25em}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-amazon{color:#f90}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-bandcamp{color:#1ea0c3}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-behance{color:#0757fe}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-bluesky{color:#0a7aff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-codepen{color:#1e1f26}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-deviantart{color:#02e49b}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-discord{color:#5865f2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-dribbble{color:#e94c89}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-dropbox{color:#4280ff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-etsy{color:#f45800}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-facebook{color:#0866ff}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-fivehundredpx{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-flickr{color:#0461dd}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-foursquare{color:#e65678}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-github{color:#24292d}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-goodreads{color:#382110}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-google{color:#ea4434}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-gravatar{color:#1d4fc4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-instagram{color:#f00075}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-lastfm{color:#e21b24}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-linkedin{color:#0d66c2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-mastodon{color:#3288d4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-medium{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-meetup{color:#f6405f}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-patreon{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-pinterest{color:#e60122}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-pocket{color:#ef4155}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-reddit{color:#ff4500}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-skype{color:#0478d7}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-snapchat{color:#fff;stroke:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-soundcloud{color:#ff5600}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-spotify{color:#1bd760}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-telegram{color:#2aabee}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-threads{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-tiktok{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-tumblr{color:#011835}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-twitch{color:#6440a4}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-twitter{color:#1da1f2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-vimeo{color:#1eb7ea}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-vk{color:#4680c2}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-whatsapp{color:#25d366}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-wordpress{color:#3499cd}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-x{color:#000}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-yelp{color:#d32422}:where(.wp-block-social-links.is-style-logos-only) .wp-social-link-youtube{color:red}.wp-block-social-links.is-style-pill-shape .wp-social-link{width:auto}:root :where(.wp-block-social-links .wp-social-link a){padding:.25em}:root :where(.wp-block-social-links.is-style-logos-only .wp-social-link a){padding:0}:root :where(.wp-block-social-links.is-style-pill-shape .wp-social-link a){padding-left:.6666666667em;padding-right:.6666666667em}.wp-block-social-links:not(.has-icon-color):not(.has-icon-background-color) .wp-social-link-snapchat .wp-block-social-link-label{color:#000}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/social-links/style.min.css */
+</style>
+<style id='wp-block-spacer-inline-css' type='text/css'>
+.wp-block-spacer{clear:both}
+/*# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/blocks/spacer/style.min.css */
+</style>
+<style id='global-styles-inline-css' type='text/css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);--wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);}:root { --wp--style--global--content-size: 800px;--wp--style--global--wide-size: 1200px; }:where(body) { margin: 0; }.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }.wp-site-blocks > .alignright { float: right; margin-left: 2em; }.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }:where(.wp-site-blocks) > * { margin-block-start: 24px; margin-block-end: 0; }:where(.wp-site-blocks) > :first-child { margin-block-start: 0; }:where(.wp-site-blocks) > :last-child { margin-block-end: 0; }:root { --wp--style--block-gap: 24px; }:root :where(.is-layout-flow) > :first-child{margin-block-start: 0;}:root :where(.is-layout-flow) > :last-child{margin-block-end: 0;}:root :where(.is-layout-flow) > *{margin-block-start: 24px;margin-block-end: 0;}:root :where(.is-layout-constrained) > :first-child{margin-block-start: 0;}:root :where(.is-layout-constrained) > :last-child{margin-block-end: 0;}:root :where(.is-layout-constrained) > *{margin-block-start: 24px;margin-block-end: 0;}:root :where(.is-layout-flex){gap: 24px;}:root :where(.is-layout-grid){gap: 24px;}.is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}a:where(:not(.wp-element-button)){text-decoration: none;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-radius: 0;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;font-style: inherit;font-weight: inherit;letter-spacing: inherit;line-height: inherit;padding-top: calc(0.667em + 2px);padding-right: calc(1.333em + 2px);padding-bottom: calc(0.667em + 2px);padding-left: calc(1.333em + 2px);text-decoration: none;text-transform: inherit;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:root :where(.wp-block-button .wp-block-button__link){border-radius: 0;}
+:root :where(.wp-block-heading){line-height: 1.3;}
+/*# sourceURL=global-styles-inline-css */
+</style>
+<style id='core-block-supports-inline-css' type='text/css'>
+.wp-container-core-columns-is-layout-28f84493{flex-wrap:nowrap;}.wp-container-core-buttons-is-layout-8275d22b{gap:var(--wp--preset--spacing--20);justify-content:flex-start;}.wp-block-gallery.wp-block-gallery-1{--wp--style--unstable-gallery-gap:var( --wp--style--gallery-gap-default, var( --gallery-block--gutter-size, var( --wp--style--block-gap, 0.5em ) ) );gap:var( --wp--style--gallery-gap-default, var( --gallery-block--gutter-size, var( --wp--style--block-gap, 0.5em ) ) );}
+/*# sourceURL=core-block-supports-inline-css */
+</style>
+
+<link rel='stylesheet' id='bootstrap-css' href='https://sefaa.dgac.gob.cl/wp-content/themes/covernews/assets/bootstrap/css/bootstrap.min.css?ver=9ebcc260c71eba850dd1160f178deec5' type='text/css' media='all' />
+<link rel='stylesheet' id='covernews-style-css' href='https://sefaa.dgac.gob.cl/wp-content/themes/covernews/style.css?ver=9ebcc260c71eba850dd1160f178deec5' type='text/css' media='all' />
+<link rel='stylesheet' id='newscover-css' href='https://sefaa.dgac.gob.cl/wp-content/themes/newscover/style.css?ver=2.0.2' type='text/css' media='all' />
+<link rel='stylesheet' id='covernews-google-fonts-css' href='https://fonts.googleapis.com/css?family=Source%2BSans%2BPro%3A400%2C700%7CLato%3A400%2C700&#038;subset=latin&#038;display=swap' type='text/css' media='all' />
+<link rel='stylesheet' id='covernews-icons-css' href='https://sefaa.dgac.gob.cl/wp-content/themes/covernews/assets/icons/style.css?ver=9ebcc260c71eba850dd1160f178deec5' type='text/css' media='all' />
+<link rel='stylesheet' id='slick-css' href='https://sefaa.dgac.gob.cl/wp-content/themes/covernews/assets/slick/css/slick.css?ver=2.0.2' type='text/css' media='all' />
+<!--n2css--><!--n2js--><script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script>
+<link rel="https://api.w.org/" href="https://sefaa.dgac.gob.cl/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://sefaa.dgac.gob.cl/wp-json/wp/v2/pages/79" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://sefaa.dgac.gob.cl/xmlrpc.php?rsd" />
+
+<link rel="canonical" href="https://sefaa.dgac.gob.cl/" />
+<link rel='shortlink' href='https://sefaa.dgac.gob.cl/' />
+<!-- Analytics by WP Statistics - https://wp-statistics.com -->
+<link rel="preload" href="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/FONDO.jpg" as="image">        <style type="text/css">
+                        body .masthead-banner.data-bg:before {
+                background: rgba(0,0,0,0);
+            }
+                        .site-title a,
+            .site-header .site-branding .site-title a:visited,
+            .site-header .site-branding .site-title a:hover,
+            .site-description {
+                color: #f3f3f3            }
+
+            body.aft-dark-mode .site-title a,
+      body.aft-dark-mode .site-header .site-branding .site-title a:visited,
+      body.aft-dark-mode .site-header .site-branding .site-title a:hover,
+      body.aft-dark-mode .site-description {
+        color: #ffffff;
+      }
+
+            .site-branding .site-title {
+                font-size: 225px;
+            }
+
+            @media only screen and (max-width: 640px) {
+                .header-layout-3 .site-header .site-branding .site-title,
+                .site-branding .site-title {
+                    font-size: 60px;
+
+                }
+              }   
+
+           @media only screen and (max-width: 375px) {
+               .header-layout-3 .site-header .site-branding .site-title,
+               .site-branding .site-title {
+                        font-size: 50px;
+
+                    }
+                }
+                
+                    .elementor-template-full-width .elementor-section.elementor-section-full_width > .elementor-container,
+        .elementor-template-full-width .elementor-section.elementor-section-boxed > .elementor-container{
+            max-width: 1200px;
+        }
+        @media (min-width: 1600px){
+            .elementor-template-full-width .elementor-section.elementor-section-full_width > .elementor-container,
+            .elementor-template-full-width .elementor-section.elementor-section-boxed > .elementor-container{
+                max-width: 1600px;
+            }
+        }
+        
+        .align-content-left .elementor-section-stretched,
+        .align-content-right .elementor-section-stretched {
+            max-width: 100%;
+            left: 0 !important;
+        }
+
+
+        </style>
+        <style type="text/css" id="custom-background-css">
+body.custom-background { background-color: #f5f5f5; }
+</style>
+	<link rel="icon" href="https://sefaa.dgac.gob.cl/wp-content/uploads/2021/12/cropped-SEFAA-Marco-blanco-32x32.jpg" sizes="32x32" />
+<link rel="icon" href="https://sefaa.dgac.gob.cl/wp-content/uploads/2021/12/cropped-SEFAA-Marco-blanco-192x192.jpg" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://sefaa.dgac.gob.cl/wp-content/uploads/2021/12/cropped-SEFAA-Marco-blanco-180x180.jpg" />
+<meta name="msapplication-TileImage" content="https://sefaa.dgac.gob.cl/wp-content/uploads/2021/12/cropped-SEFAA-Marco-blanco-270x270.jpg" />
+</head>
+
+<body class="home wp-singular page-template-default page page-id-79 custom-background wp-embed-responsive wp-theme-covernews wp-child-theme-newscover default-content-layout archive-layout-grid scrollup-sticky-header aft-sticky-header aft-sticky-sidebar dark aft-container-wide aft-main-banner-slider-editors-picks-trending single-content-mode-default header-image-default align-content-left ">
+  
+  
+  <div id="page" class="site">
+    <a class="skip-link screen-reader-text" href="#content">Saltar al contenido</a>
+
+        <div class="header-layout-3">
+                <header id="masthead" class="site-header">
+                        <div class="masthead-banner data-bg"
+                 data-background="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/FONDO.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="site-branding">
+                                                                    <h1 class="site-title font-family-1">
+                                        <a href="https://sefaa.dgac.gob.cl/"
+                                           rel="home">SEFAA</a>
+                                    </h1>
+                                
+                                                                    <p class="site-description">Sección de Estudios de Fenómenos Aéreos Anómalos</p>
+                                                            </div>
+                        </div>
+                        <div class="col-md-12">
+                                                    </div>
+                    </div>
+                </div>
+            </div>
+            <nav id="site-navigation" class="main-navigation">
+                <div class="container">
+                    <div class="row">
+                        <div class="kol-12">
+                            <div class="navigation-container">
+
+
+                                <div class="main-navigation-container-items-wrapper">
+                        <span class="toggle-menu" aria-controls="primary-menu" aria-expanded="false">
+                            <a href="javascript:void(0)" class="aft-void-menu">
+                                <span class="screen-reader-text">Primary Menu</span>
+                                 <i class="ham"></i>
+                            </a>
+                        </span>
+                                    <span class="af-mobile-site-title-wrap">
+                                                        <p class="site-title font-family-1">
+                                <a href="https://sefaa.dgac.gob.cl/"
+                                   rel="home">SEFAA</a>
+                            </p>
+                        </span>
+                                    <div class="menu main-menu"><ul id="primary-menu" class="menu"><li id="menu-item-92" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-79 current_page_item menu-item-92"><a href="https://sefaa.dgac.gob.cl/" aria-current="page">Home</a></li>
+<li id="menu-item-90" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-90"><a href="https://sefaa.dgac.gob.cl/quienes-somos/">Quiénes somos <span class="submenu-toggle">▼</span></a>
+<ul class="sub-menu">
+	<li id="menu-item-185" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-185"><a href="https://sefaa.dgac.gob.cl/historia/">Historia</a></li>
+</ul>
+</li>
+<li id="menu-item-2335" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2335"><a href="https://sefaa.dgac.gob.cl/category/noticias">Noticias</a></li>
+<li id="menu-item-2746" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2746"><a href="https://sefaa.dgac.gob.cl/category/educacion/">Educación</a></li>
+<li id="menu-item-2336" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2336"><a href="https://sefaa.dgac.gob.cl/category/casos-resueltos">Casos resueltos</a></li>
+<li id="menu-item-2496" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2496"><a href="https://sefaa.dgac.gob.cl/reportar-un-caso/">Reportar un caso</a></li>
+<li id="menu-item-2733" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2733"><a href="https://sefaa.dgac.gob.cl/preguntas-frecuentes/">Preguntas frecuentes</a></li>
+<li id="menu-item-2471" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2471"><a href="https://sefaa.dgac.gob.cl/contacto/">Contacto</a></li>
+</ul></div>                                </div>
+
+                                    <div class="cart-search">
+
+                                        <div class="af-search-wrap">
+                                            <div class="search-overlay">
+                                                <a href="#" title="Search" class="search-icon">
+                                                    <i class="fa fa-search"></i>
+                                                </a>
+                                                <div class="af-search-form">
+                                                    <form role="search" method="get" class="search-form" action="https://sefaa.dgac.gob.cl/">
+				<label>
+					<span class="screen-reader-text">Buscar:</span>
+					<input type="search" class="search-field" placeholder="Buscar &hellip;" value="" name="s" />
+				</label>
+				<input type="submit" class="search-submit" value="Buscar" />
+			</form>                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+
+    </div>
+
+
+
+        <section class="af-blocks">
+                            <div class="container af-main-banner default-section-slider">
+                    <div class="row">
+                        
+                        <div class="for-main-row">
+                            <div class="main-story-wrapper col-sm-6">
+                                                                <h4 class="header-after1">
+                                    <span class="header-after ">
+                                        LO MÁS RECIENTE                                    </span>
+
+
+                                </h4>
+                            
+                                <div class="main-slider-wrapper">
+                                <div class="main-slider full-slider-mode">
+
+                                                                                <figure class="slick-item">
+                                                <div class="data-bg-hover data-bg-slide read-bg-img">
+                                                    <a class="aft-slide-items" href="https://sefaa.dgac.gob.cl/2026/06/04/casos-mayo-2026/">
+                                                        <img width="576" height="524" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/06/83acd933ab99c8049aff0c863667ad011816-e1780607132400.jpg" class="attachment-covernews-slider-center size-covernews-slider-center wp-post-image" alt="83acd933ab99c8049aff0c863667ad011816" decoding="async" fetchpriority="high" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/06/83acd933ab99c8049aff0c863667ad011816-e1780607132400.jpg 576w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/06/83acd933ab99c8049aff0c863667ad011816-e1780607132400-300x273.jpg 300w" sizes="(max-width: 576px) 100vw, 576px" loading="lazy" />                                                    </a>
+                                                                                                        <figcaption class="slider-figcaption slider-figcaption-1">
+                                                        <div class="figure-categories figure-categories-bg">
+
+
+                                                            <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-3"
+                            href="https://sefaa.dgac.gob.cl/category/casos-resueltos/" 
+                            aria-label="Ver todas las publicaciones en Casos resueltos"> 
+                                 Casos resueltos
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li></ul>                                                        </div>
+                                                        <div class="title-heading">
+                                                            <h3 class="article-title slide-title">
+                                                                <a href="https://sefaa.dgac.gob.cl/2026/06/04/casos-mayo-2026/">Casos Mayo 2026</a>
+                                                            </h3>
+                                                        </div>
+                                                        <div class="grid-item-metadata grid-item-metadata-1">
+                                                            
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2026/06/">
+            4 de junio de 2026          </a>
+        </span>
+                </span>
+                                                        </div>
+                                                    </figcaption>
+                                                </div>
+                                            </figure>
+
+
+                                                                                    <figure class="slick-item">
+                                                <div class="data-bg-hover data-bg-slide read-bg-img">
+                                                    <a class="aft-slide-items" href="https://sefaa.dgac.gob.cl/2026/05/07/sefaa-realizo-exposicion-institucional-en-el-aerodromo-de-la-independencia-de-rancagua/">
+                                                        <img width="2560" height="1440" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-scaled.jpg" class="attachment-covernews-slider-center size-covernews-slider-center wp-post-image" alt="20260430_113230" decoding="async" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-scaled.jpg 2560w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-300x169.jpg 300w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-1024x576.jpg 1024w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-768x432.jpg 768w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-1536x864.jpg 1536w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-2048x1152.jpg 2048w" sizes="(max-width: 2560px) 100vw, 2560px" loading="lazy" />                                                    </a>
+                                                                                                        <figcaption class="slider-figcaption slider-figcaption-1">
+                                                        <div class="figure-categories figure-categories-bg">
+
+
+                                                            <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/noticias/" 
+                            aria-label="Ver todas las publicaciones en Noticias"> 
+                                 Noticias
+                             </a>
+                        </li></ul>                                                        </div>
+                                                        <div class="title-heading">
+                                                            <h3 class="article-title slide-title">
+                                                                <a href="https://sefaa.dgac.gob.cl/2026/05/07/sefaa-realizo-exposicion-institucional-en-el-aerodromo-de-la-independencia-de-rancagua/">SEFAA realizó exposición institucional en el Aeródromo de La Independencia de Rancagua</a>
+                                                            </h3>
+                                                        </div>
+                                                        <div class="grid-item-metadata grid-item-metadata-1">
+                                                            
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2026/05/">
+            7 de mayo de 2026          </a>
+        </span>
+                </span>
+                                                        </div>
+                                                    </figcaption>
+                                                </div>
+                                            </figure>
+
+
+                                                                                    <figure class="slick-item">
+                                                <div class="data-bg-hover data-bg-slide read-bg-img">
+                                                    <a class="aft-slide-items" href="https://sefaa.dgac.gob.cl/2026/05/07/casos-abril-2026/">
+                                                        <img width="568" height="320" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/Video-50384-con-circulo.jpg" class="attachment-covernews-slider-center size-covernews-slider-center wp-post-image" alt="Video (5)0384 con círculo" decoding="async" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/Video-50384-con-circulo.jpg 568w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/Video-50384-con-circulo-300x169.jpg 300w" sizes="(max-width: 568px) 100vw, 568px" loading="lazy" />                                                    </a>
+                                                                                                        <figcaption class="slider-figcaption slider-figcaption-1">
+                                                        <div class="figure-categories figure-categories-bg">
+
+
+                                                            <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-3"
+                            href="https://sefaa.dgac.gob.cl/category/casos-resueltos/" 
+                            aria-label="Ver todas las publicaciones en Casos resueltos"> 
+                                 Casos resueltos
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li></ul>                                                        </div>
+                                                        <div class="title-heading">
+                                                            <h3 class="article-title slide-title">
+                                                                <a href="https://sefaa.dgac.gob.cl/2026/05/07/casos-abril-2026/">Casos Abril 2026</a>
+                                                            </h3>
+                                                        </div>
+                                                        <div class="grid-item-metadata grid-item-metadata-1">
+                                                            
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2026/05/">
+            7 de mayo de 2026          </a>
+        </span>
+                </span>
+                                                        </div>
+                                                    </figcaption>
+                                                </div>
+                                            </figure>
+
+
+                                                                                    <figure class="slick-item">
+                                                <div class="data-bg-hover data-bg-slide read-bg-img">
+                                                    <a class="aft-slide-items" href="https://sefaa.dgac.gob.cl/2026/04/02/casos-marzo-2026/">
+                                                        <img width="1080" height="1076" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/04/2216_3546-a-3871-Eje-Informe.jpg" class="attachment-covernews-slider-center size-covernews-slider-center wp-post-image" alt="2216_3546-a-3871-Eje-Informe" decoding="async" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/04/2216_3546-a-3871-Eje-Informe.jpg 1080w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/04/2216_3546-a-3871-Eje-Informe-300x300.jpg 300w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/04/2216_3546-a-3871-Eje-Informe-1024x1020.jpg 1024w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/04/2216_3546-a-3871-Eje-Informe-150x150.jpg 150w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/04/2216_3546-a-3871-Eje-Informe-768x765.jpg 768w" sizes="(max-width: 1080px) 100vw, 1080px" loading="lazy" />                                                    </a>
+                                                                                                        <figcaption class="slider-figcaption slider-figcaption-1">
+                                                        <div class="figure-categories figure-categories-bg">
+
+
+                                                            <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-3"
+                            href="https://sefaa.dgac.gob.cl/category/casos-resueltos/" 
+                            aria-label="Ver todas las publicaciones en Casos resueltos"> 
+                                 Casos resueltos
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li></ul>                                                        </div>
+                                                        <div class="title-heading">
+                                                            <h3 class="article-title slide-title">
+                                                                <a href="https://sefaa.dgac.gob.cl/2026/04/02/casos-marzo-2026/">Casos Marzo 2026</a>
+                                                            </h3>
+                                                        </div>
+                                                        <div class="grid-item-metadata grid-item-metadata-1">
+                                                            
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2026/04/">
+            2 de abril de 2026          </a>
+        </span>
+                </span>
+                                                        </div>
+                                                    </figcaption>
+                                                </div>
+                                            </figure>
+
+
+                                                                                    <figure class="slick-item">
+                                                <div class="data-bg-hover data-bg-slide read-bg-img">
+                                                    <a class="aft-slide-items" href="https://sefaa.dgac.gob.cl/2026/03/06/casos-febrero-2026/">
+                                                        <img width="1929" height="2011" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/03/2212_34_47_88_943-rojoverde-Informe.jpg" class="attachment-covernews-slider-center size-covernews-slider-center wp-post-image" alt="2212_34_47_88_943-rojoverde-Informe" decoding="async" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/03/2212_34_47_88_943-rojoverde-Informe.jpg 1929w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/03/2212_34_47_88_943-rojoverde-Informe-288x300.jpg 288w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/03/2212_34_47_88_943-rojoverde-Informe-982x1024.jpg 982w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/03/2212_34_47_88_943-rojoverde-Informe-768x801.jpg 768w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/03/2212_34_47_88_943-rojoverde-Informe-1473x1536.jpg 1473w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/03/2212_34_47_88_943-rojoverde-Informe-1024x1068.jpg 1024w" sizes="(max-width: 1929px) 100vw, 1929px" loading="lazy" />                                                    </a>
+                                                                                                        <figcaption class="slider-figcaption slider-figcaption-1">
+                                                        <div class="figure-categories figure-categories-bg">
+
+
+                                                            <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-3"
+                            href="https://sefaa.dgac.gob.cl/category/casos-resueltos/" 
+                            aria-label="Ver todas las publicaciones en Casos resueltos"> 
+                                 Casos resueltos
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li></ul>                                                        </div>
+                                                        <div class="title-heading">
+                                                            <h3 class="article-title slide-title">
+                                                                <a href="https://sefaa.dgac.gob.cl/2026/03/06/casos-febrero-2026/">Casos Febrero 2026</a>
+                                                            </h3>
+                                                        </div>
+                                                        <div class="grid-item-metadata grid-item-metadata-1">
+                                                            
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2026/03/">
+            6 de marzo de 2026          </a>
+        </span>
+                </span>
+                                                        </div>
+                                                    </figcaption>
+                                                </div>
+                                            </figure>
+
+
+                                                                        </div>
+
+                                <div class="af-main-navcontrols "></div>
+                            </div>
+                            </div>
+                            
+                            <div class="af-main-banner-editors-picks layout-2 categorized-story col-sm-6">
+                                                                <h4 class="header-after1">
+                                        <span class="header-after">
+                                            NOTICIAS                                        </span>
+                                </h4>
+                                                            <div class="featured-posts-grid">
+                                    <div class="row">
+                                        
+                                                <div class="col-sm-6 odd-grid">
+                                                    <div class="spotlight-post" data-mh="banner-height">
+                                                        <figure class="featured-article">
+                                                            <div class="featured-article-wrapper">
+                                                                <div class="data-bg-hover data-bg-featured read-bg-img">
+                                                                    <a href="https://sefaa.dgac.gob.cl/2026/05/07/sefaa-realizo-exposicion-institucional-en-el-aerodromo-de-la-independencia-de-rancagua/">
+                                                                        <img width="300" height="169" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-300x169.jpg" class="attachment-medium size-medium wp-post-image" alt="20260430_113230" decoding="async" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-300x169.jpg 300w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-1024x576.jpg 1024w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-768x432.jpg 768w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-1536x864.jpg 1536w, https://sefaa.dgac.gob.cl/wp-content/uploads/2026/05/20260430_113230-2048x1152.jpg 2048w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" />                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                                                                                    </figure>
+
+                                                        <figcaption class="cate-fig">
+                                                            <div class="figure-categories figure-categories-bg">
+
+                                                                <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/noticias/" 
+                            aria-label="Ver todas las publicaciones en Noticias"> 
+                                 Noticias
+                             </a>
+                        </li></ul>                                                            </div>
+                                                            <div class="title-heading">
+                                                                <h3 class="article-title article-title-2">
+                                                                    <a href="https://sefaa.dgac.gob.cl/2026/05/07/sefaa-realizo-exposicion-institucional-en-el-aerodromo-de-la-independencia-de-rancagua/">
+                                                                        SEFAA realizó exposición institucional en el Aeródromo de La Independencia de Rancagua                                                                    </a>
+                                                                </h3>
+                                                            </div>
+                                                            <div class="grid-item-metadata">
+                                                                
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2026/05/">
+            7 de mayo de 2026          </a>
+        </span>
+                </span>
+                                                            </div>
+                                                        </figcaption>
+                                                    </div>
+                                                </div>
+
+
+                                            
+                                                <div class="col-sm-6 odd-grid">
+                                                    <div class="spotlight-post" data-mh="banner-height">
+                                                        <figure class="featured-article">
+                                                            <div class="featured-article-wrapper">
+                                                                <div class="data-bg-hover data-bg-featured read-bg-img">
+                                                                    <a href="https://sefaa.dgac.gob.cl/2025/06/16/equipo-sefaa-dio-charla-sobre-fenomenos-aereos-anomalos-en-el-aerodromo-santo-domingo/">
+                                                                        <img width="300" height="200" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/06/IMG_6409-300x200.jpg" class="attachment-medium size-medium wp-post-image" alt="IMG_6409" decoding="async" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/06/IMG_6409-300x200.jpg 300w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/06/IMG_6409-1024x683.jpg 1024w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/06/IMG_6409-768x512.jpg 768w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/06/IMG_6409-1536x1024.jpg 1536w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/06/IMG_6409-2048x1366.jpg 2048w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" />                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                                                                                    </figure>
+
+                                                        <figcaption class="cate-fig">
+                                                            <div class="figure-categories figure-categories-bg">
+
+                                                                <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/noticias/" 
+                            aria-label="Ver todas las publicaciones en Noticias"> 
+                                 Noticias
+                             </a>
+                        </li></ul>                                                            </div>
+                                                            <div class="title-heading">
+                                                                <h3 class="article-title article-title-2">
+                                                                    <a href="https://sefaa.dgac.gob.cl/2025/06/16/equipo-sefaa-dio-charla-sobre-fenomenos-aereos-anomalos-en-el-aerodromo-santo-domingo/">
+                                                                        Equipo SEFAA dio charla sobre fenómenos aéreos anómalos en el Aeródromo Santo Domingo                                                                    </a>
+                                                                </h3>
+                                                            </div>
+                                                            <div class="grid-item-metadata">
+                                                                
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2025/06/">
+            16 de junio de 2025          </a>
+        </span>
+                </span>
+                                                            </div>
+                                                        </figcaption>
+                                                    </div>
+                                                </div>
+
+
+                                            
+                                                <div class="col-sm-6 odd-grid">
+                                                    <div class="spotlight-post" data-mh="banner-height">
+                                                        <figure class="featured-article">
+                                                            <div class="featured-article-wrapper">
+                                                                <div class="data-bg-hover data-bg-featured read-bg-img">
+                                                                    <a href="https://sefaa.dgac.gob.cl/2025/05/06/equipo-de-la-sefaa-dicto-charla-a-funcionarios-del-ad-rodelillo/">
+                                                                        <img width="300" height="225" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/05/1-300x225.jpg" class="attachment-medium size-medium wp-post-image" alt="1" decoding="async" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/05/1-300x225.jpg 300w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/05/1-1024x768.jpg 1024w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/05/1-768x576.jpg 768w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/05/1.jpg 1392w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" />                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                                                                                    </figure>
+
+                                                        <figcaption class="cate-fig">
+                                                            <div class="figure-categories figure-categories-bg">
+
+                                                                <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/noticias/" 
+                            aria-label="Ver todas las publicaciones en Noticias"> 
+                                 Noticias
+                             </a>
+                        </li></ul>                                                            </div>
+                                                            <div class="title-heading">
+                                                                <h3 class="article-title article-title-2">
+                                                                    <a href="https://sefaa.dgac.gob.cl/2025/05/06/equipo-de-la-sefaa-dicto-charla-a-funcionarios-del-ad-rodelillo/">
+                                                                        SEFAA dictó charla a funcionarios de los Aeródromos Rodelillo y Viña del Mar                                                                    </a>
+                                                                </h3>
+                                                            </div>
+                                                            <div class="grid-item-metadata">
+                                                                
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2025/05/">
+            6 de mayo de 2025          </a>
+        </span>
+                </span>
+                                                            </div>
+                                                        </figcaption>
+                                                    </div>
+                                                </div>
+
+
+                                            
+                                                <div class="col-sm-6 odd-grid">
+                                                    <div class="spotlight-post" data-mh="banner-height">
+                                                        <figure class="featured-article">
+                                                            <div class="featured-article-wrapper">
+                                                                <div class="data-bg-hover data-bg-featured read-bg-img">
+                                                                    <a href="https://sefaa.dgac.gob.cl/2025/02/14/sefaa-lanza-sus-redes-sociales/">
+                                                                        <img width="300" height="227" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/POST-1-scaled-e1739555592527-300x227.jpg" class="attachment-medium size-medium wp-post-image" alt="POST 1" decoding="async" srcset="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/POST-1-scaled-e1739555592527-300x227.jpg 300w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/POST-1-scaled-e1739555592527-1024x774.jpg 1024w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/POST-1-scaled-e1739555592527-768x581.jpg 768w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/POST-1-scaled-e1739555592527-1536x1161.jpg 1536w, https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/POST-1-scaled-e1739555592527.jpg 1856w" sizes="(max-width: 300px) 100vw, 300px" loading="lazy" />                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                                                                                    </figure>
+
+                                                        <figcaption class="cate-fig">
+                                                            <div class="figure-categories figure-categories-bg">
+
+                                                                <ul class="cat-links"><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/destacados/" 
+                            aria-label="Ver todas las publicaciones en Destacados"> 
+                                 Destacados
+                             </a>
+                        </li><li class="meta-category">
+                             <a class="covernews-categories category-color-1"
+                            href="https://sefaa.dgac.gob.cl/category/noticias/" 
+                            aria-label="Ver todas las publicaciones en Noticias"> 
+                                 Noticias
+                             </a>
+                        </li></ul>                                                            </div>
+                                                            <div class="title-heading">
+                                                                <h3 class="article-title article-title-2">
+                                                                    <a href="https://sefaa.dgac.gob.cl/2025/02/14/sefaa-lanza-sus-redes-sociales/">
+                                                                        SEFAA lanza sus redes sociales                                                                    </a>
+                                                                </h3>
+                                                            </div>
+                                                            <div class="grid-item-metadata">
+                                                                
+    <span class="author-links">
+
+                    <span class="item-metadata posts-date">
+          <i class="far fa-clock"></i>
+          <a href="https://sefaa.dgac.gob.cl/2025/02/">
+            14 de febrero de 2025          </a>
+        </span>
+                </span>
+                                                            </div>
+                                                        </figcaption>
+                                                    </div>
+                                                </div>
+
+
+                                            
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            
+
+            <div class="container container-full-width">
+                <div class="row">
+                                    </div>
+            </div>
+        </section>
+
+        <!-- end slider-section -->
+            
+    <div id="content" class="container">
+                    <div class="section-block-upper row">
+                <div id="primary" class="content-area">
+                    <main id="main" class="site-main">
+
+                        
+<article id="post-79" class="post-79 page type-page status-publish hentry">
+	    <div class="entry-content-wrap">
+	
+	<div class="entry-content">
+		
+<div class="wp-block-group is-layout-constrained wp-block-group-is-layout-constrained">
+<div class="wp-block-columns is-layout-flex wp-container-core-columns-is-layout-28f84493 wp-block-columns-is-layout-flex">
+<div class="wp-block-column is-vertically-aligned-stretch is-layout-flow wp-block-column-is-layout-flow" style="flex-basis:50%">
+<p></p>
+</div>
+</div>
+
+
+
+<h1 class="wp-block-heading"><strong>Te damos la bienvenida</strong></h1>
+</div>
+
+
+
+<p>Somos la <strong>Sección de Estudios de Fenómenos Aéreos Anómalos </strong>(SEFAA, antiguamente «CEFAA»), un organismo dependiente de la Dirección General de Aeronáutica Civil (DGAC) de Chile.</p>
+
+
+
+<p>Nos dedicamos a investigar los <strong>fenómenos aéreos anómalos o no identificados</strong> que puedan presentarse en el espacio aéreo chileno.</p>
+
+
+
+<p>Nuestra misión es clara: <strong>apoyar la seguridad de las operaciones aéreas de nuestro país</strong>, mediante el estudio detallado de cada reporte recibido. Cada avistamiento, ya sea de un piloto, un tripulante de cabina o un ciudadano, tiene un valor fundamental para ayudar a garantizar la seguridad en nuestro cielo.</p>
+
+
+
+<p><strong>Tu experiencia es importante para nosotros</strong>. Si has sido testigo de algún fenómeno aéreo que te pareció inusual, te invitamos a <strong>compartir tu reporte</strong>. Estarás contribuyendo directamente a un análisis serio y profesional.</p>
+
+
+
+<div class="wp-block-columns is-layout-flex wp-container-core-columns-is-layout-28f84493 wp-block-columns-is-layout-flex">
+<div class="wp-block-column is-layout-flow wp-block-column-is-layout-flow" style="flex-basis:50%"></div>
+</div>
+
+
+
+<figure class="wp-block-video"><video height="1080" style="aspect-ratio: 1920 / 1080;" width="1920" controls muted poster="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/SEFAA-video-cover.png" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2025/02/SEFAA-1.mp4"></video></figure>
+	</div><!-- .entry-content -->
+	</div><!-- .entry-content-wrap -->
+
+	</article>
+
+                    </main><!-- #main -->
+                </div><!-- #primary -->
+
+                <aside id="secondary" class="widget-area sidebar-sticky-top">
+	<div id="block-108" class="widget covernews-widget widget_block">
+<h2 class="wp-block-heading">REPORTA TU CASO</h2>
+</div><div id="block-98" class="widget covernews-widget widget_block widget_text">
+<p>En la SEFAA acogemos con gran interés, seriedad y reserva los reportes que recibimos sobre anomalías aéreas. Nuestras investigaciones se fundamentan en el<strong> método científico</strong>, por lo que dependen fuertemente de la disponibilidad de <strong>registros audiovisuales</strong> (audios, fotografías, videos). <br><br>Si tienes material sobre un fenómeno que consideres una anomalía aérea, <strong>envíanos tu caso</strong>. Nos comprometemos a mantenerte informado/a respecto al avance del proceso investigativo.</p>
+</div><div id="block-81" class="widget covernews-widget widget_block">
+<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex">
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-white-color has-text-color has-background has-link-color wp-element-button" href="https://sefaa.dgac.gob.cl/reportar-un-caso/" style="border-radius:0px;background-color:#094293"><strong>INGRESA TU REPORTE</strong></a></div>
+</div>
+</div><div id="block-101" class="widget covernews-widget widget_block">
+<div style="height:11px" aria-hidden="true" class="wp-block-spacer"></div>
+</div><div id="block-96" class="widget covernews-widget widget_block">
+<h2 class="wp-block-heading">CASOS RESUELTOS POR AÑO</h2>
+</div><div id="block-104" class="widget covernews-widget widget_block">
+<div class="wp-block-buttons is-horizontal is-content-justification-left is-layout-flex wp-container-core-buttons-is-layout-8275d22b wp-block-buttons-is-layout-flex" style="margin-top:0;margin-bottom:0">
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2026/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>202</strong>6</a></div>
+
+
+
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2025/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>2025</strong></a></div>
+
+
+
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2024/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>2024</strong></a></div>
+
+
+
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2023/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>2023</strong></a></div>
+
+
+
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2022/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>2022</strong></a></div>
+
+
+
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2021/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>2021</strong></a></div>
+
+
+
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2020/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>2020</strong></a></div>
+
+
+
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2019/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>2019</strong></a></div>
+
+
+
+<div class="wp-block-button is-style-fill"><a class="wp-block-button__link has-background has-border-color wp-element-button" href="https://sefaa.dgac.gob.cl/tag/casos-2018/" style="border-color:#094293;border-radius:0px;background-color:#094293;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><strong>2018</strong></a></div>
+
+
+</div>
+</div></aside><!-- #secondary -->
+        </div>
+
+</div>
+
+
+  <footer class="site-footer">
+              <div class="primary-footer">
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="row">
+                                  <div class="primary-footer-area footer-first-widgets-section col-md-4 col-sm-12">
+                    <section class="widget-area">
+                      <div id="block-47" class="widget covernews-widget widget_block">
+<h3 class="wp-block-heading">SOBRE NOSOTROS</h3>
+</div><div id="block-114" class="widget covernews-widget widget_block widget_text">
+<p>Sección de Estudios de Fenómenos Aéreos Anómalos<br><br>Av. Pedro Aguirre Cerda 5100<br>Cerrillos, Santiago de Chile<br><br>Teléfonos: 2 2436 3970 / 2 2436 3971 / 2 2436 3972<br>Formulario de contacto disponible <a href="https://sefaa.dgac.gob.cl/contacto/" data-type="link" data-id="https://sefaa.dgac.gob.cl/contacto/">aquí</a>.</p>
+</div>                    </section>
+                  </div>
+                
+                                  <div class="primary-footer-area footer-second-widgets-section col-md-4  col-sm-12">
+                    <section class="widget-area">
+                      <div id="block-52" class="widget covernews-widget widget_block">
+<h3 class="wp-block-heading has-text-align-left">SÍGUENOS EN REDES</h3>
+</div><div id="block-94" class="widget covernews-widget widget_block">
+<ul class="wp-block-social-links is-layout-flex wp-block-social-links-is-layout-flex"><li class="wp-social-link wp-social-link-instagram  wp-block-social-link"><a href="https://www.instagram.com/sefaa_chile_oficial" class="wp-block-social-link-anchor"><svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M12,4.622c2.403,0,2.688,0.009,3.637,0.052c0.877,0.04,1.354,0.187,1.671,0.31c0.42,0.163,0.72,0.358,1.035,0.673 c0.315,0.315,0.51,0.615,0.673,1.035c0.123,0.317,0.27,0.794,0.31,1.671c0.043,0.949,0.052,1.234,0.052,3.637 s-0.009,2.688-0.052,3.637c-0.04,0.877-0.187,1.354-0.31,1.671c-0.163,0.42-0.358,0.72-0.673,1.035 c-0.315,0.315-0.615,0.51-1.035,0.673c-0.317,0.123-0.794,0.27-1.671,0.31c-0.949,0.043-1.233,0.052-3.637,0.052 s-2.688-0.009-3.637-0.052c-0.877-0.04-1.354-0.187-1.671-0.31c-0.42-0.163-0.72-0.358-1.035-0.673 c-0.315-0.315-0.51-0.615-0.673-1.035c-0.123-0.317-0.27-0.794-0.31-1.671C4.631,14.688,4.622,14.403,4.622,12 s0.009-2.688,0.052-3.637c0.04-0.877,0.187-1.354,0.31-1.671c0.163-0.42,0.358-0.72,0.673-1.035 c0.315-0.315,0.615-0.51,1.035-0.673c0.317-0.123,0.794-0.27,1.671-0.31C9.312,4.631,9.597,4.622,12,4.622 M12,3 C9.556,3,9.249,3.01,8.289,3.054C7.331,3.098,6.677,3.25,6.105,3.472C5.513,3.702,5.011,4.01,4.511,4.511 c-0.5,0.5-0.808,1.002-1.038,1.594C3.25,6.677,3.098,7.331,3.054,8.289C3.01,9.249,3,9.556,3,12c0,2.444,0.01,2.751,0.054,3.711 c0.044,0.958,0.196,1.612,0.418,2.185c0.23,0.592,0.538,1.094,1.038,1.594c0.5,0.5,1.002,0.808,1.594,1.038 c0.572,0.222,1.227,0.375,2.185,0.418C9.249,20.99,9.556,21,12,21s2.751-0.01,3.711-0.054c0.958-0.044,1.612-0.196,2.185-0.418 c0.592-0.23,1.094-0.538,1.594-1.038c0.5-0.5,0.808-1.002,1.038-1.594c0.222-0.572,0.375-1.227,0.418-2.185 C20.99,14.751,21,14.444,21,12s-0.01-2.751-0.054-3.711c-0.044-0.958-0.196-1.612-0.418-2.185c-0.23-0.592-0.538-1.094-1.038-1.594 c-0.5-0.5-1.002-0.808-1.594-1.038c-0.572-0.222-1.227-0.375-2.185-0.418C14.751,3.01,14.444,3,12,3L12,3z M12,7.378 c-2.552,0-4.622,2.069-4.622,4.622S9.448,16.622,12,16.622s4.622-2.069,4.622-4.622S14.552,7.378,12,7.378z M12,15 c-1.657,0-3-1.343-3-3s1.343-3,3-3s3,1.343,3,3S13.657,15,12,15z M16.804,6.116c-0.596,0-1.08,0.484-1.08,1.08 s0.484,1.08,1.08,1.08c0.596,0,1.08-0.484,1.08-1.08S17.401,6.116,16.804,6.116z"></path></svg><span class="wp-block-social-link-label screen-reader-text">Instagram</span></a></li>
+
+<li class="wp-social-link wp-social-link-x  wp-block-social-link"><a href="https://www.x.com/sefaachile" class="wp-block-social-link-anchor"><svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M13.982 10.622 20.54 3h-1.554l-5.693 6.618L8.745 3H3.5l6.876 10.007L3.5 21h1.554l6.012-6.989L15.868 21h5.245l-7.131-10.378Zm-2.128 2.474-.697-.997-5.543-7.93H8l4.474 6.4.697.996 5.815 8.318h-2.387l-4.745-6.787Z" /></svg><span class="wp-block-social-link-label screen-reader-text">X</span></a></li></ul>
+</div>                    </section>
+                  </div>
+                
+                                  <div class="primary-footer-area footer-third-widgets-section col-md-4  col-sm-12">
+                    <section class="widget-area">
+                      <div id="block-110" class="widget covernews-widget widget_block">
+<h3 class="wp-block-heading">POLÍTICA DE PRIVACIDAD</h3>
+</div><div id="block-111" class="widget covernews-widget widget_block widget_text">
+<p>Lee la política de privacidad <a href="https://www.dgac.gob.cl/rest-portalweb/jcr/repository/collaboration/sites%20content/live/dgac/web%20contents/site%20artifacts/barrainferiorprensa/documents/PoliticaPrivacidad.pdf" target="_blank" rel="noreferrer noopener">aquí</a>.</p>
+</div><div id="block-55" class="widget covernews-widget widget_block">
+<h3 class="wp-block-heading">OTROS SITIOS</h3>
+</div><div id="block-113" class="widget covernews-widget widget_block">
+<div class="wp-block-group is-layout-constrained wp-block-group-is-layout-constrained">
+<figure class="wp-block-gallery alignleft has-nested-images columns-2 wp-block-gallery-1 is-layout-flex wp-block-gallery-is-layout-flex">
+<figure class="wp-block-image size-full"><a href="https://www.dgac.gob.cl/"><img loading="lazy" decoding="async" width="172" height="43" data-id="1361" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2023/02/banner-dgac-1.png" alt="" class="wp-image-1361"/></a></figure>
+
+
+
+<figure class="wp-block-image size-full"><a href="https://www.dgac.gob.cl/oirs/"><img loading="lazy" decoding="async" width="172" height="43" data-id="1350" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2023/02/banner-oirs.png" alt="" class="wp-image-1350"/></a></figure>
+
+
+
+<figure class="wp-block-image size-full"><a href="https://www.portaltransparencia.cl/PortalPdT/directorio-de-organismos-regulados/?org=AD020"><img loading="lazy" decoding="async" width="172" height="43" data-id="1365" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2023/02/banner-gobierno-transparente.png" alt="" class="wp-image-1365"/></a></figure>
+
+
+
+<figure class="wp-block-image size-full"><a href="https://www.defensa.cl/"><img loading="lazy" decoding="async" width="172" height="43" data-id="1358" src="https://sefaa.dgac.gob.cl/wp-content/uploads/2023/02/banner-defensa.jpg" alt="" class="wp-image-1358"/></a></figure>
+</figure>
+</div>
+</div>                    </section>
+                  </div>
+                                              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+                  <div class="site-info">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+                                      Sección de Estudios de Fenómenos Aéreos Anómalos (SEFAA) V 2.0                                                  <span class="sep"> | </span>
+              <a href="https://afthemes.com/products/covernews/">CoverNews</a> por AF themes.                      </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<a id="scroll-up" class="secondary-color" href="#top" aria-label="Scroll to top">
+  <i class="fa fa-angle-up" aria-hidden="true"></i>
+</a>
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":["/wp-*.php","/wp-admin/*","/wp-content/uploads/*","/wp-content/*","/wp-content/plugins/*","/wp-content/themes/newscover/*","/wp-content/themes/covernews/*","/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<!-- Instagram Feed JS -->
+<script type="text/javascript">
+var sbiajaxurl = "https://sefaa.dgac.gob.cl/wp-admin/admin-ajax.php";
+</script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-content/themes/covernews/js/navigation.js?ver=2.0.2" id="covernews-navigation-js"></script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-content/themes/covernews/js/skip-link-focus-fix.js?ver=2.0.2" id="covernews-skip-link-focus-fix-js"></script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-content/themes/covernews/assets/jquery-match-height/jquery.matchHeight.min.js?ver=2.0.2" id="matchheight-js"></script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-content/themes/covernews/assets/fixed-header-script.js?ver=2.0.2" id="covernews-fixed-header-script-js"></script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-content/themes/covernews/assets/slick/js/slick.min.js?ver=2.0.2" id="slick-js"></script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-content/themes/covernews/assets/bootstrap/js/bootstrap.min.js?ver=2.0.2" id="bootstrap-js"></script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-content/themes/covernews/admin-dashboard/dist/covernews_scripts.build.js?ver=2.0.2" id="covernews-script-js"></script>
+<script type="text/javascript" id="wp-statistics-tracker-js-extra">
+/* <![CDATA[ */
+var WP_Statistics_Tracker_Object = {"requestUrl":"https://sefaa.dgac.gob.cl/wp-json/wp-statistics/v2","ajaxUrl":"https://sefaa.dgac.gob.cl/wp-admin/admin-ajax.php","hitParams":{"wp_statistics_hit":1,"source_type":"home","source_id":79,"search_query":"","signature":"0aa81acb7e8f0ecffc81e657bbdad6b4","endpoint":"hit"},"option":{"dntEnabled":"1","bypassAdBlockers":"","consentIntegration":{"name":null,"status":[]},"isPreview":false,"userOnline":false,"isWpConsentApiActive":false},"isLegacyEventLoaded":"","customEventAjaxUrl":"https://sefaa.dgac.gob.cl/wp-admin/admin-ajax.php?action=wp_statistics_custom_event&nonce=bca57f2a61","onlineParams":{"wp_statistics_hit":1,"source_type":"home","source_id":79,"search_query":"","signature":"0aa81acb7e8f0ecffc81e657bbdad6b4","action":"wp_statistics_online_check"},"jsCheckTime":"60000"};
+//# sourceURL=wp-statistics-tracker-js-extra
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://sefaa.dgac.gob.cl/wp-content/plugins/wp-statistics/assets/js/tracker.js?ver=14.16.8" id="wp-statistics-tracker-js"></script>
+<script id="wp-emoji-settings" type="application/json">
+{"baseUrl":"https://s.w.org/images/core/emoji/17.0.2/72x72/","ext":".png","svgUrl":"https://s.w.org/images/core/emoji/17.0.2/svg/","svgExt":".svg","source":{"concatemoji":"https://sefaa.dgac.gob.cl/wp-includes/js/wp-emoji-release.min.js?ver=9ebcc260c71eba850dd1160f178deec5"}}
+</script>
+<script type="module">
+/* <![CDATA[ */
+/*! This file is auto-generated */
+const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(window._wpemojiSettings=a,"wpEmojiSettingsSupports"),s=["flag","emoji"];function i(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function c(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0);const a=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data);return t.every((e,t)=>e===a[t])}function p(e,t){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var n=e.getImageData(16,16,1,1);for(let e=0;e<n.data.length;e++)if(0!==n.data[e])return!1;return!0}function u(e,t,n,a){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\udde8\ud83c\uddf6","\ud83c\udde8\u200b\ud83c\uddf6")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!a(e,"\ud83e\u1fac8")}return!1}function f(e,t,n,a){let r;const o=(r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):document.createElement("canvas")).getContext("2d",{willReadFrequently:!0}),s=(o.textBaseline="top",o.font="600 32px Arial",{});return e.forEach(e=>{s[e]=t(o,e,n,a)}),s}function r(e){var t=document.createElement("script");t.src=e,t.defer=!0,document.head.appendChild(t)}a.supports={everything:!0,everythingExceptFlag:!0},new Promise(t=>{let n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),c.toString(),p.toString()].join(",")+"));",a=new Blob([e],{type:"text/javascript"});const r=new Worker(URL.createObjectURL(a),{name:"wpTestEmojiSupports"});return void(r.onmessage=e=>{i(n=e.data),r.terminate(),t(n)})}catch(e){}i(n=f(s,u,c,p))}t(n)}).then(e=>{for(const n in e)a.supports[n]=e[n],a.supports.everything=a.supports.everything&&a.supports[n],"flag"!==n&&(a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&a.supports[n]);var t;a.supports.everythingExceptFlag=a.supports.everythingExceptFlag&&!a.supports.flag,a.supports.everything||((t=a.source||{}).concatemoji?r(t.concatemoji):t.wpemoji&&t.twemoji&&(r(t.twemoji),r(t.wpemoji)))});
+//# sourceURL=https://sefaa.dgac.gob.cl/wp-includes/js/wp-emoji-loader.min.js
+/* ]]> */
+</script>
+
+</body>
+
+</html><!-- WP Fastest Cache file was created in 0.360 seconds, on 18 de June de 2026 @ 5:07 PM -->

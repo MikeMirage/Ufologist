@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-06-22T21:50:36.945Z",
+  "files": {
+    "acquired_cases": "data/sources/normalized/acquired_cases.jsonl",
+    "acquired_documents": "data/sources/normalized/acquired_documents.jsonl",
+    "by_source": {
+      "chile_sefaa": "data/sources/normalized/chile_sefaa.jsonl",
+      "uk_mod": "data/sources/normalized/uk_mod.jsonl",
+      "argentina_ciae": "data/sources/normalized/argentina_ciae.jsonl",
+      "denmark_files": "data/sources/normalized/denmark_files.jsonl",
+      "nara_uap": "data/sources/normalized/nara_uap.jsonl",
+      "sweden_afu": "data/sources/normalized/sweden_afu.jsonl",
+      "brazil_an": "data/sources/normalized/brazil_an.jsonl",
+      "canada_lac": "data/sources/normalized/canada_lac.jsonl",
+      "spain_defensa": "data/sources/normalized/spain_defensa.jsonl",
+      "new_zealand_nzdf": "data/sources/normalized/new_zealand_nzdf.jsonl",
+      "aaro": "data/sources/normalized/aaro.jsonl"
+    }
+  },
+  "totals": {
+    "cases": 3799,
+    "documents": 854,
+    "case_sources": [
+      "chile_sefaa",
+      "uk_mod",
+      "argentina_ciae",
+      "nara_uap",
+      "spain_defensa"
+    ],
+    "document_sources": [
+      "denmark_files",
+      "nara_uap",
+      "sweden_afu",
+      "brazil_an",
+      "canada_lac",
+      "spain_defensa",
+      "new_zealand_nzdf",
+      "aaro"
+    ]
+  },
+  "case_field_coverage": {
+    "source_case_id": 1095,
+    "event_date": 3743,
+    "event_time": 3021,
+    "location_name": 2647,
+    "region": 2080,
+    "country": 3799,
+    "classification_value": 458,
+    "shape_reported": 2327,
+    "description": 3799
+  },
+  "document_field_coverage": {
+    "title": 854,
+    "source_url": 167,
+    "country": 854,
+    "document_year": 216,
+    "text_sample": 236,
+    "zip_entry": 612,
+    "extraction_error": 0
+  },
+  "review_counts": {
+    "cases_needing_review": 3746,
+    "documents_needing_review": 854
+  },
+  "notes": [
+    "Cases are normalized event/report candidates. Most acquired official sources still require review before map ingestion.",
+    "Documents are source corpus or inventory records, not encounters.",
+    "Only established labels are used for shape_reported where text explicitly matches known NUFORC shape categories."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "new_zealand_nzdf",
+  "name": "New Zealand Defence Force UFO files",
+  "strategy": "page_assets",
+  "seeds": [
+    "https://natlib.govt.nz/records/22979464"
+  ],
+  "assets": [
+    {
+      "url": "https://natlib.govt.nz/records/22979464",
+      "final_url": "https://natlib.govt.nz/records/22979464",
+      "kind": "pages",
+      "file": "data/sources/raw/new_zealand_nzdf/pages/22979464.html",
+      "bytes": 1157,
+      "content_type": "text/html",
+      "acquired_at": "2026-06-22T12:08:52.112Z"
+    }
+  ],
+  "discovered_links": [
+    "https://natlib.govt.nz/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3",
+    "https://natlib.govt.nz/hem-forror-he-Diuing-Wealthing-burne-sord-it-sho",
+    "https://natlib.govt.nz/_Incapsula_Resource?SWUDNSAI=31&xinfo=5-19824424-0%200NNN%20RT%281782130132064%2042%29%20q%280%20-1%20-1%201%29%20r%280%20-1%29%20B12%288%2c881023%2c0%29%20U18&incident_id=313000800099234434-94751578480251909&edet=12&cinfo=08000000&rpinfo=0&cts=M49%2biJFpoU%2bdVrg6ytzUSTWSNfuORxhySORhEr%2fDzcVEaMIb4sJqq2fFvkxAmhhG&cip=47.59.27.195&mth=GET"
+  ],
+  "errors": [],
+  "started_at": "2026-06-22T12:08:52.022Z",
+  "finished_at": "2026-06-22T12:08:52.112Z",
+  "page_count": 1,
+  "download_count": 0,
+  "discovered_count": 3
+}

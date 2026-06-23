@@ -1,0 +1,175 @@
+{
+  "generated_at": "2026-06-22T16:20:49.234Z",
+  "raw_root": "data/sources/raw",
+  "sources": [
+    {
+      "id": "aaro",
+      "files": 1,
+      "pages": 0,
+      "downloads": 0,
+      "bytes": 508,
+      "manifest_errors": 1,
+      "manifest_present": true,
+      "sample_downloads": []
+    },
+    {
+      "id": "argentina_ciae",
+      "files": 15,
+      "pages": 1,
+      "downloads": 13,
+      "bytes": 98172032,
+      "manifest_errors": 0,
+      "manifest_present": true,
+      "sample_downloads": [
+        "data/sources/raw/argentina_ciae/downloads/2026-01_lista_de_integrantes_y_asesores_del_ciae.pdf",
+        "data/sources/raw/argentina_ciae/downloads/comentarios_de_nuestros_testigos-1.pdf",
+        "data/sources/raw/argentina_ciae/downloads/informe-ciae-2020.pdf",
+        "data/sources/raw/argentina_ciae/downloads/informe-ciae-2023.pdf",
+        "data/sources/raw/argentina_ciae/downloads/informe-ciae-2024.pdf",
+        "data/sources/raw/argentina_ciae/downloads/informe_cefae_2015.pdf",
+        "data/sources/raw/argentina_ciae/downloads/informe_cefae_2016.pdf",
+        "data/sources/raw/argentina_ciae/downloads/informe_cefae_2017.pdf"
+      ]
+    },
+    {
+      "id": "brazil_an",
+      "files": 70,
+      "pages": 40,
+      "downloads": 29,
+      "bytes": 30212863,
+      "manifest_errors": 1,
+      "manifest_present": true,
+      "sample_downloads": [
+        "data/sources/raw/brazil_an/downloads/ANEXOSIeII.pdf",
+        "data/sources/raw/brazil_an/downloads/Consolidacao_avaliacao_UFMG_2017.pdf",
+        "data/sources/raw/brazil_an/downloads/Convocatoria-ordinaria-proyectos-2026_PT.pdf",
+        "data/sources/raw/brazil_an/downloads/Convocatoria-supranacional-proyectos-2026_PT.pdf",
+        "data/sources/raw/brazil_an/downloads/RelatorioNEU_2023_0103.pdf",
+        "data/sources/raw/brazil_an/downloads/RelatorioNEU_2023_0406.pdf",
+        "data/sources/raw/brazil_an/downloads/RelatorioNEU_2023_07091.pdf",
+        "data/sources/raw/brazil_an/downloads/Relatorio_NEU_2024_0103.pdf"
+      ]
+    },
+    {
+      "id": "canada_lac",
+      "files": 20,
+      "pages": 19,
+      "downloads": 0,
+      "bytes": 772628,
+      "manifest_errors": 0,
+      "manifest_present": true,
+      "sample_downloads": []
+    },
+    {
+      "id": "chile_sefaa",
+      "files": 100,
+      "pages": 45,
+      "downloads": 54,
+      "bytes": 37661073,
+      "manifest_errors": 3,
+      "manifest_present": true,
+      "sample_downloads": [
+        "data/sources/raw/chile_sefaa/downloads/CASO-N_C2_B0-1007-09122019.pdf",
+        "data/sources/raw/chile_sefaa/downloads/CASO-N_C2_B0-1402-08012021.pdf",
+        "data/sources/raw/chile_sefaa/downloads/CASO-N_C2_B0-1466-26022021.pdf",
+        "data/sources/raw/chile_sefaa/downloads/CASO-N_C2_B0-1475-04032021.pdf",
+        "data/sources/raw/chile_sefaa/downloads/CASO-N_C2_B0-1476-06032021.pdf",
+        "data/sources/raw/chile_sefaa/downloads/CASO-N_C2_B0-1479-07032021.pdf",
+        "data/sources/raw/chile_sefaa/downloads/CASO-N_C2_B0-1480-08032021.pdf",
+        "data/sources/raw/chile_sefaa/downloads/CASO-N_C2_B0-1481-10032021.pdf"
+      ]
+    },
+    {
+      "id": "denmark_files",
+      "files": 9,
+      "pages": 1,
+      "downloads": 7,
+      "bytes": 140442093,
+      "manifest_errors": 0,
+      "manifest_present": true,
+      "sample_downloads": [
+        "data/sources/raw/denmark_files/downloads/DanishUFOFiles_archive.torrent",
+        "data/sources/raw/denmark_files/downloads/Danish_20UFO_20files.pdf",
+        "data/sources/raw/denmark_files/downloads/Danish_20UFO_20files_abbyy.gz",
+        "data/sources/raw/denmark_files/downloads/Danish_20UFO_20files_djvu.txt",
+        "data/sources/raw/denmark_files/downloads/Danish_20UFO_20files_jp2.zip",
+        "data/sources/raw/denmark_files/downloads/Danish_20UFO_20files_text.pdf",
+        "data/sources/raw/denmark_files/downloads/ia_thumb.jpg"
+      ]
+    },
+    {
+      "id": "nara_uap",
+      "files": 17,
+      "pages": 11,
+      "downloads": 5,
+      "bytes": 191486358,
+      "manifest_errors": 0,
+      "manifest_present": true,
+      "sample_downloads": [
+        "data/sources/raw/nara_uap/downloads/488808322.zip",
+        "data/sources/raw/nara_uap/downloads/493468575.zip",
+        "data/sources/raw/nara_uap/downloads/493468579.zip",
+        "data/sources/raw/nara_uap/downloads/493468580.zip",
+        "data/sources/raw/nara_uap/downloads/BILLS-118hr2670enr.pdf"
+      ]
+    },
+    {
+      "id": "new_zealand_nzdf",
+      "files": 2,
+      "pages": 1,
+      "downloads": 0,
+      "bytes": 2418,
+      "manifest_errors": 0,
+      "manifest_present": true,
+      "sample_downloads": []
+    },
+    {
+      "id": "spain_defensa",
+      "files": 73,
+      "pages": 72,
+      "downloads": 0,
+      "bytes": 2584191,
+      "manifest_errors": 53,
+      "manifest_present": true,
+      "sample_downloads": []
+    },
+    {
+      "id": "sweden_afu",
+      "files": 62,
+      "pages": 31,
+      "downloads": 30,
+      "bytes": 49305147,
+      "manifest_errors": 4,
+      "manifest_present": true,
+      "sample_downloads": [
+        "data/sources/raw/sweden_afu/downloads/AFU-Annual-Economy-2019.pdf",
+        "data/sources/raw/sweden_afu/downloads/AFU-Annual-Economy-2020.pdf",
+        "data/sources/raw/sweden_afu/downloads/AFU-Annual-Report-2017_OCR.pdf",
+        "data/sources/raw/sweden_afu/downloads/AFU-Annual-Report-2019.pdf",
+        "data/sources/raw/sweden_afu/downloads/AFU-Annual-Report-2020.pdf",
+        "data/sources/raw/sweden_afu/downloads/AFU-Book-Library-2018-Alfa.xlsx",
+        "data/sources/raw/sweden_afu/downloads/AFU-Book-List-2017-Alfa.xlsx",
+        "data/sources/raw/sweden_afu/downloads/AFU-Book-List-2018-Simple.pdf"
+      ]
+    },
+    {
+      "id": "uk_mod",
+      "files": 29,
+      "pages": 2,
+      "downloads": 26,
+      "bytes": 1321950,
+      "manifest_errors": 0,
+      "manifest_present": true,
+      "sample_downloads": [
+        "data/sources/raw/uk_mod/downloads/UFOReport1998-2.pdf",
+        "data/sources/raw/uk_mod/downloads/UFOReport1998.pdf",
+        "data/sources/raw/uk_mod/downloads/UFOReport1999-2.pdf",
+        "data/sources/raw/uk_mod/downloads/UFOReport1999.pdf",
+        "data/sources/raw/uk_mod/downloads/UFOReport2000-2.pdf",
+        "data/sources/raw/uk_mod/downloads/UFOReport2000.pdf",
+        "data/sources/raw/uk_mod/downloads/UFOReport2001-2.pdf",
+        "data/sources/raw/uk_mod/downloads/UFOReport2001.pdf"
+      ]
+    }
+  ]
+}

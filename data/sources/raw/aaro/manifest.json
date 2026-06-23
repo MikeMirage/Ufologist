@@ -1,0 +1,23 @@
+{
+  "id": "aaro",
+  "name": "All-domain Anomaly Resolution Office",
+  "strategy": "crawl_same_host",
+  "seeds": [
+    "https://www.aaro.mil/"
+  ],
+  "assets": [],
+  "discovered_links": [],
+  "errors": [
+    {
+      "url": "https://www.aaro.mil/",
+      "kind": "pages",
+      "error": "403 Forbidden",
+      "at": "2026-06-22T12:08:52.022Z"
+    }
+  ],
+  "started_at": "2026-06-22T12:08:51.447Z",
+  "finished_at": "2026-06-22T12:08:52.022Z",
+  "page_count": 0,
+  "download_count": 0,
+  "discovered_count": 0
+}

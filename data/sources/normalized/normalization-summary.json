@@ -1,0 +1,137 @@
+{
+  "generated_at": "2026-06-22T21:50:36.932Z",
+  "summary": [
+    {
+      "source_id": "chile_sefaa",
+      "records": 53,
+      "high": 53,
+      "medium": 0,
+      "low": 0,
+      "needs_review": 0,
+      "output_kind": "cases",
+      "case_records": 53,
+      "document_records": 0,
+      "file": "data/sources/normalized/chile_sefaa.jsonl"
+    },
+    {
+      "source_id": "uk_mod",
+      "records": 2704,
+      "high": 0,
+      "medium": 2704,
+      "low": 0,
+      "needs_review": 2704,
+      "output_kind": "cases",
+      "case_records": 2704,
+      "document_records": 0,
+      "file": "data/sources/normalized/uk_mod.jsonl"
+    },
+    {
+      "source_id": "argentina_ciae",
+      "records": 428,
+      "high": 0,
+      "medium": 421,
+      "low": 7,
+      "needs_review": 428,
+      "output_kind": "cases",
+      "case_records": 428,
+      "document_records": 0,
+      "file": "data/sources/normalized/argentina_ciae.jsonl"
+    },
+    {
+      "source_id": "denmark_files",
+      "records": 4,
+      "high": 0,
+      "medium": 4,
+      "low": 0,
+      "needs_review": 4,
+      "output_kind": "documents",
+      "case_records": 0,
+      "document_records": 4,
+      "file": "data/sources/normalized/denmark_files.jsonl"
+    },
+    {
+      "source_id": "nara_uap",
+      "records": 1201,
+      "high": 0,
+      "medium": 1199,
+      "low": 2,
+      "needs_review": 1201,
+      "output_kind": "mixed",
+      "case_records": 574,
+      "document_records": 627,
+      "file": "data/sources/normalized/nara_uap.jsonl"
+    },
+    {
+      "source_id": "sweden_afu",
+      "records": 61,
+      "high": 0,
+      "medium": 60,
+      "low": 1,
+      "needs_review": 61,
+      "output_kind": "documents",
+      "case_records": 0,
+      "document_records": 61,
+      "file": "data/sources/normalized/sweden_afu.jsonl"
+    },
+    {
+      "source_id": "brazil_an",
+      "records": 69,
+      "high": 0,
+      "medium": 68,
+      "low": 1,
+      "needs_review": 69,
+      "output_kind": "documents",
+      "case_records": 0,
+      "document_records": 69,
+      "file": "data/sources/normalized/brazil_an.jsonl"
+    },
+    {
+      "source_id": "canada_lac",
+      "records": 19,
+      "high": 0,
+      "medium": 19,
+      "low": 0,
+      "needs_review": 19,
+      "output_kind": "documents",
+      "case_records": 0,
+      "document_records": 19,
+      "file": "data/sources/normalized/canada_lac.jsonl"
+    },
+    {
+      "source_id": "spain_defensa",
+      "records": 112,
+      "high": 0,
+      "medium": 108,
+      "low": 4,
+      "needs_review": 112,
+      "output_kind": "mixed",
+      "case_records": 40,
+      "document_records": 72,
+      "file": "data/sources/normalized/spain_defensa.jsonl"
+    },
+    {
+      "source_id": "new_zealand_nzdf",
+      "records": 1,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "needs_review": 1,
+      "output_kind": "documents",
+      "case_records": 0,
+      "document_records": 1,
+      "file": "data/sources/normalized/new_zealand_nzdf.jsonl"
+    },
+    {
+      "source_id": "aaro",
+      "records": 1,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "needs_review": 1,
+      "output_kind": "documents",
+      "case_records": 0,
+      "document_records": 1,
+      "file": "data/sources/normalized/aaro.jsonl"
+    }
+  ]
+}

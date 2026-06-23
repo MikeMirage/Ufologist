@@ -1,0 +1,650 @@
+{
+  "id": "spain_defensa",
+  "name": "Expedientes OVNI del Ministerio de Defensa",
+  "strategy": "crawl_same_host",
+  "seeds": [
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo"
+  ],
+  "assets": [
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/indice_campo.do",
+      "bytes": 48539,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:00:39.451Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/oai.do",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/oai.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/oai.do",
+      "bytes": 21953,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:50.484Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/rss.do",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/rss.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/rss.do",
+      "bytes": 26117,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:50.636Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/accesibilidad.do",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/accesibilidad.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/accesibilidad.do",
+      "bytes": 23224,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:50.705Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/mapa-web.do",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/mapa-web.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/mapa-web.do",
+      "bytes": 22369,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:50.771Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo#",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/indice_campo-2.do",
+      "bytes": 48539,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:51.076Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/inicio.do",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/inicio.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/inicio.do",
+      "bytes": 27777,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:51.459Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=41",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=41",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/indice_campo-3.do",
+      "bytes": 49797,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:51.626Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=81",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=81",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/indice_campo-4.do",
+      "bytes": 28619,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:51.719Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/oai.do#",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/oai.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/oai-2.do",
+      "bytes": 21953,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:55.226Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/rss.do#",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/rss.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/rss-2.do",
+      "bytes": 26117,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:55.646Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/accesibilidad.do#",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/accesibilidad.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/accesibilidad-2.do",
+      "bytes": 23224,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:55.852Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/mapa-web.do#",
+      "final_url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/mapa-web.do",
+      "kind": "pages",
+      "file": "data/sources/raw/spain_defensa/pages/mapa-web-2.do",
+      "bytes": 22369,
+      "content_type": "text/html;charset=UTF-8",
+      "acquired_at": "2026-06-22T12:01:56.085Z"
+    }
+  ],
+  "discovered_links": [
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/fonts/OpenSans.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/fonts/PTSerif.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/fonts/ionicons.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/clientinfo.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/vendor/jquery.min.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/vendor/jquery-ui.min.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/vendor/clipboard.min.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/vendor/bootstrap_vm.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/vendor/moment-with-locales.min.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/vendor/chosen.jquery.min.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/comun/digiweb.js?v=af1f23d8",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/main.js?v=af1f23d8",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/js/accessible_menu.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/comun/comun_base.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/comun/comun_all.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/stylecookies.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/js/comun_all.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/estilos_personalizacion.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/perfiles/rss.do?id=0",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/cms/rss.cmd?id=novedades/noticias",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/favicon.ico",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/favicon-16x16.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/safari-pinned-tab.svg",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/favicon-32x32.png",
+    "https://bibliotecavirtual.defensa.gob.es/apple-touch-icon.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/apple-touch-icon-180x180.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/apple-touch-icon-152x152.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/apple-touch-icon-120x120.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/apple-touch-icon-76x76.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/apple-touch-icon-60x60.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/android-chrome-256x256.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/android-chrome-192x192.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/favicon/manifest.json",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/comun/toggleContainer.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/js/cookies.min.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/es/js/cookies.cdata.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/css/default/main.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/indices.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/oai.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/rss.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/accesibilidad.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/mapa-web.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;..&#x2f;en&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo",
+    "http://www.defensa.gob.es/",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/footer/logo-m-defensa.jpg",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/es/inicio/inicio.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/header/logo.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;micrositios&#x2f;inicio.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo#",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/js/queryHistory.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/inicio.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/botones/primero_des.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/botones/ant_des.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=41",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/botones/siguiente.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=81",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/botones/ultimo.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;594441",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395944",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396018",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395890",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396000",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395924",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395871",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395972",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395892",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395882",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395912",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395998",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395914",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395880",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395916",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395976",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396016",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395896",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395994",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395904",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396010",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395918",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395990",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395926",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395928",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395946",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395992",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395878",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395898",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;884469",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;884473",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395958",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395980",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395964",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395960",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395886",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395884",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395888",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395894",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395902",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/es/contenido/aviso_legal.do",
+    "http://www.digibis.com/",
+    "https://www.w3.org/TR/WCAG20/",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/iconos_estandares/wai-aa_22.png",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/cms.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;..&#x2f;en&#x2f;ayuda&#x2f;oai.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;micrositios&#x2f;inicio.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/oai.do#",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;consulta&#x2f;busqueda.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/oaipmh.gif",
+    "http://www.openarchives.org/",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/oai/oai.do?verb=Identify",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;..&#x2f;en&#x2f;ayuda&#x2f;rss.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/rss.do#",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/rss_para_texto.png",
+    "http://es.wikipedia.org/wiki/XML",
+    "http://es.wikipedia.org/wiki/Redifusi%C3%B3n_web",
+    "http://es.wikipedia.org/wiki/Sindicaci%C3%B3n_web",
+    "http://www.bloglines.com/",
+    "http://www.netvibes.com/",
+    "http://www.rssreader.com/",
+    "http://www.sharpreader.net/",
+    "http://www.ranchero.com/",
+    "http://www.newsgator.com/INDIVIDUALS/NETNEWSWIRE/",
+    "http://www.mozilla-europe.org/es/",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/rss.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;..&#x2f;en&#x2f;ayuda&#x2f;accesibilidad.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/accesibilidad.do#",
+    "https://administracionelectronica.gob.es/pae_Home/pae_Estrategias/pae_Accesibilidad/pae_normativa/pae_eInclusion_Normas_Accesibilidad.html#.XQORxlUzaUk",
+    "http://www.w3.org/TR/WCAG20/",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;..&#x2f;en&#x2f;ayuda&#x2f;mapa-web.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/mapa-web.do#",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/css/looper.css",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/js/looper.min.js",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/..&#x2f;..&#x2f;en&#x2f;micrositios&#x2f;inicio.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/..&#x2f;micrositios&#x2f;inicio.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/inicio.do#",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/..&#x2f;consulta&#x2f;busqueda.do",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/..&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/registro.do?id=38366",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/media/object-miniature.do?id=753416",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/registro.do?id=38273",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/media/object-miniature.do?id=752678",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/micrositios/inicio.do#bulletLooper",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;..&#x2f;en&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo&posicion&#x3d;41",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=41#",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=1",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/botones/primero.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/botones/anterior.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395932",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395920",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395988",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396002",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395966",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395948",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395942",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395936",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395908",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395962",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395978",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395968",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396014",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396032",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396034",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395956",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395970",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395906",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395930",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396028",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395938",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396004",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395996",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395910",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396006",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396022",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395950",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395876",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396020",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396008",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395940",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395982",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395922",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395986",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395984",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396012",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395900",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395934",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396030",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;530141",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;..&#x2f;en&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo&posicion&#x3d;81",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/indice_campo.do?campo=idtitulo&posicion=81#",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/botones/sig_des.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/i18n/img/botones/ultimo_des.gif",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;595400",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;610110",
+    "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;530275"
+  ],
+  "errors": [
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/perfiles/rss.do?id=0",
+      "kind": "pages",
+      "error": "fetch failed",
+      "at": "2026-06-22T12:01:50.245Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/cms/rss.cmd?id=novedades/noticias",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:50.334Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;..&#x2f;en&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:50.792Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;micrositios&#x2f;inicio.do",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:50.888Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda.do",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:51.158Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:51.230Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;594441",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:51.739Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395944",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:51.807Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396018",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:51.897Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395890",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:51.975Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396000",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.055Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395924",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.143Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395871",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.221Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395972",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.299Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395892",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.373Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395882",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.447Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395912",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.521Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395998",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.595Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395914",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.673Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395880",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.751Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395916",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.832Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395976",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:52.918Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396016",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.000Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395896",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.080Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395994",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.188Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395904",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.267Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;396010",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.346Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395918",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.423Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395990",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.503Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395926",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.584Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395928",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.664Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395946",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.743Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395992",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.825Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395878",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.907Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395898",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:53.985Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;884469",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.061Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;884473",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.139Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395958",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.221Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395980",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.321Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395964",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.398Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395960",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.477Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395886",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.555Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395884",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.631Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395888",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.728Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395894",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.809Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/consulta/..&#x2f;consulta&#x2f;busqueda_referencia.do&#x3f;campo&#x3d;idtitulo&idValor&#x3d;395902",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:54.902Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;..&#x2f;en&#x2f;ayuda&#x2f;oai.do",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:55.014Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;micrositios&#x2f;inicio.do",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:55.094Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;consulta&#x2f;busqueda.do",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:55.310Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;consulta&#x2f;indice_campo.do&#x3f;campo&#x3d;idtitulo",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:55.381Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;..&#x2f;en&#x2f;ayuda&#x2f;rss.do",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:55.477Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;..&#x2f;en&#x2f;ayuda&#x2f;accesibilidad.do",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:55.735Z"
+    },
+    {
+      "url": "https://bibliotecavirtual.defensa.gob.es/BVMDefensa/exp_ovni/es/ayuda/..&#x2f;..&#x2f;en&#x2f;ayuda&#x2f;mapa-web.do",
+      "kind": "pages",
+      "error": "500 Internal Server Error",
+      "at": "2026-06-22T12:01:55.931Z"
+    }
+  ],
+  "started_at": "2026-06-22T12:00:39.241Z",
+  "finished_at": "2026-06-22T12:01:56.086Z",
+  "page_count": 13,
+  "download_count": 0,
+  "discovered_count": 196
+}

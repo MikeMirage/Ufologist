@@ -35,6 +35,8 @@ const I18N = {
     navInfo: 'Info',
     navTour: 'Expedición',
     navPass: 'Pass',
+    viewEarth: 'Tierra',
+    viewOrbit: 'Órbita',
     titleKnowledge: 'Centro de conocimiento',
     titleStats: 'Panel de análisis y tendencias',
     titleReport: 'Reportar o registrar un avistamiento propio',
@@ -60,6 +62,35 @@ const I18N = {
     nuforcSwitch: '80.332 reportes geolocalizados (1906-2014)',
     geipanDb: 'Base GEIPAN · Francia',
     geipanSwitch: 'Casos oficiales del CNES (1937-2018)',
+    officialArchives: 'Archivos oficiales',
+    officialSwitch: 'Candidatos normalizados en revisión',
+    officialHint: 'Incluye casos aún no publicados: NARA, UK MoD, España, Chile y Argentina.',
+    officialCase: 'Caso oficial en revisión',
+    officialReview: 'Pendiente de revisión',
+    officialNoCoords: 'sin coordenadas todavía',
+    officialGeoHint: '{geo} geolocalizados de {total}',
+    officialShort: 'oficiales',
+    mapShort: 'mapa',
+    geoQuality: 'Precisión geográfica',
+    geoQualityHint: 'Separa coordenadas reportadas, locales, regionales y amplias para no mezclar patrones fuertes con ubicaciones aproximadas.',
+    geoReported: 'Reportada',
+    geoReportedDesc: 'Coordenadas reportadas por la fuente o por el cuaderno local.',
+    geoLocal: 'Local',
+    geoLocalDesc: 'Ubicación a nivel de localidad, ciudad, aeropuerto o instalación.',
+    geoRegional: 'Regional',
+    geoRegionalDesc: 'Ubicación aproximada a nivel de condado, provincia, región, isla o área.',
+    geoBroad: 'Amplia',
+    geoBroadDesc: 'Solo país o ubicación muy amplia. Útil para inventario, débil para patrones finos.',
+    geoContext: 'Contexto geográfico',
+    geoContextHint: 'Filtra encuentros cerca de bases militares, sobre agua/mar, en costa o claramente interiores.',
+    ctxMilitary: 'Base militar',
+    ctxMilitaryDesc: 'Caso etiquetado como militar o situado cerca de una base, aeródromo o instalación naval conocida.',
+    ctxWater: 'Mar / agua',
+    ctxWaterDesc: 'Ubicación o descripción sobre océano, mar, lago, bahía, río o zona marítima.',
+    ctxCoastal: 'Costa',
+    ctxCoastalDesc: 'Lugar costero, isla, puerto, cabo, playa o área próxima a litoral.',
+    ctxInland: 'Interior',
+    ctxInlandDesc: 'Sin señal clara de costa, mar o agua cercana en los datos disponibles.',
     timeBand: 'Franja horaria',
     timeFilterTitle: 'Filtra los reportes por hora del avistamiento',
     day: 'Día',
@@ -98,7 +129,7 @@ const I18N = {
     notesPlaceholder: 'Duración, dirección, color, testigos, condiciones...',
     pickHint: 'Haz clic en el globo en el lugar exacto del avistamiento',
     cancel: 'cancelar',
-    modalTabs: ['Clasificación', 'Anatomía', 'Disclosure USA', 'Glosario', 'Metodología', 'Reportar'],
+    modalTabs: ['Clasificación', 'Anatomía', 'Disclosure USA', 'Glosario', 'Metodología', 'Fuentes', 'Reportar'],
     appInfoTitle: 'Sobre UFOlogist',
     appInfoIntro: '<b>UFOlogist</b> es un atlas interactivo independiente para explorar el fenómeno UAP con contexto, fuentes y una mirada crítica. La intención no es empujar una conclusión cerrada, sino ordenar el material, separar evidencia de ruido y hacer visible dónde están los patrones.',
     appInfoAuthorTitle: 'Mensaje del autor',
@@ -134,6 +165,7 @@ const I18N = {
     curated: 'curados',
     heatSuffix: 'calor',
     narrowHint: 'acota a <=600 para ver puntos',
+    sampledPointsHint: 'mostrando {shown} puntos de {total} casos filtrados',
     noResults: 'Sin resultados',
     myNotebook: 'mi cuaderno',
     satellite: 'ver en satélite',
@@ -200,6 +232,20 @@ const I18N = {
     dataLayersTitle: 'Las dos capas de datos',
     curatedLayer: '<b>Casos curados (~100):</b> selección editorial de los casos mejor documentados de la historia, cada uno con fuentes primarias verificables.',
     massLayer: '<b>Base masiva (80.332):</b> reportes ciudadanos del National UFO Reporting Center (1906–2014), geocodificados a nivel de localidad. Sin filtrar: contiene ruido, errores de identificación y sesgos (país, era de internet). Su valor es estadístico — tendencias, formas, franjas horarias y geografía — no probatorio caso a caso.',
+    sourceAtlasTitle: 'Atlas de fuentes',
+    sourceAtlasIntro: 'La app renderiza datasets compactos para velocidad, pero la capa de investigación debe vivir en un modelo normalizado: fuentes, casos, observaciones, enlaces, tags y relaciones. Esta cola prioriza qué archivos añadir sin confundir fuente con estética visual.',
+    sourceLoaded: 'cargado',
+    sourceCandidate: 'candidato',
+    sourceOfficial: 'oficial',
+    sourceCivil: 'civil',
+    sourceOfficialArchive: 'archivo oficial',
+    sourcePriority: 'prioridad',
+    sourcePeriod: 'periodo',
+    sourceRecords: 'registros',
+    sourceWhy: 'valor',
+    sourceCaveat: 'cuidado',
+    sourceIntegration: 'integración',
+    sourceOpen: 'abrir fuente',
     reportTitle: 'Archivos oficiales y cómo reportar',
     reportIntro: '¿Has visto algo? Usa el botón <b>➕ Registrar</b> para anotarlo en tu cuaderno de campo local con coordenadas precisas, y repórtalo después a un organismo: hora exacta, duración, dirección, condiciones, fotos sin zoom digital. Antes, descarta lo prosaico: Starlink, ISS, Venus, bengalas, drones y globos explican la gran mayoría de casos.',
   },
@@ -220,6 +266,8 @@ const I18N = {
     navInfo: 'Info',
     navTour: 'Expedition',
     navPass: 'Pass',
+    viewEarth: 'Earth',
+    viewOrbit: 'Orbit',
     titleKnowledge: 'Knowledge center',
     titleStats: 'Analysis and trends panel',
     titleReport: 'Report or register your own sighting',
@@ -245,6 +293,35 @@ const I18N = {
     nuforcSwitch: '80,332 geolocated reports (1906-2014)',
     geipanDb: 'GEIPAN database · France',
     geipanSwitch: 'Official CNES cases (1937-2018)',
+    officialArchives: 'Official archives',
+    officialSwitch: 'Normalized candidates under review',
+    officialHint: 'Includes unpublished cases: NARA, UK MoD, Spain, Chile and Argentina.',
+    officialCase: 'Official case under review',
+    officialReview: 'Needs review',
+    officialNoCoords: 'coordinates pending',
+    officialGeoHint: '{geo} geolocated of {total}',
+    officialShort: 'official',
+    mapShort: 'map',
+    geoQuality: 'Geographic precision',
+    geoQualityHint: 'Separate reported, local, regional, and broad coordinates so strong patterns are not mixed with approximate locations.',
+    geoReported: 'Reported',
+    geoReportedDesc: 'Coordinates reported by the source or the local notebook.',
+    geoLocal: 'Local',
+    geoLocalDesc: 'Location at locality, city, airport, or facility level.',
+    geoRegional: 'Regional',
+    geoRegionalDesc: 'Approximate location at county, province, region, island, or area level.',
+    geoBroad: 'Broad',
+    geoBroadDesc: 'Country-level or very broad location. Useful for inventory, weak for fine patterns.',
+    geoContext: 'Geographic context',
+    geoContextHint: 'Filter encounters near military bases, over water/sea, on the coast, or clearly inland.',
+    ctxMilitary: 'Military base',
+    ctxMilitaryDesc: 'Case tagged as military or located near a known base, airfield, or naval installation.',
+    ctxWater: 'Sea / water',
+    ctxWaterDesc: 'Location or description over ocean, sea, lake, bay, river, or maritime area.',
+    ctxCoastal: 'Coastal',
+    ctxCoastalDesc: 'Coastal place, island, port, cape, beach, or shoreline area.',
+    ctxInland: 'Inland',
+    ctxInlandDesc: 'No clear sign of nearby coast, sea, or water in the available data.',
     timeBand: 'Time of day',
     timeFilterTitle: 'Filter reports by sighting time',
     day: 'Day',
@@ -283,7 +360,7 @@ const I18N = {
     notesPlaceholder: 'Duration, direction, color, witnesses, conditions...',
     pickHint: 'Click the globe at the exact sighting location',
     cancel: 'cancel',
-    modalTabs: ['Classification', 'Anatomy', 'Disclosure USA', 'Glossary', 'Methodology', 'Report'],
+    modalTabs: ['Classification', 'Anatomy', 'Disclosure USA', 'Glossary', 'Methodology', 'Sources', 'Report'],
     appInfoTitle: 'About UFOlogist',
     appInfoIntro: '<b>UFOlogist</b> is an independent interactive atlas for exploring the UAP phenomenon with context, sources, and a critical eye. The goal is not to force a conclusion, but to organize the material, separate evidence from noise, and reveal where patterns appear.',
     appInfoAuthorTitle: 'Author note',
@@ -319,6 +396,7 @@ const I18N = {
     curated: 'curated',
     heatSuffix: 'heat',
     narrowHint: 'narrow to <=600 to show points',
+    sampledPointsHint: 'showing {shown} points from {total} filtered cases',
     noResults: 'No results',
     myNotebook: 'my notebook',
     satellite: 'satellite view',
@@ -385,6 +463,20 @@ const I18N = {
     dataLayersTitle: 'The two data layers',
     curatedLayer: '<b>Curated cases (~100):</b> an editorial selection of the best documented cases in history, each linked to verifiable primary sources.',
     massLayer: '<b>Mass database (80,332):</b> citizen reports from the National UFO Reporting Center (1906–2014), geocoded at locality level. Unfiltered: it contains noise, misidentifications, and biases by country and internet era. Its value is statistical — trends, shapes, time bands, and geography — not proof case by case.',
+    sourceAtlasTitle: 'Source atlas',
+    sourceAtlasIntro: 'The app renders compact datasets for speed, but the research layer should live in a normalized model: sources, cases, observations, links, tags, and relations. This queue prioritizes which archives to add without confusing source with visual style.',
+    sourceLoaded: 'loaded',
+    sourceCandidate: 'candidate',
+    sourceOfficial: 'official',
+    sourceCivil: 'civil',
+    sourceOfficialArchive: 'official archive',
+    sourcePriority: 'priority',
+    sourcePeriod: 'period',
+    sourceRecords: 'records',
+    sourceWhy: 'value',
+    sourceCaveat: 'caveat',
+    sourceIntegration: 'integration',
+    sourceOpen: 'open source',
     reportTitle: 'Official archives and how to report',
     reportIntro: 'Seen something? Use the <b>➕ Report</b> button to add it to your local field notebook with precise coordinates, then report it to an organization with exact time, duration, direction, conditions, and unzoomed photos. First rule out prosaic causes: Starlink, ISS, Venus, flares, drones, and balloons explain the vast majority of cases.',
   },
@@ -424,11 +516,21 @@ function t(key, vars) {
   if (vars) Object.entries(vars).forEach(([k, v]) => { value = value.replaceAll(`{${k}}`, v); });
   return value;
 }
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+}
+function hasCoords(d) { return Number.isFinite(d?.lat) && Number.isFinite(d?.lng); }
 function locale() { return currentLang === 'en' ? 'en-US' : 'es-ES'; }
 function fmtNum(n) { return n.toLocaleString(locale()); }
 function typeLabel(code) { return currentLang === 'en' && TYPE_TEXT.en[code] ? TYPE_TEXT.en[code][0] : TYPE_META[code].label; }
 function typeDesc(code) { return currentLang === 'en' && TYPE_TEXT.en[code] ? TYPE_TEXT.en[code][1] : TYPE_META[code].desc; }
 function shapeLabel(i) { return currentLang === 'en' && SHAPE_TEXT.en[i] ? SHAPE_TEXT.en[i] : SHAPE_META[i].label; }
+function reportVisualColor(d) {
+  if (d?.mass && Number.isInteger(d.s) && SHAPE_META[d.s]) return SHAPE_META[d.s].color;
+  if (d?.official && Number.isInteger(d.s) && SHAPE_META[d.s]) return SHAPE_META[d.s].color;
+  if (d?.geipan) return SHAPE_META[9].color;
+  return TYPE_META[d?.type]?.color || SHAPE_META[9].color;
+}
 function geipanLabel(i) { return currentLang === 'en' && GEIPAN_TEXT.en[i] ? GEIPAN_TEXT.en[i][0] : GEIPAN_META[i].label; }
 function geipanDesc(i) { return currentLang === 'en' && GEIPAN_TEXT.en[i] ? GEIPAN_TEXT.en[i][1] : GEIPAN_META[i].desc; }
 function enContent() { return currentLang === 'en' && typeof CONTENT_EN !== 'undefined' ? CONTENT_EN : null; }
@@ -449,6 +551,188 @@ function methodologyNotes() { return enContent()?.methodology?.notes || METHODOL
 function methodologyCred() { return enContent()?.methodology?.cred || METHODOLOGY.cred; }
 function tlEventLabel(i, ev) { return enContent()?.tlEvents?.[i]?.label || ev.label; }
 function reportLinks() { return enContent()?.reportLinks || REPORT_LINKS; }
+const GEO_QUALITY_META = [
+  { id: 'reported', color: '#f8fbff' },
+  { id: 'local', color: '#4be1c3' },
+  { id: 'regional', color: '#8ecae6' },
+  { id: 'broad', color: '#b388ff' },
+];
+const GEO_CONTEXT_META = [
+  { id: 'military', color: '#ef476f' },
+  { id: 'water', color: '#118ab2' },
+  { id: 'coastal', color: '#8ecae6' },
+  { id: 'inland', color: '#80ed99' },
+];
+const MILITARY_SITES = [
+  ['Wright-Patterson AFB', 39.82, -84.05], ['Nellis AFB / Area 51 corridor', 36.24, -115.03],
+  ['Edwards AFB', 34.91, -117.88], ['Vandenberg SFB', 34.74, -120.57],
+  ['Travis AFB', 38.27, -121.94], ['NAS Miramar', 32.87, -117.14],
+  ['Naval Base San Diego', 32.68, -117.12], ['Naval Station Norfolk', 36.95, -76.33],
+  ['Eglin AFB', 30.48, -86.53], ['NAS Pensacola', 30.35, -87.32],
+  ['Patrick SFB / Cape Canaveral', 28.23, -80.61], ['Malmstrom AFB', 47.50, -111.19],
+  ['Minot AFB', 48.42, -101.36], ['Loring AFB', 46.95, -67.88],
+  ['Fort Liberty', 35.14, -79.01], ['Fort Cavazos', 31.13, -97.78],
+  ['Holloman AFB / White Sands', 32.85, -106.10], ['Kirtland AFB', 35.05, -106.61],
+  ['Dugway Proving Ground', 40.18, -112.92], ['Cheyenne Mountain / Peterson', 38.74, -104.85],
+  ['Joint Base Andrews', 38.81, -76.87], ['NAS Patuxent River', 38.29, -76.41],
+  ['RAF Lakenheath', 52.41, 0.56], ['RAF Mildenhall', 52.36, 0.49],
+  ['RAF Bentwaters', 52.13, 1.43], ['RAF Fylingdales', 54.36, -0.67],
+  ['RAF Lossiemouth', 57.72, -3.32], ['RAF Brize Norton', 51.75, -1.58],
+  ['RAF Waddington', 53.17, -0.52], ['RAF Coningsby', 53.09, -0.18],
+  ['HMNB Clyde / Faslane', 56.07, -4.82], ['Base Aerea Torrejon', 40.49, -3.45],
+  ['Base Aerea Zaragoza', 41.67, -1.04], ['Base Aerea Moron', 37.17, -5.62],
+  ['Naval Station Rota', 36.62, -6.35], ['Base Aerea Gando', 27.93, -15.39],
+  ['Base Aerea Los Llanos', 38.95, -1.86], ['Istres Air Base', 43.52, 4.92],
+  ['Avord Air Base', 47.05, 2.63], ['Cazaux Air Base', 44.53, -1.13],
+  ['Orange-Caritat Air Base', 44.14, 4.87], ['Brest Naval Base', 48.39, -4.49],
+  ['Toulon Naval Base', 43.12, 5.93], ['Cerro Moreno Air Base', -23.44, -70.44],
+  ['El Bosque Air Base', -33.56, -70.69], ['Quintero Air Base', -32.78, -71.52],
+  ['Punta Arenas / Chabunco', -53.00, -70.85], ['El Palomar Air Base', -34.61, -58.61],
+  ['Moreno Air Base', -34.56, -58.79], ['Tandil Air Base', -37.23, -59.23],
+  ['Rio Gallegos Air Base', -51.61, -69.31], ['Bahia Blanca / Comandante Espora', -38.72, -62.17],
+  ['Mar del Plata Naval Air Base', -37.93, -57.57], ['La Joya Air Base', -16.73, -71.87],
+];
+const COASTAL_REFERENCE_POINTS = [
+  ['Seattle', 47.61, -122.33], ['San Francisco Bay', 37.77, -122.42],
+  ['Los Angeles', 34.05, -118.24], ['San Diego', 32.72, -117.16],
+  ['Santa Barbara', 34.42, -119.70], ['Monterey', 36.60, -121.89],
+  ['Miami', 25.76, -80.19], ['Tampa Bay', 27.95, -82.46],
+  ['Jacksonville', 30.33, -81.66], ['Cape Canaveral', 28.39, -80.61],
+  ['Pensacola', 30.42, -87.22], ['New Orleans', 29.95, -90.07],
+  ['Galveston', 29.30, -94.80], ['Corpus Christi', 27.80, -97.40],
+  ['Savannah', 32.08, -81.09], ['Charleston', 32.78, -79.93],
+  ['Wilmington NC', 34.21, -77.89], ['Norfolk', 36.85, -76.29],
+  ['Atlantic City', 39.36, -74.42], ['New York Harbor', 40.71, -74.01],
+  ['Boston', 42.36, -71.06], ['Portland ME', 43.66, -70.25],
+  ['Honolulu', 21.31, -157.86], ['Anchorage', 61.22, -149.90],
+  ['Plymouth', 50.38, -4.14], ['Portsmouth', 50.82, -1.09],
+  ['Dover', 51.13, 1.31], ['Brighton', 50.82, -0.14],
+  ['Liverpool', 53.41, -2.99], ['Newcastle', 54.98, -1.62],
+  ['Edinburgh', 55.95, -3.19], ['Aberdeen', 57.15, -2.09],
+  ['Belfast', 54.60, -5.93], ['Barcelona', 41.39, 2.17],
+  ['Valencia', 39.47, -0.38], ['Alicante', 38.35, -0.49],
+  ['Malaga', 36.72, -4.42], ['Cadiz', 36.53, -6.29],
+  ['A Coruna', 43.36, -8.41], ['Vigo', 42.24, -8.72],
+  ['Bilbao', 43.26, -2.94], ['Santander', 43.46, -3.81],
+  ['Palma', 39.57, 2.65], ['Las Palmas', 28.12, -15.44],
+  ['Brest', 48.39, -4.49], ['Cherbourg', 49.64, -1.62],
+  ['Le Havre', 49.49, 0.11], ['Calais', 50.95, 1.86],
+  ['La Rochelle', 46.16, -1.15], ['Saint-Nazaire', 47.27, -2.21],
+  ['Marseille', 43.30, 5.37], ['Toulon', 43.12, 5.93],
+  ['Nice', 43.71, 7.26], ['Buenos Aires', -34.60, -58.38],
+  ['Mar del Plata', -38.00, -57.55], ['Bahia Blanca', -38.72, -62.27],
+  ['Rio Gallegos', -51.62, -69.22], ['Punta Arenas', -53.16, -70.91],
+  ['Valparaiso', -33.05, -71.62], ['Antofagasta', -23.65, -70.40],
+  ['Iquique', -20.21, -70.15], ['Callao', -12.06, -77.15],
+  ['Trujillo', -8.11, -79.03],
+];
+function geoQualityLabel(id) {
+  return {
+    reported: t('geoReported'),
+    local: t('geoLocal'),
+    regional: t('geoRegional'),
+    broad: t('geoBroad'),
+  }[id] || id;
+}
+function geoQualityDesc(id) {
+  return {
+    reported: t('geoReportedDesc'),
+    local: t('geoLocalDesc'),
+    regional: t('geoRegionalDesc'),
+    broad: t('geoBroadDesc'),
+  }[id] || '';
+}
+function geoContextLabel(id) {
+  return {
+    military: t('ctxMilitary'),
+    water: t('ctxWater'),
+    coastal: t('ctxCoastal'),
+    inland: t('ctxInland'),
+  }[id] || id;
+}
+function geoContextDesc(id) {
+  return {
+    military: t('ctxMilitaryDesc'),
+    water: t('ctxWaterDesc'),
+    coastal: t('ctxCoastalDesc'),
+    inland: t('ctxInlandDesc'),
+  }[id] || '';
+}
+function geoQuality(d) {
+  if (d?.mine) return 'reported';
+  if (d?.official) {
+    if (d.geoPrecision === 'reported') return 'reported';
+    if (['locality', 'city', 'airport', 'facility'].includes(d.geoPrecision)) return 'local';
+    if (['county', 'province', 'region', 'country-region', 'island', 'area'].includes(d.geoPrecision)) return 'regional';
+    return 'broad';
+  }
+  if (d?.mass) return 'local';
+  if (d?.geipan) return 'regional';
+  return 'local';
+}
+function geoAllowed(d) { return state.geoQuality.has(geoQuality(d)); }
+function distKm(aLat, aLng, bLat, bLng) {
+  const R = 6371, toRad = v => v * Math.PI / 180;
+  const dLat = toRad(bLat - aLat), dLng = toRad(bLng - aLng);
+  const s1 = Math.sin(dLat / 2), s2 = Math.sin(dLng / 2);
+  const a = s1 * s1 + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * s2 * s2;
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+function plainText(value) {
+  return String(value || '').toLowerCase()
+    .replace(/&[^;\s]+;/g, ' ')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+function contextText(d) {
+  if (d?.official) return [d.title, d.loc, d.country, d.source, d.summary, d.cls, d.system].map(plainText).join(' ');
+  if (d?.geipan) return [d.zone, d.resume, 'france'].map(plainText).join(' ');
+  if (d?.mass) return [d.loc].map(plainText).join(' ');
+  return [caseName(d), caseLoc(d), caseCountry(d), caseSummary(d), d.type].map(plainText).join(' ');
+}
+function nearMilitarySite(d) {
+  if (!hasCoords(d)) return false;
+  for (const [, lat, lng] of MILITARY_SITES) {
+    if (distKm(d.lat, d.lng, lat, lng) <= 60) return true;
+  }
+  return false;
+}
+function nearCoastalReference(d) {
+  if (!hasCoords(d)) return false;
+  for (const [, lat, lng] of COASTAL_REFERENCE_POINTS) {
+    if (distKm(d.lat, d.lng, lat, lng) <= 85) return true;
+  }
+  return false;
+}
+function geoContextTags(d) {
+  if (d._geoCtx) return d._geoCtx;
+  const text = contextText(d);
+  const tags = new Set();
+  const militaryText = /\b(afb|raf|nas|naval|navy|air force|army|military|militar|base aerea|base naval|fuerza aerea|aeronaval|mod|norad|silo|missile|radar|pentagon|defen[cs]e|defensa)\b/.test(text);
+  const waterText = /\b(ocean|oceano|atlantic|atlantico|pacific|pacifico|sea|mar|gulf|golfo|bay|bahia|baya|lake|lago|river|rio|water|agua|canal|channel|strait|estuary|offshore|caribbean|caribe|mediterranean|mediterraneo|cantabrico)\b/.test(text);
+  const coastText = waterText || /\b(coast|coastal|costa|shore|litoral|beach|playa|harbor|harbour|port|puerto|cape|cabo|key|cayo|island|isla|peninsula|naval|marina|faro)\b/.test(text);
+  const coastGeo = nearCoastalReference(d);
+  if (d.type === 'MIL' || militaryText || nearMilitarySite(d)) tags.add('military');
+  if (waterText || d.type === 'USO') tags.add('water');
+  if (coastText || coastGeo || d.type === 'USO') tags.add('coastal');
+  if (!tags.has('water') && !tags.has('coastal')) tags.add('inland');
+  d._geoCtx = tags;
+  return tags;
+}
+function contextAllowed(d) {
+  if (state.geoContexts.size === GEO_CONTEXT_META.length) return true;
+  if (!state.geoContexts.size) return false;
+  const tags = geoContextTags(d);
+  for (const tag of tags) if (state.geoContexts.has(tag)) return true;
+  return false;
+}
+function sourceStatusLabel(status) {
+  return status === 'active' ? t('sourceLoaded') : t('sourceCandidate');
+}
+function sourceTypeLabel(type) {
+  if (type === 'official') return t('sourceOfficial');
+  if (type === 'official_archive') return t('sourceOfficialArchive');
+  return t('sourceCivil');
+}
 function setText(sel, text) { const el = typeof sel === 'string' ? document.querySelector(sel) : sel; if (el) el.textContent = text; }
 function setFirstText(el, text) { if (el && el.childNodes.length) el.childNodes[0].nodeValue = text + ' '; }
 function setButton(id, icon, labelKey, titleKey) {
@@ -504,6 +788,8 @@ function applyStaticI18n() {
   setButton('btn-about', 'ⓘ', 'navInfo', 'titleInfo');
   setButton('btn-tour', '⌖', 'navTour', 'titleTour');
   setButton('btn-pass', '◇', 'navPass', 'titlePass');
+  setText('#btn-view-earth', t('viewEarth'));
+  setText('#btn-view-orbit', t('viewOrbit'));
   updateAudioButton();
   document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
 
@@ -527,22 +813,35 @@ function applyStaticI18n() {
     setText(blocks[2].querySelector('.switch-row span'), t('geipanSwitch'));
   }
   if (blocks[3]) {
-    setText(blocks[3].querySelector('h3'), t('timeBand'));
+    setFirstText(blocks[3].querySelector('h3'), t('officialArchives'));
+    setText(blocks[3].querySelector('.switch-row span'), t('officialSwitch'));
+    setText('#official-hint', t('officialHint'));
+  }
+  if (blocks[4]) {
+    setText('#geo-quality-title', t('geoQuality'));
+    setText('#geo-quality-hint', t('geoQualityHint'));
+  }
+  if (blocks[5]) {
+    setText('#geo-context-title', t('geoContext'));
+    setText('#geo-context-hint', t('geoContextHint'));
+  }
+  if (blocks[6]) {
+    setText(blocks[6].querySelector('h3'), t('timeBand'));
     const tod = $('tod-filter');
     if (tod) tod.title = t('timeFilterTitle');
     setText('#tod-filter [data-tod="day"]', `☀ ${t('day')}`);
     setText('#tod-filter [data-tod="night"]', `☾ ${t('night')}`);
   }
-  if (blocks[4]) {
-    setFirstText(blocks[4].querySelector('h3'), t('curatedType'));
+  if (blocks[7]) {
+    setFirstText(blocks[7].querySelector('h3'), t('curatedType'));
     setText('#types-all', t('all'));
     setText('#types-none', t('none'));
   }
-  if (blocks[5]) {
-    setText(blocks[5].querySelector('h3'), t('minCredibility'));
-    setText(blocks[5].querySelector('.hint'), t('credibilityHint'));
+  if (blocks[8]) {
+    setText(blocks[8].querySelector('h3'), t('minCredibility'));
+    setText(blocks[8].querySelector('.hint'), t('credibilityHint'));
   }
-  if (blocks[6]) setFirstText(blocks[6].querySelector('h3'), t('selection'));
+  if (blocks[9]) setFirstText(blocks[9].querySelector('h3'), t('selection'));
   ['btn-export-csv', 'btn-export-json'].forEach(id => { if ($(id)) $(id).title = t('exportSelection'); });
   if ($('btn-permalink')) { $('btn-permalink').title = t('copyFiltersLink'); $('btn-permalink').textContent = `🔗 ${t('permalink')}`; }
 
@@ -618,6 +917,8 @@ function setLanguage(lang) {
   buildTypeFilters();
   buildShapeFilters();
   buildGeipanFilters();
+  buildGeoQualityFilters();
+  buildGeoContextFilters();
   refresh();
   if (!$('panel-stats').classList.contains('hidden')) renderStats();
   if (!$('modal-overlay').classList.contains('hidden')) {
@@ -760,8 +1061,13 @@ const state = {
   tod: 'all',                   // all | day | night
   geipanOn: true,
   geipanClasses: new Set(GEIPAN_META.map((_, i) => i)),
+  officialOn: true,
+  officialSources: new Set(),
+  geoQuality: new Set(GEO_QUALITY_META.map(g => g.id)),
+  geoContexts: new Set(GEO_CONTEXT_META.map(g => g.id)),
   hotspots: false,
   pickMode: false,
+  viewMode: 'earth',             // earth | orbit
 };
 
 TYPE_META.MINE = { label: 'Mis avistamientos', color: '#ffffff', desc: 'Avistamientos registrados por ti, guardados en este navegador.' };
@@ -780,6 +1086,7 @@ function allCuratedPool() { return CASES.concat(journal); }
 // ---------- Entry reveal + hex-cap altitudes ----------
 let casesReady = false;   // gate: heatmap draws first, cases revealed after the landing
 let revealCases = false;  // active during the sweep-in animation
+let officialData = null;  // normalized official/archive candidates loaded from compact JSON
 
 // Place each curated case at the top of its heatmap column (H3 bin), matching the
 // hex-bar height so the hexagon sits like the column's lid in hybrid view.
@@ -790,8 +1097,9 @@ function computeCapAltitudes() {
   const bump = (lat, lng) => { const c = h3.latLngToCell(lat, lng, res); weight.set(c, (weight.get(c) || 0) + 1); };
   if (massData) massData.forEach(r => bump(r.lat, r.lng));
   if (geipanData) geipanData.forEach(r => bump(r.lat, r.lng));
+  if (officialData) officialData.forEach(r => { if (hasCoords(r)) bump(r.lat, r.lng); });
   allCuratedPool().forEach(c => bump(c.lat, c.lng));
-  const total = (massData ? massData.length : 0) + (geipanData ? geipanData.length : 0);
+  const total = (massData ? massData.length : 0) + (geipanData ? geipanData.length : 0) + (officialData ? officialData.filter(hasCoords).length : 0);
   const capRef = total > 0 ? Math.max(20, total / 30) : 15;
   const capT = w => Math.min(1, Math.log10(1 + w) / Math.log10(1 + capRef));
   allCuratedPool().forEach(c => {
@@ -808,6 +1116,41 @@ function revealCasesSweep() {
   computeCapAltitudes();
   refresh();
   setTimeout(() => { revealCases = false; }, 2200);
+}
+
+function pointSampleKey(d) {
+  if (d.official) return `o:${d.id || d.sourceCaseId || ''}:${d.lat}:${d.lng}`;
+  if (d.geipan) return `g:${d.d}:${d.ci}:${d.lat}:${d.lng}:${d.zone || ''}`;
+  if (d.mass) return `m:${d.d}:${d.h}:${d.s}:${d.lat}:${d.lng}:${d.loc || ''}`;
+  return `c:${d.id || d.name || ''}:${d.lat}:${d.lng}`;
+}
+function hashKey(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+function deterministicSample(rows, limit) {
+  if (rows.length <= limit) return rows.slice();
+  return rows
+    .map(row => ({ row, h: hashKey(pointSampleKey(row)) }))
+    .sort((a, b) => a.h - b.h)
+    .slice(0, limit)
+    .map(x => x.row);
+}
+function sourcePointData(mass, geipan, officialGeo) {
+  if (state.layerMode === 'points') {
+    const limit = isMobile() ? MOBILE_CASE_POINT_LIMIT : CASE_POINT_LIMIT;
+    return deterministicSample(mass.concat(geipan, officialGeo), limit);
+  }
+  const pointLimit = isMobile() ? MOBILE_POINT_LIMIT : MASS_POINT_LIMIT;
+  let rows = [];
+  if (mass.length > 0 && mass.length <= pointLimit) rows = rows.concat(mass);
+  if (geipan.length > 0 && geipan.length <= pointLimit) rows = rows.concat(geipan);
+  if (officialGeo.length > 0 && officialGeo.length <= pointLimit) rows = rows.concat(officialGeo);
+  return rows;
 }
 
 // ---------- Mass DB (NUFORC) ----------
@@ -843,6 +1186,8 @@ function massFiltered() {
   return massData.filter(r => {
     if (r.year < yearFrom || r.year > yearTo) return false;
     if (!shapes.has(r.s)) return false;
+    if (!geoAllowed(r)) return false;
+    if (!contextAllowed(r)) return false;
     if (tod === 'day' && !(r.h >= 7 && r.h <= 19)) return false;
     if (tod === 'night' && !(r.h >= 20 || (r.h >= 0 && r.h <= 6))) return false;
     return true;
@@ -875,14 +1220,58 @@ fetch('data/geipan.json?v=1')
 function geipanFiltered() {
   if (!state.geipanOn || !geipanData) return [];
   const { yearFrom, yearTo, geipanClasses } = state;
-  return geipanData.filter(r => r.year >= yearFrom && r.year <= yearTo && geipanClasses.has(r.ci));
+  return geipanData.filter(r => r.year >= yearFrom && r.year <= yearTo && geipanClasses.has(r.ci) && geoAllowed(r) && contextAllowed(r));
+}
+
+// ---------- Official archive candidates ----------
+function ingestOfficial(json) {
+  officialData = (json.rows || []).map(r => ({ ...r, official: true }));
+  state.officialSources = new Set((json.sources || []).map(s => s.id));
+  $('official-status').textContent = fmtNum(officialData.length);
+  $('official-hint').textContent = t('officialGeoHint', {
+    geo: fmtNum(json.geolocated || officialData.filter(hasCoords).length),
+    total: fmtNum(officialData.length),
+  });
+  buildOfficialFilters(json.sources || []);
+  computeCapAltitudes();
+  refresh();
+}
+fetch('data/official-cases.json?v=1')
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(ingestOfficial)
+  .catch(() => {
+    const s = document.createElement('script');
+    s.src = 'data/official-cases.js?v=1';
+    s.onload = () => window.OFFICIAL_CASES_DATA ? ingestOfficial(window.OFFICIAL_CASES_DATA)
+                                                : ($('official-status').textContent = t('unavailable'));
+    s.onerror = () => { $('official-status').textContent = t('unavailable'); };
+    document.head.appendChild(s);
+  });
+
+function officialFiltered() {
+  if (!state.officialOn || !officialData) return [];
+  const { yearFrom, yearTo, officialSources, tod } = state;
+  return officialData.filter(r => {
+    if (r.year < yearFrom || r.year > yearTo) return false;
+    if (!officialSources.has(r.sid)) return false;
+    if (!geoAllowed(r)) return false;
+    if (!contextAllowed(r)) return false;
+    if (tod === 'day' && !(r.h >= 7 && r.h <= 19)) return false;
+    if (tod === 'night' && !(r.h >= 20 || (r.h >= 0 && r.h <= 6))) return false;
+    return true;
+  });
 }
 
 // ---------- Globe ----------
-const MASS_POINT_LIMIT = 600;  // show individual mass dots only below this (DOM markers); else heatmap
+const MASS_POINT_LIMIT = 2400; // show individual mass dots only below this (WebGL points); else heatmap
+const MOBILE_POINT_LIMIT = 900; // portrait/mobile still gets clickable WebGL points after filtering
+const CASE_POINT_LIMIT = 9000; // cases view: deterministic WebGL sample from all filtered source rows
+const MOBILE_CASE_POINT_LIMIT = 2600;
+const EARTH_DAY_TEXTURE = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/planets/earth_atmos_2048.jpg';
+const EARTH_NIGHT_TEXTURE = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg';
 
 const globe = Globe()($('globe'))
-  .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg')
+  .globeImageUrl(EARTH_NIGHT_TEXTURE)
   .bumpImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png')
   .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
   .atmosphereColor('#4be1c3')
@@ -897,6 +1286,18 @@ const globe = Globe()($('globe'))
     return 0.013;
   })
   .htmlElement(d => buildMarker(d))
+  .pointLat(d => d.lat)
+  .pointLng(d => d.lng)
+  .pointAltitude(0.008)
+  .pointRadius(0.055)
+  .pointResolution(8)
+  .pointColor(d => reportVisualColor(d))
+  .pointLabel(d => d.geipan
+    ? `<div style="font-family:'JetBrains Mono',monospace;background:rgba(8,12,26,.94);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 9px;color:#e8eefc;font-size:11px;">GEIPAN ${GEIPAN_META[d.ci].code} · ${fmtDateInt(d.d)} · ${d.zone || t('france')}</div>`
+    : d.official
+      ? `<div style="font-family:'JetBrains Mono',monospace;background:rgba(8,12,26,.94);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 9px;color:#e8eefc;font-size:11px;">${esc(d.source)} · ${d.date || d.year} · ${esc(d.loc || d.country || t('officialNoCoords'))}</div>`
+    : `<div style="font-family:'JetBrains Mono',monospace;background:rgba(8,12,26,.94);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 9px;color:#e8eefc;font-size:11px;">${shapeLabel(d.s)} · ${fmtDateInt(d.d)} · ${d.loc || t('geocodedLocation')}</div>`)
+  .onPointClick(d => d.official ? openOfficialReport(d, true) : (d.geipan ? openGeipanReport(d) : openMassReport(d)))
   .hexBinPointLat('lat').hexBinPointLng('lng')
   .hexBinPointWeight(1)
   .hexBinResolution(3)
@@ -914,7 +1315,7 @@ const globe = Globe()($('globe'))
   .labelResolution(2)
   .labelLabel(d => `
     <div style="font-family:'Space Grotesk',sans-serif;background:rgba(8,12,26,.94);border:1px solid rgba(255,209,102,.4);border-radius:10px;padding:9px 12px;max-width:260px;">
-      <div style="color:#ffd166;font-weight:700;">🔥 ${hotspotName(d)}</div>
+      <div style="color:#ffd166;font-weight:700;">${d.solar ? '☉' : '🔥'} ${hotspotName(d)}</div>
       <div style="color:#cdd8ef;font-size:11.5px;margin-top:4px;line-height:1.5;">${hotspotDesc(d)}</div>
     </div>`)
   .onLabelClick(d => {
@@ -928,8 +1329,8 @@ const globe = Globe()($('globe'))
 function buildMarker(d) {
   const el = document.createElement('div');
   el.className = 'globe-marker';
-  const isMassLike = d.mass || d.geipan;
-  const color = d.geipan ? GEIPAN_META[d.ci].color : (d.mass ? SHAPE_META[d.s].color : TYPE_META[d.type].color);
+  const isMassLike = d.mass || d.geipan || d.official;
+  const color = reportVisualColor(d);
   const reveal = revealCases && !isMassLike;
   const cls = 'case-hex' + (isMassLike ? ' mass' : '') + (d.mine ? ' mine' : '') + (reveal ? ' reveal' : '');
   const pip = isMassLike ? '' : '<circle class="pip" cx="12" cy="12" r="2.3"/>';
@@ -938,10 +1339,12 @@ function buildMarker(d) {
     <polygon points="12,1.6 21.5,7 21.5,17 12,22.4 2.5,17 2.5,7"/>${pip}</svg>`;
   el.title = d.geipan
     ? `GEIPAN ${GEIPAN_META[d.ci].code} · ${fmtDateInt(d.d)} · ${d.zone || t('france')}`
+    : d.official
+      ? `${d.source} · ${d.date || d.year} · ${d.loc || d.country || t('officialNoCoords')}`
     : d.mass
       ? `${shapeLabel(d.s)} · ${fmtDateInt(d.d)} · ${d.loc || t('geocodedLocation')}`
       : `${caseName(d)} · ${d.year} · ${caseLoc(d) || ''}`;
-  el.onclick = () => d.geipan ? openGeipanReport(d) : (d.mass ? openMassReport(d) : openCase(d.id, true));
+  el.onclick = () => d.official ? openOfficialReport(d, true) : (d.geipan ? openGeipanReport(d) : (d.mass ? openMassReport(d) : openCase(d.id, true)));
   return el;
 }
 
@@ -949,6 +1352,421 @@ globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.35;
 globe.controls().addEventListener('start', () => { globe.controls().autoRotate = false; });
 globe.pointOfView({ lat: 30, lng: -40, altitude: 2.3 });
+
+let solarSystemGroup = null;
+let solarBodies = {};
+let currentAstroContext = null;
+let orbitSystemGroup = null;
+let orbitBodies = {};
+let orbitLines = {};
+let orbitLabels = {};
+let orbitEventMarker = null;
+let orbitConnectors = {};
+let orbitBackdrop = null;
+let earthSceneVisibility = null;
+function globeVector(lat, lng, radius = 1) {
+  const phi = (90 - lat) * Math.PI / 180;
+  const theta = (lng + 180) * Math.PI / 180;
+  return {
+    x: -radius * Math.sin(phi) * Math.cos(theta),
+    y: radius * Math.cos(phi),
+    z: radius * Math.sin(phi) * Math.sin(theta),
+  };
+}
+function astroVectorToScene(v, radius) {
+  const len = Math.hypot(v.x, v.y, v.z) || 1;
+  return new THREE.Vector3(
+    -(v.x / len) * radius,
+    (v.z / len) * radius,
+    (v.y / len) * radius
+  );
+}
+function helioVectorToOrbitScene(v) {
+  const len = Math.hypot(v.x, v.y, v.z) || 1;
+  const radius = Math.pow(Math.max(0.04, len), 0.46) * 2.05;
+  return new THREE.Vector3(
+    -(v.x / len) * radius,
+    (v.z / len) * radius,
+    (v.y / len) * radius
+  );
+}
+function scaledBodyRadius(dist, kind) {
+  if (kind === 'sun') return 4.8;
+  if (kind === 'moon') return 1.55;
+  return 2.05 + Math.min(2.1, Math.log10(1 + Math.max(0, dist)) * 1.35);
+}
+function orbitBodySpec(name) {
+  const specs = {
+    Mercury: { color: 0xb9aa92, size: 0.065, days: 87.969, samples: 120, au: '0,39 UA' },
+    Venus: { color: 0xf0d38a, size: 0.082, days: 224.701, samples: 160, au: '0,72 UA' },
+    Earth: { color: 0x5cb7ff, size: 0.12, days: 365.256, samples: 220, au: '1,00 UA' },
+    Mars: { color: 0xf0785a, size: 0.078, days: 686.98, samples: 240, au: '1,52 UA' },
+    Jupiter: { color: 0xe0b075, size: 0.235, days: 4332.59, samples: 320, au: '5,20 UA' },
+    Saturn: { color: 0xd6c08a, size: 0.205, days: 10759.22, samples: 320, au: '9,58 UA' },
+    Uranus: { color: 0x8fd7d7, size: 0.145, days: 30688.5, samples: 340, au: '19,20 UA' },
+    Neptune: { color: 0x6f8ee8, size: 0.145, days: 60182, samples: 360, au: '30,05 UA' },
+  };
+  return specs[name];
+}
+function configureTexture(texture) {
+  if (!texture || !window.THREE) return texture;
+  if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  return texture;
+}
+function ensureSolarSystemScene() {
+  if (solarSystemGroup || !window.THREE || !globe.scene) return;
+  const scene = globe.scene();
+  solarSystemGroup = new THREE.Group();
+  solarSystemGroup.name = 'ufologist-solar-system';
+  scene.add(solarSystemGroup);
+
+  const specs = [
+    ['Sun', 0xffd166, 0.085],
+    ['Moon', 0xdce7ff, 0.035],
+    ['Mercury', 0xb9aa92, 0.026],
+    ['Venus', 0xf0d38a, 0.034],
+    ['Mars', 0xf0785a, 0.032],
+    ['Jupiter', 0xe0b075, 0.052],
+    ['Saturn', 0xd6c08a, 0.048],
+    ['Uranus', 0x8fd7d7, 0.04],
+    ['Neptune', 0x6f8ee8, 0.04],
+  ];
+  specs.forEach(([name, color, size]) => {
+    const geo = new THREE.SphereGeometry(size, 16, 12);
+    const mat = new THREE.MeshBasicMaterial({ color });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.name = `astro-${name}`;
+    solarSystemGroup.add(mesh);
+    solarBodies[name] = mesh;
+  });
+}
+function updateSolarSystemScene(ctx) {
+  if (!ctx || !ctx.available) return;
+  ensureSolarSystemScene();
+  if (!solarSystemGroup) return;
+  solarSystemGroup.visible = state.viewMode === 'earth';
+  if (solarBodies.Sun && ctx.sunGeo) {
+    solarBodies.Sun.position.copy(astroVectorToScene(ctx.sunGeo, scaledBodyRadius(ctx.sunGeo.dist, 'sun')));
+  }
+  if (solarBodies.Moon && ctx.moon?.geo) {
+    solarBodies.Moon.position.copy(astroVectorToScene(ctx.moon.geo, scaledBodyRadius(ctx.moon.geo.dist, 'moon')));
+  }
+  (ctx.planets || []).forEach(p => {
+    const mesh = solarBodies[p.name];
+    if (mesh && p.geo) mesh.position.copy(astroVectorToScene(p.geo, scaledBodyRadius(p.geo.dist, 'planet')));
+  });
+}
+function makeTextSprite(text, color = '#d9e8ff') {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 96;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(0,0,0,.85)';
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = color;
+  const lines = String(text).split('\\n');
+  lines.forEach((line, i) => {
+    ctx.font = i === 0 ? '700 23px Space Grotesk, Arial, sans-serif' : '500 17px JetBrains Mono, monospace';
+    ctx.fillText(line.toUpperCase(), canvas.width / 2, 36 + i * 27);
+  });
+  const texture = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.renderOrder = 30;
+  sprite.scale.set(1.04, 0.39, 1);
+  return sprite;
+}
+function isOrbitObject(obj) {
+  let cursor = obj;
+  while (cursor) {
+    if (cursor === orbitSystemGroup) return true;
+    cursor = cursor.parent;
+  }
+  return false;
+}
+function setEarthSceneVisible(visible) {
+  const scene = globe.scene && globe.scene();
+  if (!scene) return;
+  if (!earthSceneVisibility) earthSceneVisibility = new Map();
+  scene.traverse(obj => {
+    if (obj === scene || isOrbitObject(obj) || obj.isLight) return;
+    if (!earthSceneVisibility.has(obj)) earthSceneVisibility.set(obj, obj.visible);
+    obj.visible = visible ? earthSceneVisibility.get(obj) : false;
+  });
+}
+function makeOrbitEllipse(points, color, opacity, dashed = false) {
+  const mat = dashed
+    ? new THREE.LineDashedMaterial({ color, transparent: true, opacity, dashSize: 0.075, gapSize: 0.065, depthWrite: false, depthTest: false })
+    : new THREE.LineBasicMaterial({ color, transparent: true, opacity, depthWrite: false, depthTest: false });
+  const line = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(points), mat);
+  if (dashed) line.computeLineDistances();
+  return line;
+}
+function makeBelt(name, inner, outer, color, count, opacity) {
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const r = inner + Math.random() * (outer - inner);
+    const y = (Math.random() - 0.5) * 0.05;
+    positions[i * 3] = Math.cos(a) * r;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = Math.sin(a) * r * 0.72;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const mat = new THREE.PointsMaterial({
+    color,
+    size: 0.018,
+    transparent: true,
+    opacity,
+    depthWrite: false,
+    depthTest: false,
+  });
+  const points = new THREE.Points(geo, mat);
+  points.name = name;
+  return points;
+}
+function ensureOrbitSystemScene() {
+  if (orbitSystemGroup || !window.THREE || !globe.scene) return;
+  const scene = globe.scene();
+  const loader = new THREE.TextureLoader();
+  orbitSystemGroup = new THREE.Group();
+  orbitSystemGroup.name = 'ufologist-orbit-view';
+  orbitSystemGroup.scale.setScalar(33);
+  orbitSystemGroup.visible = false;
+  scene.add(orbitSystemGroup);
+
+  const sun = new THREE.Mesh(
+    new THREE.SphereGeometry(0.26, 48, 28),
+    new THREE.MeshBasicMaterial({ color: 0xffd166 })
+  );
+  sun.name = 'orbit-Sun';
+  orbitSystemGroup.add(sun);
+  orbitBodies.Sun = sun;
+  const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: (() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      const g = ctx.createRadialGradient(128, 128, 5, 128, 128, 126);
+      g.addColorStop(0, 'rgba(255,218,102,0.95)');
+      g.addColorStop(0.35, 'rgba(255,160,64,0.28)');
+      g.addColorStop(1, 'rgba(255,160,64,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 256, 256);
+      return new THREE.CanvasTexture(canvas);
+    })(),
+    transparent: true,
+    depthWrite: false,
+    depthTest: false,
+  }));
+  sunGlow.name = 'orbit-Sun-glow';
+  sunGlow.scale.set(1.3, 1.3, 1);
+  orbitSystemGroup.add(sunGlow);
+
+  const earthMap = configureTexture(loader.load(EARTH_DAY_TEXTURE));
+  const earthMat = new THREE.MeshBasicMaterial({ map: earthMap });
+  ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'].forEach(name => {
+    const spec = orbitBodySpec(name);
+    const mat = name === 'Earth'
+      ? earthMat
+      : new THREE.MeshBasicMaterial({ color: spec.color });
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(spec.size, 24, 16), mat);
+    mesh.name = `orbit-${name}`;
+    orbitSystemGroup.add(mesh);
+    orbitBodies[name] = mesh;
+
+    if (name === 'Saturn') {
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(spec.size * 1.35, spec.size * 2.1, 64),
+        new THREE.MeshBasicMaterial({ color: 0xd6c08a, transparent: true, opacity: 0.36, side: THREE.DoubleSide, depthWrite: false })
+      );
+      ring.rotation.x = Math.PI / 2.5;
+      mesh.add(ring);
+    }
+    if (name === 'Earth') {
+      const focusRing = new THREE.Mesh(
+        new THREE.RingGeometry(spec.size * 1.45, spec.size * 1.78, 48),
+        new THREE.MeshBasicMaterial({ color: 0x7fd0ff, transparent: true, opacity: 0.62, side: THREE.DoubleSide, depthWrite: false, depthTest: false })
+      );
+      focusRing.rotation.x = Math.PI / 2.05;
+      mesh.add(focusRing);
+      const earthGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+        color: 0x7fd0ff,
+        transparent: true,
+        opacity: 0.24,
+        depthWrite: false,
+        depthTest: false,
+      }));
+      earthGlow.scale.set(spec.size * 4.8, spec.size * 4.8, 1);
+      mesh.add(earthGlow);
+    }
+
+    const label = makeTextSprite(`${planetLabel(name)}\\n${spec.au}`, name === 'Earth' ? '#7fd0ff' : '#cdd8ef');
+    label.scale.set(name === 'Earth' ? 1.25 : 1.02, name === 'Earth' ? 0.46 : 0.38, 1);
+    orbitSystemGroup.add(label);
+    orbitLabels[name] = label;
+
+    const lineMat = new THREE.LineBasicMaterial({
+      color: name === 'Earth' ? 0x59caff : (['Mercury', 'Venus', 'Mars'].includes(name) ? 0xd99058 : 0x3598d3),
+      transparent: true,
+      opacity: name === 'Earth' ? 0.72 : 0.44,
+      depthWrite: false,
+      depthTest: false,
+    });
+    const line = new THREE.LineLoop(new THREE.BufferGeometry(), lineMat);
+    line.name = `orbit-line-${name}`;
+    orbitSystemGroup.add(line);
+    orbitLines[name] = line;
+  });
+
+  orbitBodies.Moon = new THREE.Mesh(
+    new THREE.SphereGeometry(0.046, 18, 12),
+    new THREE.MeshBasicMaterial({ color: 0xdce7ff })
+  );
+  orbitSystemGroup.add(orbitBodies.Moon);
+  orbitLabels.Moon = makeTextSprite(currentLang === 'en' ? 'Moon' : 'Luna', '#dce7ff');
+  orbitSystemGroup.add(orbitLabels.Moon);
+
+  orbitEventMarker = new THREE.Mesh(
+    new THREE.SphereGeometry(0.045, 18, 12),
+    new THREE.MeshBasicMaterial({ color: 0xff5a8a })
+  );
+  orbitSystemGroup.add(orbitEventMarker);
+
+  orbitBackdrop = new THREE.Group();
+  orbitBackdrop.name = 'orbit-belts-and-guides';
+  orbitBackdrop.add(makeBelt('asteroid-belt', 3.55, 4.25, 0xd8a453, 1300, 0.26));
+  orbitBackdrop.add(makeBelt('kuiper-belt', 8.5, 10.4, 0x4aa9e8, 1600, 0.16));
+  orbitSystemGroup.add(orbitBackdrop);
+
+  orbitConnectors.sunEarth = new THREE.Line(
+    new THREE.BufferGeometry(),
+    new THREE.LineBasicMaterial({ color: 0xffd166, transparent: true, opacity: 0.58, depthWrite: false, depthTest: false })
+  );
+  orbitSystemGroup.add(orbitConnectors.sunEarth);
+  orbitConnectors.earthMoon = new THREE.Line(
+    new THREE.BufferGeometry(),
+    new THREE.LineBasicMaterial({ color: 0xdce7ff, transparent: true, opacity: 0.72, depthWrite: false, depthTest: false })
+  );
+  orbitSystemGroup.add(orbitConnectors.earthMoon);
+}
+function updateOrbitLines(date) {
+  if (!window.Astronomy || !orbitSystemGroup) return;
+  const A = window.Astronomy;
+  const center = new Date(date);
+  ['Mercury', 'Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune'].forEach(name => {
+    const spec = orbitBodySpec(name);
+    const points = [];
+    for (let i = 0; i < spec.samples; i++) {
+      const f = (i / spec.samples) - 0.5;
+      const d = new Date(center.getTime() + f * spec.days * 86400000);
+      const v = A.HelioVector(A.Body[name], new A.AstroTime(d));
+      points.push(helioVectorToOrbitScene(v));
+    }
+    orbitLines[name].geometry.dispose();
+    orbitLines[name].geometry = new THREE.BufferGeometry().setFromPoints(points);
+  });
+}
+function updateOrbitSystemScene(ctx) {
+  if (!ctx || !ctx.available || !window.Astronomy) return;
+  ensureOrbitSystemScene();
+  if (!orbitSystemGroup) return;
+  const A = window.Astronomy;
+  orbitSystemGroup.visible = state.viewMode === 'orbit';
+  updateOrbitLines(ctx.date);
+
+  const earthVector = A.HelioVector(A.Body.Earth, new A.AstroTime(ctx.date));
+  const earthPos = helioVectorToOrbitScene(earthVector);
+  orbitBodies.Earth.position.copy(earthPos);
+
+  (ctx.planets || []).forEach(p => {
+    const mesh = orbitBodies[p.name];
+    if (mesh && p.helio) mesh.position.copy(helioVectorToOrbitScene(p.helio));
+  });
+
+  if (orbitBodies.Moon && ctx.moon?.geo) {
+    const moonDir = astroVectorToScene(ctx.moon.geo, 1).normalize();
+    orbitBodies.Moon.position.copy(earthPos).add(moonDir.multiplyScalar(0.42));
+  }
+  Object.entries(orbitLabels).forEach(([name, label]) => {
+    const body = orbitBodies[name];
+    if (!body) return;
+    const offset = name === 'Moon' ? 0.18 : (name === 'Earth' ? 0.36 : 0.28);
+    label.position.copy(body.position).add(new THREE.Vector3(0, offset, 0));
+  });
+  if (orbitEventMarker && currentAstroContext?.caseLatLng) {
+    const v = globeVector(currentAstroContext.caseLatLng.lat, currentAstroContext.caseLatLng.lng, 0.18);
+    orbitEventMarker.position.copy(earthPos).add(new THREE.Vector3(v.x, v.y, v.z));
+  }
+  if (orbitConnectors.sunEarth) {
+    orbitConnectors.sunEarth.geometry.dispose();
+    orbitConnectors.sunEarth.geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), earthPos]);
+  }
+  if (orbitConnectors.earthMoon && orbitBodies.Moon) {
+    orbitConnectors.earthMoon.geometry.dispose();
+    orbitConnectors.earthMoon.geometry = new THREE.BufferGeometry().setFromPoints([earthPos, orbitBodies.Moon.position]);
+  }
+}
+function applySolarContext(ctx) {
+  if (!ctx || !ctx.subsolar) return;
+  currentAstroContext = ctx;
+  updateSolarSystemScene(ctx);
+  updateOrbitSystemScene(ctx);
+  refresh();
+}
+
+function zoomGlobe(direction) {
+  const pov = globe.pointOfView();
+  const current = Number.isFinite(pov.altitude) ? pov.altitude : 2.3;
+  const factor = direction > 0 ? 0.78 : 1.28;
+  const altitude = Math.max(0.55, Math.min(4.2, current * factor));
+  globe.controls().autoRotate = false;
+  globe.pointOfView({ lat: pov.lat, lng: pov.lng, altitude }, 420);
+}
+$('btn-zoom-in').onclick = () => zoomGlobe(1);
+$('btn-zoom-out').onclick = () => zoomGlobe(-1);
+function setGlobeSurfaceVisible(visible) {
+  const material = globe.globeMaterial && globe.globeMaterial();
+  if (material) material.visible = visible;
+}
+function setViewMode(mode) {
+  if (!['earth', 'orbit'].includes(mode)) return;
+  state.viewMode = mode;
+  document.querySelectorAll('#view-toggle button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === mode);
+  });
+  setEarthSceneVisible(mode === 'earth');
+  setGlobeSurfaceVisible(mode === 'earth');
+  if (globe.showAtmosphere) globe.showAtmosphere(mode === 'earth');
+  globe.atmosphereAltitude(mode === 'earth' ? 0.18 : 0);
+  if (solarSystemGroup) solarSystemGroup.visible = mode === 'earth';
+  if (orbitSystemGroup) orbitSystemGroup.visible = mode === 'orbit';
+  if (mode === 'orbit') {
+    ensureOrbitSystemScene();
+    if (!currentAstroContext && window.UFOAstro) {
+      const now = new Date();
+      const ctx = UFOAstro.computeCaseContext({ datetimeUtc: now.toISOString(), date: now.toISOString().slice(0, 10), lat: 0, lng: 0 }, currentLang);
+      if (ctx) ctx.caseLatLng = { lat: 0, lng: 0 };
+      applySolarContext(ctx);
+    }
+    if (currentAstroContext) updateOrbitSystemScene(currentAstroContext);
+    globe.controls().autoRotate = false;
+    globe.pointOfView({ lat: 48, lng: -58, altitude: 5.9 }, 900);
+  } else {
+    setEarthSceneVisible(true);
+    if (currentAstroContext) updateSolarSystemScene(currentAstroContext);
+    globe.pointOfView({ lat: 30, lng: -40, altitude: 2.3 }, 900);
+  }
+  refresh();
+}
+$('btn-view-earth').onclick = () => setViewMode('earth');
+$('btn-view-orbit').onclick = () => setViewMode('orbit');
 
 // adaptive heat scale (log) — recomputed on refresh
 let heatRef = 15;
@@ -966,6 +1784,10 @@ function heatColor(w, alpha) {
 function fmtDateInt(d) {
   const y = Math.floor(d / 10000), m = Math.floor(d / 100) % 100, da = d % 100;
   return `${String(da).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
+}
+function isoFromDateInt(d) {
+  const y = Math.floor(d / 10000), m = Math.floor(d / 100) % 100, da = d % 100;
+  return `${y}-${String(m).padStart(2, '0')}-${String(da).padStart(2, '0')}`;
 }
 
 function hideLoading() {
@@ -987,7 +1809,9 @@ function filteredCases() {
   return allCuratedPool().filter(c =>
     c.year >= state.yearFrom && c.year <= state.yearTo &&
     state.types.has(c.type) &&
-    (c.mine || c.cred >= state.credMin)
+    (c.mine || c.cred >= state.credMin) &&
+    geoAllowed(c) &&
+    contextAllowed(c)
   );
 }
 
@@ -996,33 +1820,46 @@ function refresh() {
   const curated = filteredCases();
   const mass = massFiltered();
   const geipan = geipanFiltered();
+  const official = officialFiltered();
+  const officialGeo = official.filter(hasCoords);
   lastMassCount = mass.length;
-  const heatTotal = mass.length + geipan.length;
+  const heatTotal = mass.length + geipan.length + officialGeo.length;
   heatRef = heatTotal > 0 ? Math.max(20, heatTotal / 30) : 15;
 
-  let points = [];
-  if (state.layerMode !== 'heat' && casesReady) {
-    points = curated.slice();
-    // mobile keeps only the curated dots as DOM markers (heatmap shows mass density);
-    // desktop also shows individual mass/GEIPAN reports when each subset is small
-    if (!isMobile()) {
-      if (mass.length > 0 && mass.length <= MASS_POINT_LIMIT) points = points.concat(mass);
-      if (geipan.length > 0 && geipan.length <= MASS_POINT_LIMIT) points = points.concat(geipan);
-    }
+  let htmlPoints = [];
+  let webglPoints = [];
+  if (state.viewMode === 'earth' && state.layerMode !== 'heat' && casesReady) {
+    htmlPoints = curated.slice();
+    webglPoints = sourcePointData(mass, geipan, officialGeo);
   }
-  globe.htmlElementsData(points);
-  globe.hexBinPointsData(state.layerMode !== 'points' ? curated.concat(mass, geipan) : []);
-  globe.labelsData(state.hotspots ? HOTSPOTS : []);
+  globe.htmlElementsData(htmlPoints);
+  globe.pointsData(webglPoints);
+  globe.hexBinPointsData(state.viewMode === 'earth' && state.layerMode !== 'points' ? curated.concat(mass, geipan, officialGeo) : []);
+  const labels = (state.viewMode === 'earth' && state.hotspots ? HOTSPOTS.slice() : []);
+  globe.labelsData(labels);
 
-  renderCaseList(curated);
+  renderCaseList(curated, official);
   renderTypeCounts();
   renderShapeCounts();
   renderGeipanCounts();
-  $('case-count').textContent = fmtNum(curated.length + mass.length + geipan.length);
+  renderOfficialCounts();
+  renderGeoQualityCounts();
+  renderGeoContextCounts();
+  $('case-count').textContent = fmtNum(curated.length + mass.length + geipan.length + official.length);
   const parts = [`${fmtNum(curated.length)} ${t('curated')}`];
-  if (mass.length) parts.push(`${fmtNum(mass.length)} NUFORC${mass.length > MASS_POINT_LIMIT ? ` (${t('heatSuffix')})` : ''}`);
-  if (geipan.length) parts.push(`${fmtNum(geipan.length)} GEIPAN${geipan.length > MASS_POINT_LIMIT ? ` (${t('heatSuffix')})` : ''}`);
-  $('mass-count-hint').textContent = parts.join(' + ') + ((mass.length > MASS_POINT_LIMIT || geipan.length > MASS_POINT_LIMIT) ? ` · ${t('narrowHint')}` : '');
+  const sourceModeSuffix = n => state.layerMode !== 'points' && n > MASS_POINT_LIMIT ? ` (${t('heatSuffix')})` : '';
+  if (mass.length) parts.push(`${fmtNum(mass.length)} NUFORC${sourceModeSuffix(mass.length)}`);
+  if (geipan.length) parts.push(`${fmtNum(geipan.length)} GEIPAN${sourceModeSuffix(geipan.length)}`);
+  if (official.length) parts.push(`${fmtNum(official.length)} ${t('officialShort')}${officialGeo.length !== official.length ? ` (${fmtNum(officialGeo.length)} ${t('mapShort')})` : ''}`);
+  const pointLimit = isMobile() ? MOBILE_POINT_LIMIT : MASS_POINT_LIMIT;
+  const sourceTotal = mass.length + geipan.length + officialGeo.length;
+  const sampledHint = state.layerMode === 'points' && webglPoints.length < sourceTotal
+    ? ` · ${t('sampledPointsHint', { shown: fmtNum(webglPoints.length), total: fmtNum(sourceTotal) })}`
+    : '';
+  const narrowHint = state.layerMode !== 'points' && (mass.length > pointLimit || geipan.length > pointLimit || officialGeo.length > pointLimit)
+    ? ` · ${t('narrowHint')}`
+    : '';
+  $('mass-count-hint').textContent = parts.join(' + ') + sampledHint + narrowHint;
   $('year-from').textContent = state.yearFrom;
   $('year-to').textContent = state.yearTo;
   drawHistogram();
@@ -1137,6 +1974,133 @@ function renderGeipanCounts() {
 }
 $('geipan-toggle').onchange = e => { state.geipanOn = e.target.checked; refresh(); };
 
+// ---------- Source filters (official archive candidates) ----------
+function buildOfficialFilters(sources) {
+  const wrap = $('official-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  sources.forEach(src => {
+    const el = document.createElement('span');
+    el.className = 'shape-pill' + (state.officialSources.has(src.id) ? '' : ' off');
+    el.dataset.officialSource = src.id;
+    el.title = `${src.label} · ${fmtNum(src.geolocated)} ${currentLang === 'en' ? 'geolocated' : 'geolocalizados'}`;
+    el.innerHTML = `<span class="sdot" style="background:${SHAPE_META[9].color}"></span>${esc(src.label)} <span class="o-count"></span>`;
+    el.onclick = () => {
+      state.officialSources.has(src.id) ? state.officialSources.delete(src.id) : state.officialSources.add(src.id);
+      el.classList.toggle('off', !state.officialSources.has(src.id));
+      refresh();
+    };
+    wrap.appendChild(el);
+  });
+  renderOfficialCounts();
+}
+function renderOfficialCounts() {
+  if (!officialData) return;
+  const counts = {};
+  officialData.forEach(r => {
+    if (r.year >= state.yearFrom && r.year <= state.yearTo) counts[r.sid] = (counts[r.sid] || 0) + 1;
+  });
+  document.querySelectorAll('#official-filters .shape-pill').forEach(el => {
+    el.querySelector('.o-count').textContent = counts[el.dataset.officialSource] || 0;
+  });
+}
+$('official-toggle').onchange = e => { state.officialOn = e.target.checked; refresh(); };
+
+// ---------- Geographic precision filters ----------
+function buildGeoQualityFilters() {
+  const wrap = $('geo-quality-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  GEO_QUALITY_META.forEach(g => {
+    const el = document.createElement('span');
+    el.className = 'shape-pill' + (state.geoQuality.has(g.id) ? '' : ' off');
+    el.dataset.geoQuality = g.id;
+    el.title = geoQualityDesc(g.id);
+    el.innerHTML = `<span class="sdot" style="background:${g.color}"></span>${geoQualityLabel(g.id)} <span class="q-count"></span>`;
+    el.onclick = () => {
+      state.geoQuality.has(g.id) ? state.geoQuality.delete(g.id) : state.geoQuality.add(g.id);
+      el.classList.toggle('off', !state.geoQuality.has(g.id));
+      refresh();
+    };
+    wrap.appendChild(el);
+  });
+  renderGeoQualityCounts();
+}
+function renderGeoQualityCounts() {
+  const counts = Object.fromEntries(GEO_QUALITY_META.map(g => [g.id, 0]));
+  allCuratedPool().forEach(c => {
+    if (c.year >= state.yearFrom && c.year <= state.yearTo && state.types.has(c.type) && (c.mine || c.cred >= state.credMin) && contextAllowed(c))
+      counts[geoQuality(c)]++;
+  });
+  if (state.massOn && massData) {
+    massData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.shapes.has(r.s) && contextAllowed(r)) counts[geoQuality(r)]++;
+    });
+  }
+  if (state.geipanOn && geipanData) {
+    geipanData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.geipanClasses.has(r.ci) && contextAllowed(r)) counts[geoQuality(r)]++;
+    });
+  }
+  if (state.officialOn && officialData) {
+    officialData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.officialSources.has(r.sid) && contextAllowed(r)) counts[geoQuality(r)]++;
+    });
+  }
+  document.querySelectorAll('#geo-quality-filters .shape-pill').forEach(el => {
+    const n = counts[el.dataset.geoQuality] || 0;
+    el.querySelector('.q-count').textContent = n > 999 ? (n / 1000).toFixed(1) + 'k' : n;
+  });
+}
+
+// ---------- Geographic context filters ----------
+function buildGeoContextFilters() {
+  const wrap = $('geo-context-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  GEO_CONTEXT_META.forEach(g => {
+    const el = document.createElement('span');
+    el.className = 'shape-pill' + (state.geoContexts.has(g.id) ? '' : ' off');
+    el.dataset.geoContext = g.id;
+    el.title = geoContextDesc(g.id);
+    el.innerHTML = `<span class="sdot" style="background:${g.color}"></span>${geoContextLabel(g.id)} <span class="x-count"></span>`;
+    el.onclick = () => {
+      state.geoContexts.has(g.id) ? state.geoContexts.delete(g.id) : state.geoContexts.add(g.id);
+      el.classList.toggle('off', !state.geoContexts.has(g.id));
+      refresh();
+    };
+    wrap.appendChild(el);
+  });
+  renderGeoContextCounts();
+}
+function renderGeoContextCounts() {
+  const counts = Object.fromEntries(GEO_CONTEXT_META.map(g => [g.id, 0]));
+  const addTags = d => geoContextTags(d).forEach(tag => { if (tag in counts) counts[tag]++; });
+  allCuratedPool().forEach(c => {
+    if (c.year >= state.yearFrom && c.year <= state.yearTo && state.types.has(c.type) && (c.mine || c.cred >= state.credMin) && geoAllowed(c))
+      addTags(c);
+  });
+  if (state.massOn && massData) {
+    massData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.shapes.has(r.s) && geoAllowed(r)) addTags(r);
+    });
+  }
+  if (state.geipanOn && geipanData) {
+    geipanData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.geipanClasses.has(r.ci) && geoAllowed(r)) addTags(r);
+    });
+  }
+  if (state.officialOn && officialData) {
+    officialData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.officialSources.has(r.sid) && geoAllowed(r)) addTags(r);
+    });
+  }
+  document.querySelectorAll('#geo-context-filters .shape-pill').forEach(el => {
+    const n = counts[el.dataset.geoContext] || 0;
+    el.querySelector('.x-count').textContent = n > 999 ? (n / 1000).toFixed(1) + 'k' : n;
+  });
+}
+
 // ---------- Credibility ----------
 $('cred-range').oninput = e => {
   state.credMin = +e.target.value;
@@ -1155,17 +2119,31 @@ document.querySelectorAll('#layer-mode button').forEach(btn => {
 });
 
 // ---------- Case list ----------
-function renderCaseList(data) {
+function renderCaseList(data, official = []) {
   const wrap = $('case-list');
   wrap.innerHTML = '';
-  [...data].sort((a, b) => b.year - a.year).forEach(c => {
+  const rows = [
+    ...data.map(c => ({ kind: 'curated', year: c.year, item: c })),
+    ...official.map(o => ({ kind: 'official', year: o.year, item: o })),
+  ].sort((a, b) => b.year - a.year).slice(0, 900);
+  rows.forEach(row => {
+    const c = row.item;
     const el = document.createElement('div');
     el.className = 'case-item' + (state.selectedCase === c.id ? ' active' : '');
-    el.innerHTML = `
-      <div class="ci-top"><span class="ci-dot" style="background:${TYPE_META[c.type].color}"></span>
-      <span class="ci-name">${caseName(c)}</span></div>
-      <div class="ci-meta">${c.year} · ${caseCountry(c) || t('myNotebook')} · ${c.mine ? '📓' : '★'.repeat(c.cred)}</div>`;
-    el.onclick = () => openCase(c.id, true);
+    if (row.kind === 'official') {
+      const color = reportVisualColor(c);
+      el.innerHTML = `
+        <div class="ci-top"><span class="ci-dot" style="background:${color}"></span>
+        <span class="ci-name">${esc(c.title)}</span></div>
+        <div class="ci-meta">${c.year} · ${esc(c.source)} · ${hasCoords(c) ? esc(c.loc || c.country || '') : t('officialNoCoords')}</div>`;
+      el.onclick = () => openOfficialReport(c, true);
+    } else {
+      el.innerHTML = `
+        <div class="ci-top"><span class="ci-dot" style="background:${TYPE_META[c.type].color}"></span>
+        <span class="ci-name">${caseName(c)}</span></div>
+        <div class="ci-meta">${c.year} · ${caseCountry(c) || t('myNotebook')} · ${c.mine ? '📓' : '★'.repeat(c.cred)}</div>`;
+      el.onclick = () => openCase(c.id, true);
+    }
     wrap.appendChild(el);
   });
 }
@@ -1256,6 +2234,51 @@ $('case-content').addEventListener('click', e => {
 
 // ---------- Case detail ----------
 function gmaps(lat, lng) { return `https://maps.google.com/?q=${lat.toFixed(5)},${lng.toFixed(5)}&t=k`; }
+function deg(v) { return `${v >= 0 ? '+' : ''}${v.toFixed(1)}°`; }
+function pct(v) { return `${Math.round(v * 100)}%`; }
+function planetLabel(name) {
+  const es = { Mercury: 'Mercurio', Venus: 'Venus', Mars: 'Marte', Jupiter: 'Júpiter', Saturn: 'Saturno', Uranus: 'Urano', Neptune: 'Neptuno' };
+  return currentLang === 'en' ? name : (es[name] || name);
+}
+function renderAstroBlock(ctx) {
+  if (!ctx) return '';
+  const dt = ctx.date.toLocaleString(locale(), {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short',
+  });
+  const brightPlanetNames = new Set(['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn']);
+  const visiblePlanets = (ctx.planets || []).filter(p => p.visible && brightPlanetNames.has(p.name)).slice(0, 4);
+  const visibleText = visiblePlanets.length
+    ? visiblePlanets.map(p => `${planetLabel(p.name)} ${deg(p.altitude)}`).join(' · ')
+    : (currentLang === 'en' ? 'None above horizon' : 'Ninguno sobre el horizonte');
+  const timeNote = ctx.timeNote ? `<p class="astro-note">${ctx.timeNote}</p>` : '';
+  if (!ctx.available) {
+    return `<div class="astro-card">
+      <h4>${currentLang === 'en' ? 'Celestial context' : 'Contexto celeste'}</h4>
+      <p class="hint">${currentLang === 'en' ? 'Astronomy engine unavailable.' : 'Motor astronómico no disponible.'}</p>
+      <div class="astro-grid">
+        <div><label>${currentLang === 'en' ? 'Case time' : 'Tiempo del caso'}</label><span>${dt}</span></div>
+        <div><label>${currentLang === 'en' ? 'Precision' : 'Precisión'}</label><span>${ctx.precisionLabel}</span></div>
+      </div>
+      ${timeNote}
+    </div>`;
+  }
+  return `<div class="astro-card">
+    <h4>${currentLang === 'en' ? 'Celestial context' : 'Contexto celeste'}</h4>
+    <div class="astro-grid">
+      <div><label>${currentLang === 'en' ? 'Case time' : 'Tiempo del caso'}</label><span>${dt}</span></div>
+      <div><label>${currentLang === 'en' ? 'Precision' : 'Precisión'}</label><span>${ctx.precisionLabel}</span></div>
+      <div><label>${currentLang === 'en' ? 'Sun altitude' : 'Altura solar'}</label><span>${deg(ctx.sun.altitude)} · ${ctx.sun.visible ? (currentLang === 'en' ? 'daylight' : 'día') : (currentLang === 'en' ? 'below horizon' : 'bajo horizonte')}</span></div>
+      <div><label>${currentLang === 'en' ? 'Moon' : 'Luna'}</label><span>${ctx.moon.phaseName} · ${pct(ctx.moon.illuminated)} · ${deg(ctx.moon.altitude)}</span></div>
+      <div><label>${currentLang === 'en' ? 'Bright planets above horizon' : 'Planetas brillantes sobre horizonte'}</label><span>${visibleText}</span></div>
+      <div><label>${currentLang === 'en' ? 'Subsolar point' : 'Punto subsolar'}</label><span>${ctx.subsolar.lat.toFixed(1)}, ${ctx.subsolar.lng.toFixed(1)}</span></div>
+    </div>
+    ${timeNote}
+    <p class="hint">${currentLang === 'en'
+      ? 'Astronomical context is computed from the recorded date. Date-only cases are rendered at 12:00 UTC. Solar-system body positions update in the 3D scene; visual distances and sizes are compressed for readability.'
+      : 'El contexto astronómico se calcula desde la fecha registrada. Los casos sin hora se renderizan a las 12:00 UTC. Las posiciones de cuerpos del sistema solar se actualizan en la escena 3D; distancias y tamaños son visuales.'}</p>
+  </div>`;
+}
 
 function openCase(id, fly) {
   const pool = allCuratedPool();
@@ -1264,6 +2287,9 @@ function openCase(id, fly) {
   closeStats();
   state.selectedCase = id;
   const meta = TYPE_META[c.type];
+  const astroContext = window.UFOAstro ? UFOAstro.computeCaseContext(c, currentLang) : null;
+  if (astroContext) astroContext.caseLatLng = { lat: c.lat, lng: c.lng };
+  applySolarContext(astroContext);
   const dateFmt = new Date(c.date + 'T12:00:00').toLocaleDateString(locale(), { day: 'numeric', month: 'long', year: 'numeric' });
   $('case-content').innerHTML = `
     <span class="cc-type-badge" style="background:${meta.color}22;color:${meta.color};border:1px solid ${meta.color}55">
@@ -1279,6 +2305,7 @@ function openCase(id, fly) {
       <div class="cc-stat"><label>${t('classification')}</label><span class="v">${c.type}</span></div>
     </div>
     <p class="cc-summary">${caseSummary(c) || `<i>${t('noNotes')}</i>`}</p>
+    ${renderAstroBlock(astroContext)}
     ${c.mine ? '' : renderMediaBlock(c)}
     ${c.sources && c.sources.length ? `<div class="cc-sources"><h4>${t('originalSources')}</h4>
       ${c.sources.map((s, i) => `<a class="cc-source-link" href="${s[1]}" target="_blank" rel="noopener">${caseSourceLabel(c, i)}</a>`).join('')}</div>` : ''}
@@ -1314,7 +2341,7 @@ function openCase(id, fly) {
     globe.controls().autoRotate = false;
     globe.pointOfView({ lat: c.lat, lng: c.lng, altitude: 1.4 }, 900);
   }
-  renderCaseList(visible);
+  renderCaseList(visible, officialFiltered());
   scheduleHashUpdate();
 }
 
@@ -1322,6 +2349,14 @@ function openMassReport(d) {
   closeStats();
   state.selectedCase = null;
   const s = SHAPE_META[d.s];
+  const astroContext = window.UFOAstro ? UFOAstro.computeCaseContext({
+    date: isoFromDateInt(d.d),
+    time: d.h >= 0 ? `${String(d.h).padStart(2, '0')}:00` : undefined,
+    lat: d.lat,
+    lng: d.lng,
+  }, currentLang) : null;
+  if (astroContext) astroContext.caseLatLng = { lat: d.lat, lng: d.lng };
+  applySolarContext(astroContext);
   $('case-content').innerHTML = `
     <span class="cc-type-badge" style="background:${s.color}22;color:${s.color};border:1px solid ${s.color}55">
       <span class="dot" style="width:8px;height:8px;border-radius:50%;background:${s.color}"></span>${shapeLabel(d.s)}</span>
@@ -1336,6 +2371,7 @@ function openMassReport(d) {
       <div class="cc-stat"><label>${t('shape')}</label><span class="v">${shapeLabel(d.s)}</span></div>
     </div>
     <p class="cc-summary">${t('nuforcSummary')}</p>
+    ${renderAstroBlock(astroContext)}
     <div class="cc-sources"><h4>${t('source')}</h4>
       <a class="cc-source-link" href="https://nuforc.org/databank/" target="_blank" rel="noopener">${t('nuforcDatabank', { date: fmtDateInt(d.d) })}</a>
     </div>
@@ -1351,10 +2387,18 @@ function openGeipanReport(d) {
   closeStats();
   state.selectedCase = null;
   const g = GEIPAN_META[d.ci];
+  const astroContext = window.UFOAstro ? UFOAstro.computeCaseContext({
+    date: isoFromDateInt(d.d),
+    lat: d.lat,
+    lng: d.lng,
+  }, currentLang) : null;
+  if (astroContext) astroContext.caseLatLng = { lat: d.lat, lng: d.lng };
+  applySolarContext(astroContext);
   const q = encodeURIComponent((d.zone || 'France') + ' ' + Math.floor(d.d / 10000) + ' OVNI UAP');
+  const color = reportVisualColor(d);
   $('case-content').innerHTML = `
-    <span class="cc-type-badge" style="background:${g.color}22;color:${g.color};border:1px solid ${g.color}55">
-      <span class="dot" style="width:8px;height:8px;border-radius:50%;background:${g.color}"></span>GEIPAN · ${geipanLabel(d.ci)}</span>
+    <span class="cc-type-badge" style="background:${color}22;color:${color};border:1px solid ${color}55">
+      <span class="dot" style="width:8px;height:8px;border-radius:50%;background:${color}"></span>${geipanLabel(d.ci)}</span>
     <h2 class="cc-title">${t('geipanCase')}</h2>
     <p class="cc-loc">📍 ${d.zone || t('france')} · <span style="color:var(--txt-dim)">${t('departmentLocation')}</span></p>
     <div class="cc-row">
@@ -1363,6 +2407,7 @@ function openGeipanReport(d) {
     </div>
     <p class="cc-summary">${d.resume || t('geipanSummary')}</p>
     <p class="hint">${geipanDesc(d.ci)}</p>
+    ${renderAstroBlock(astroContext)}
     <div class="cc-sources"><h4>${t('officialSource')}</h4>
       <a class="cc-source-link" href="https://www.cnes-geipan.fr/fr/recherche/cas" target="_blank" rel="noopener">GEIPAN — Recherche de cas</a>
     </div>
@@ -1372,6 +2417,55 @@ function openGeipanReport(d) {
     </div>`;
   $('panel-case').classList.remove('hidden');
   mobileOnCaseOpen();
+}
+
+function openOfficialReport(d, fly) {
+  closeStats();
+  state.selectedCase = d.id;
+  const color = reportVisualColor(d);
+  const coords = hasCoords(d);
+  const astroContext = (coords && window.UFOAstro && d.date) ? UFOAstro.computeCaseContext({
+    date: d.date,
+    time: d.time || undefined,
+    lat: d.lat,
+    lng: d.lng,
+  }, currentLang) : null;
+  if (astroContext) astroContext.caseLatLng = { lat: d.lat, lng: d.lng };
+  applySolarContext(astroContext);
+  const dateLabel = d.d ? fmtDateInt(d.d) : (d.date || d.year || '—');
+  const q = encodeURIComponent(`${d.title} ${d.year || ''} UFO UAP`);
+  const sourceHref = d.sourceUrl || '';
+  const geoText = coords ? `${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}${d.geoApprox ? ` · ${esc(d.geoPrecision || 'approx')}` : ''}` : '—';
+  const geoNote = coords && d.geoApprox ? ` · <span style="color:var(--txt-dim)">${esc(d.geoLabel || d.geoPrecision || 'approx')}</span>` : '';
+  $('case-content').innerHTML = `
+    <span class="cc-type-badge" style="background:${color}22;color:${color};border:1px solid ${color}55">
+      <span class="dot" style="width:8px;height:8px;border-radius:50%;background:${color}"></span>${t('officialCase')}</span>
+    <h2 class="cc-title">${esc(d.title)}</h2>
+    <p class="cc-loc">📍 ${esc(d.loc || d.country || t('officialNoCoords'))}${coords ? ` · <a class="cc-map-link" href="${gmaps(d.lat, d.lng)}" target="_blank" rel="noopener">${t('satellite')} ↗</a>${geoNote}` : ` · <span style="color:var(--txt-dim)">${t('officialNoCoords')}</span>`}</p>
+    <div class="cc-row">
+      <div class="cc-stat"><label>${t('date')}</label><span class="v">${dateLabel}</span></div>
+      <div class="cc-stat"><label>${t('source')}</label><span class="v">${esc(d.source)}</span></div>
+    </div>
+    <div class="cc-row">
+      <div class="cc-stat"><label>${t('classification')}</label><span class="v">${esc(d.cls || d.recordType || t('officialReview'))}</span></div>
+      <div class="cc-stat"><label>${t('coordinates')}</label><span class="v">${geoText}</span></div>
+    </div>
+    <p class="cc-summary">${esc(d.summary || t('officialReview'))}</p>
+    ${renderAstroBlock(astroContext)}
+    <div class="cc-sources"><h4>${t('officialSource')}</h4>
+      ${sourceHref ? `<a class="cc-source-link" href="${sourceHref}" target="_blank" rel="noopener">${esc(d.source)}</a>` : ''}
+      ${d.sourceFile ? `<span class="cc-source-link" style="display:block;opacity:.78">${esc(d.sourceFile)}</span>` : ''}
+    </div>
+    <div class="cc-media-actions">
+      <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">▶ ${t('searchVideos')}</a>
+      <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}">🖼 ${t('searchImages')}</a>
+    </div>`;
+  $('panel-case').classList.remove('hidden');
+  mobileOnCaseOpen();
+  if (fly && coords) {
+    globe.controls().autoRotate = false;
+    globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 0.9 }, 800);
+  }
 }
 $('btn-close-case').onclick = () => {
   $('panel-case').classList.add('hidden');
@@ -1384,28 +2478,65 @@ const searchInput = $('search'), searchResults = $('search-results');
 searchInput.oninput = () => {
   const q = searchInput.value.trim().toLowerCase();
   if (q.length < 2) { searchResults.classList.add('hidden'); return; }
-  const hits = allCuratedPool().filter(c =>
+  const curatedHits = allCuratedPool().filter(c =>
     caseName(c).toLowerCase().includes(q) || (caseLoc(c) || '').toLowerCase().includes(q) ||
     (caseCountry(c) || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q) ||
     (c.loc || '').toLowerCase().includes(q) || (c.country || '').toLowerCase().includes(q) || c.year.toString().includes(q)
-  ).slice(0, 10);
+  ).map(c => ({ kind: 'curated', item: c }));
+  const officialHits = (officialData || []).filter(o =>
+    (o.title || '').toLowerCase().includes(q) || (o.loc || '').toLowerCase().includes(q) ||
+    (o.country || '').toLowerCase().includes(q) || (o.source || '').toLowerCase().includes(q) ||
+    (o.sourceCaseId || '').toLowerCase().includes(q) || String(o.year || '').includes(q)
+  ).map(o => ({ kind: 'official', item: o }));
+  const hits = curatedHits.concat(officialHits).slice(0, 10);
   searchResults.innerHTML = hits.length
-    ? hits.map(c => `
-        <div class="sr-item" data-id="${c.id}">
-          <span class="sr-dot" style="background:${TYPE_META[c.type].color}"></span>
-          <div><div class="sr-name">${caseName(c)}</div>
-          <div class="sr-meta">${c.year} · ${caseLoc(c)}${caseCountry(c) ? ', ' + caseCountry(c) : ''}</div></div>
-        </div>`).join('')
+    ? hits.map(hit => {
+      const c = hit.item;
+      const isOfficial = hit.kind === 'official';
+      const color = isOfficial ? reportVisualColor(c) : TYPE_META[c.type].color;
+      return `
+        <div class="sr-item" data-kind="${hit.kind}" data-id="${esc(c.id)}">
+          <span class="sr-dot" style="background:${color}"></span>
+          <div><div class="sr-name">${isOfficial ? esc(c.title) : caseName(c)}</div>
+          <div class="sr-meta">${c.year} · ${isOfficial ? esc(c.source) : `${caseLoc(c)}${caseCountry(c) ? ', ' + caseCountry(c) : ''}`}</div></div>
+        </div>`;
+    }).join('')
     : `<div class="sr-item"><div class="sr-meta">${t('noResults')}</div></div>`;
   searchResults.classList.remove('hidden');
   searchResults.querySelectorAll('.sr-item[data-id]').forEach(el => {
     el.onclick = () => {
       searchResults.classList.add('hidden');
       searchInput.value = '';
+      if (el.dataset.kind === 'official') {
+        const o = (officialData || []).find(x => x.id === el.dataset.id);
+        if (!o) return;
+        if (o.year < state.yearFrom || o.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
+        if (!state.officialSources.has(o.sid)) { state.officialSources.add(o.sid); document.querySelector(`.shape-pill[data-official-source="${o.sid}"]`)?.classList.remove('off'); }
+        const oq = geoQuality(o);
+        if (!state.geoQuality.has(oq)) { state.geoQuality.add(oq); document.querySelector(`.shape-pill[data-geo-quality="${oq}"]`)?.classList.remove('off'); }
+        geoContextTags(o).forEach(tag => {
+          if (!state.geoContexts.has(tag)) {
+            state.geoContexts.add(tag);
+            document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
+          }
+        });
+        state.officialOn = true; $('official-toggle').checked = true;
+        refresh();
+        openOfficialReport(o, true);
+        return;
+      }
       const c = allCuratedPool().find(x => x.id === el.dataset.id);
       if (c.year < state.yearFrom || c.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
       if (!state.types.has(c.type)) { state.types.add(c.type); document.querySelector(`.type-chip[data-type="${c.type}"]`)?.classList.remove('off'); }
       if (!c.mine && c.cred < state.credMin) { state.credMin = 1; $('cred-range').value = 1; $('cred-stars').textContent = '★☆☆☆☆'; }
+      const cq = geoQuality(c);
+      if (!state.geoQuality.has(cq)) { state.geoQuality.add(cq); document.querySelector(`.shape-pill[data-geo-quality="${cq}"]`)?.classList.remove('off'); }
+      geoContextTags(c).forEach(tag => {
+        if (!state.geoContexts.has(tag)) {
+          state.geoContexts.add(tag);
+          document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
+        }
+      });
       refresh();
       openCase(c.id, true);
     };
@@ -1429,17 +2560,22 @@ function drawHistogram() {
   const span = YEAR_MAX - YEAR_MIN + 1;
   const counts = new Array(span).fill(0);
   allCuratedPool().forEach(c => {
-    if (state.types.has(c.type) && (c.mine || c.cred >= state.credMin) && c.year >= YEAR_MIN && c.year <= YEAR_MAX)
+    if (state.types.has(c.type) && (c.mine || c.cred >= state.credMin) && geoAllowed(c) && contextAllowed(c) && c.year >= YEAR_MIN && c.year <= YEAR_MAX)
       counts[c.year - YEAR_MIN]++;
   });
   if (state.massOn && massData) {
     massData.forEach(r => {
-      if (r.year >= YEAR_MIN && r.year <= YEAR_MAX && state.shapes.has(r.s)) counts[r.year - YEAR_MIN]++;
+      if (r.year >= YEAR_MIN && r.year <= YEAR_MAX && state.shapes.has(r.s) && geoAllowed(r) && contextAllowed(r)) counts[r.year - YEAR_MIN]++;
     });
   }
   if (state.geipanOn && geipanData) {
     geipanData.forEach(r => {
-      if (r.year >= YEAR_MIN && r.year <= YEAR_MAX && state.geipanClasses.has(r.ci)) counts[r.year - YEAR_MIN]++;
+      if (r.year >= YEAR_MIN && r.year <= YEAR_MAX && state.geipanClasses.has(r.ci) && geoAllowed(r) && contextAllowed(r)) counts[r.year - YEAR_MIN]++;
+    });
+  }
+  if (state.officialOn && officialData) {
+    officialData.forEach(r => {
+      if (r.year >= YEAR_MIN && r.year <= YEAR_MAX && state.officialSources.has(r.sid) && geoAllowed(r) && contextAllowed(r)) counts[r.year - YEAR_MIN]++;
     });
   }
   // log scale (mass DB is exponentially skewed toward 2000s)
@@ -1607,11 +2743,13 @@ function renderStats() {
   const curated = filteredCases();
   const mass = massFiltered();
   const geipan = geipanFiltered();
+  const official = officialFiltered();
   // decades
   const dec = {};
   curated.forEach(c => { const d = Math.floor(c.year / 10) * 10; dec[d] = (dec[d] || 0) + 1; });
   mass.forEach(r => { const d = Math.floor(r.year / 10) * 10; dec[d] = (dec[d] || 0) + 1; });
   geipan.forEach(r => { const d = Math.floor(r.year / 10) * 10; dec[d] = (dec[d] || 0) + 1; });
+  official.forEach(r => { const d = Math.floor(r.year / 10) * 10; dec[d] = (dec[d] || 0) + 1; });
   const decKeys = Object.keys(dec).map(Number).sort((a, b) => a - b);
   const decMax = Math.max(1, ...Object.values(dec));
   // GEIPAN by classification
@@ -1621,29 +2759,40 @@ function renderStats() {
   // shapes
   const sh = new Array(SHAPE_META.length).fill(0);
   mass.forEach(r => sh[r.s]++);
+  official.forEach(r => sh[r.s]++);
   const shMax = Math.max(1, ...sh);
   // top locations
   const locs = {};
   mass.forEach(r => { if (r.loc) locs[r.loc] = (locs[r.loc] || 0) + 1; });
+  official.forEach(r => { if (r.loc) locs[r.loc] = (locs[r.loc] || 0) + 1; });
   const topLocs = Object.entries(locs).sort((a, b) => b[1] - a[1]).slice(0, 10);
   const locMax = topLocs.length ? topLocs[0][1] : 1;
   // day vs night
   let day = 0, night = 0, unk = 0;
   mass.forEach(r => { if (r.h < 0) unk++; else if (r.h >= 7 && r.h <= 19) day++; else night++; });
+  official.forEach(r => { if (r.h < 0) unk++; else if (r.h >= 7 && r.h <= 19) day++; else night++; });
+  const officialBySource = {};
+  official.forEach(r => { officialBySource[r.source] = (officialBySource[r.source] || 0) + 1; });
+  const officialTop = Object.entries(officialBySource).sort((a, b) => b[1] - a[1]);
+  const officialMax = officialTop.length ? officialTop[0][1] : 1;
 
   $('stats-content').innerHTML = `
     <div class="kpi-row">
       <div class="kpi"><span class="n">${fmtNum(curated.length)}</span><label>${t('kpiCurated')}</label></div>
       <div class="kpi"><span class="n">${fmtNum(mass.length)}</span><label>NUFORC</label></div>
       <div class="kpi"><span class="n">${fmtNum(geipan.length)}</span><label>GEIPAN</label></div>
-      <div class="kpi"><span class="n">${fmtNum(curated.length + mass.length + geipan.length)}</span><label>${t('total')}</label></div>
+      <div class="kpi"><span class="n">${fmtNum(official.length)}</span><label>${t('officialShort')}</label></div>
+      <div class="kpi"><span class="n">${fmtNum(curated.length + mass.length + geipan.length + official.length)}</span><label>${t('total')}</label></div>
     </div>
     <div class="chart-block"><h4>${t('byDecade')}</h4>
       ${decKeys.map(d => hbar(d + 's', dec[d], decMax)).join('')}</div>
     ${geipan.length ? `
     <div class="chart-block"><h4>${t('geipanByClass')}</h4>
       ${GEIPAN_META.map((g, i) => ({ g, i, n: gc[i] })).filter(x => x.n).map(x => hbar(geipanLabel(x.i), x.n, gcMax)).join('')}</div>` : ''}
-    ${mass.length ? `
+    ${official.length ? `
+    <div class="chart-block"><h4>${t('officialArchives')}</h4>
+      ${officialTop.map(([l, n]) => hbar(l, n, officialMax)).join('')}</div>` : ''}
+    ${(mass.length || official.length) ? `
     <div class="chart-block"><h4>${t('byShape')}</h4>
       ${SHAPE_META.map((s, i) => ({ s, i, n: sh[i] })).filter(x => x.n).sort((a, b) => b.n - a.n)
         .map(x => hbar(shapeLabel(x.i), x.n, shMax)).join('')}</div>
@@ -1687,7 +2836,21 @@ function exportRows() {
     time: '', lat: r.lat, lng: r.lng, type: GEIPAN_META[r.ci].code, type_label: geipanLabel(r.ci),
     location: r.zone || '', credibility: '', summary: r.resume || '', sources: 'https://www.cnes-geipan.fr/fr/recherche/cas',
   }));
-  return curated.concat(mass, geipan);
+  const official = officialFiltered().map(r => ({
+    source: r.source || 'Official archive',
+    name: r.title || r.sourceCaseId || 'Official UAP record',
+    date: r.date || '',
+    time: r.time || '',
+    lat: r.lat,
+    lng: r.lng,
+    type: r.shape || '',
+    type_label: r.shape ? shapeLabel(r.s) : '',
+    location: (r.loc || '') + (r.country ? ', ' + r.country : ''),
+    credibility: r.geoApprox ? `geo:${r.geoPrecision || 'approx'}` : '',
+    summary: r.summary || '',
+    sources: r.sourceUrl || r.sourceFile || '',
+  }));
+  return curated.concat(mass, geipan, official);
 }
 function download(filename, text, mime) {
   const a = document.createElement('a');
@@ -1724,6 +2887,8 @@ function encodeHash() {
   if (state.tod !== 'all') p.set('h', state.tod);
   if (!state.geipanOn) p.set('g', '0');
   if (state.geipanClasses.size !== GEIPAN_META.length) p.set('gc', [...state.geipanClasses].join('.'));
+  if (state.geoQuality.size !== GEO_QUALITY_META.length) p.set('q', [...state.geoQuality].join('.'));
+  if (state.geoContexts.size !== GEO_CONTEXT_META.length) p.set('x', [...state.geoContexts].join('.'));
   if (state.hotspots) p.set('hs', '1');
   if (state.selectedCase) p.set('case', state.selectedCase);
   return p.toString();
@@ -1751,6 +2916,8 @@ function applyHash() {
     if (p.get('h') && ['day', 'night'].includes(p.get('h'))) state.tod = p.get('h');
     if (p.get('g') === '0') state.geipanOn = false;
     if (p.get('gc')) state.geipanClasses = new Set(p.get('gc').split('.').map(Number).filter(i => i >= 0 && i < GEIPAN_META.length));
+    if (p.get('q')) state.geoQuality = new Set(p.get('q').split('.').filter(q => GEO_QUALITY_META.some(g => g.id === q)));
+    if (p.get('x')) state.geoContexts = new Set(p.get('x').split('.').filter(x => GEO_CONTEXT_META.some(g => g.id === x)));
     if (p.get('hs') === '1') state.hotspots = true;
     return p.get('case');
   } finally { applyingHash = false; }
@@ -1971,6 +3138,42 @@ function buildAnatomy() {
       }).join('')}
     </div>`;
 }
+function buildSourceAtlas() {
+  const sorted = [...DATA_SOURCE_CATALOG].sort((a, b) => {
+    const byPriority = a.priority - b.priority;
+    if (byPriority) return byPriority;
+    const byStatus = (a.status === 'active' ? 0 : 1) - (b.status === 'active' ? 0 : 1);
+    if (byStatus) return byStatus;
+    return a.name.localeCompare(b.name);
+  });
+  return `
+    <h3>${t('sourceAtlasTitle')}</h3>
+    <p>${t('sourceAtlasIntro')}</p>
+    <div class="source-atlas-grid">
+      ${sorted.map(s => `
+        <article class="source-card ${s.status === 'active' ? 'is-active' : ''}">
+          <div class="source-card-head">
+            <div>
+              <b>${esc(s.name)}</b>
+              <span>${esc(s.country)}</span>
+            </div>
+            <em>${sourceStatusLabel(s.status)}</em>
+          </div>
+          <div class="source-meta-row">
+            <span>${sourceTypeLabel(s.type)}</span>
+            <span>${t('sourcePriority')} ${esc(s.priority)}</span>
+            <span>${esc(s.period)}</span>
+          </div>
+          <dl class="source-facts">
+            <div><dt>${t('sourceRecords')}</dt><dd>${esc(s.records)}</dd></div>
+            <div><dt>${t('sourceWhy')}</dt><dd>${esc(s.value)}</dd></div>
+            <div><dt>${t('sourceCaveat')}</dt><dd>${esc(s.caveat)}</dd></div>
+            <div><dt>${t('sourceIntegration')}</dt><dd>${esc(s.integration)}</dd></div>
+          </dl>
+          <a class="cc-source-link" href="${esc(s.url)}" target="_blank" rel="noopener">${t('sourceOpen')}</a>
+        </article>`).join('')}
+    </div>`;
+}
 
 const TABS = {
   hynek: () => `
@@ -2006,6 +3209,7 @@ const TABS = {
     <h3>${t('dataLayersTitle')}</h3>
     <p>${t('curatedLayer')}</p>
     <p>${t('massLayer')}</p>`,
+  sources: () => buildSourceAtlas(),
   report: () => `
     <h3>${t('reportTitle')}</h3>
     <p>${t('reportIntro')}</p>
@@ -2198,6 +3402,8 @@ document.querySelectorAll('#tod-filter button').forEach(b => b.classList.toggle(
 buildTypeFilters();
 buildShapeFilters();
 buildGeipanFilters();
+buildGeoQualityFilters();
+buildGeoContextFilters();
 positionHandles();
 renderTimelineEvents();
 refresh();

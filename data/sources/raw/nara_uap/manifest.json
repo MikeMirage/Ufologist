@@ -1,0 +1,115 @@
+{
+  "id": "nara_uap",
+  "name": "NARA UAP Records Collection",
+  "strategy": "interrupted_crawl_recovered_from_disk",
+  "seeds": [
+    "https://www.archives.gov/research/topics/uaps",
+    "https://www.archives.gov/research/topics/uaps/rg-615"
+  ],
+  "assets": [
+    {
+      "kind": "downloads",
+      "file": "data/sources/raw/nara_uap/downloads/488808322.zip",
+      "bytes": 12307212,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "downloads",
+      "file": "data/sources/raw/nara_uap/downloads/493468575.zip",
+      "bytes": 66158779,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "downloads",
+      "file": "data/sources/raw/nara_uap/downloads/493468579.zip",
+      "bytes": 1357814,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "downloads",
+      "file": "data/sources/raw/nara_uap/downloads/493468580.zip",
+      "bytes": 108387285,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "downloads",
+      "file": "data/sources/raw/nara_uap/downloads/BILLS-118hr2670enr.pdf",
+      "bytes": 2409568,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/moving-images-and-sound.html",
+      "bytes": 53680,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/nara.html",
+      "bytes": 232647,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/photographs.html",
+      "bytes": 67949,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/presidential-libraries.html",
+      "bytes": 112441,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/rg-615.html",
+      "bytes": 42174,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/rg-collections.html",
+      "bytes": 80893,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/textual-and-microfilm.html",
+      "bytes": 51139,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/uap-bulk-download.html",
+      "bytes": 98171,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/uaps-2.html",
+      "bytes": 41085,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/uaps-3.html",
+      "bytes": 41085,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    },
+    {
+      "kind": "pages",
+      "file": "data/sources/raw/nara_uap/pages/uaps.html",
+      "bytes": 41085,
+      "acquired_at": "2026-06-22T13:16:42.928Z"
+    }
+  ],
+  "discovered_links": [],
+  "errors": [],
+  "started_at": null,
+  "finished_at": "2026-06-22T13:16:42.928Z",
+  "page_count": 11,
+  "download_count": 5,
+  "discovered_count": 0,
+  "note": "Manifest reconstructed from files already acquired before crawler interruption."
+}
