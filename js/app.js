@@ -1352,8 +1352,7 @@ function officialFiltered() {
 const CASE_MARKER_NODE_BUDGET = 1600; // max DOM markers/clusters in desktop globe view
 const MOBILE_CASE_MARKER_NODE_BUDGET = 720;
 const CASE_CLUSTER_EXPAND_LIMIT = 18;
-const CASE_CLUSTER_DRILLDOWN_LIMIT = 140;
-const MOBILE_CASE_CLUSTER_DRILLDOWN_LIMIT = 72;
+const CASE_CLUSTER_INLINE_EXPAND_LIMIT = 6;
 const CASE_CLUSTER_LIST_LIMIT = 220;
 const WEATHER_HEATMAP_ENABLED = true;
 const WEATHER_HEATMAP_WIDTH = 512;
@@ -1821,10 +1820,16 @@ function zoomToCluster(cluster) {
   setTimeout(() => {
     updateWeatherHeatmapOpacity();
     updateStreamingMapTiles();
-    if (cluster.count <= CASE_CLUSTER_EXPAND_LIMIT && targetAlt <= 0.85) {
+    const nearDrilldown = targetAlt <= 0.24 || cluster.cellDeg <= 0.9;
+    if (cluster.count <= CASE_CLUSTER_INLINE_EXPAND_LIMIT && targetAlt <= 0.85) {
       expandedClusterKey = cluster._key;
       expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
+      expandedClusterLimit = CASE_CLUSTER_INLINE_EXPAND_LIMIT;
+    } else if (cluster.count > CASE_CLUSTER_INLINE_EXPAND_LIMIT && nearDrilldown) {
+      expandedClusterKey = null;
+      expandedClusterRows = [];
       expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
+      openClusterBrowser(cluster);
     }
     renderCaseMarkersFromCurrent();
   }, 980);
@@ -1853,7 +1858,13 @@ function openClusterBrowser(cluster) {
   if (!cluster?.rows?.length) return;
   closeStats();
   state.selectedCase = null;
-  const rows = deterministicSample(cluster.rows, CASE_CLUSTER_LIST_LIMIT);
+  const center = { lat: cluster.lat, lng: cluster.lng };
+  const rows = deterministicSample(cluster.rows, CASE_CLUSTER_LIST_LIMIT)
+    .sort((a, b) => {
+      const byDistance = angularDistanceDeg(center, a) - angularDistanceDeg(center, b);
+      if (Math.abs(byDistance) > 0.0001) return byDistance;
+      return (b.year || Math.floor((b.d || 0) / 10000) || 0) - (a.year || Math.floor((a.d || 0) / 10000) || 0);
+    });
   const hidden = Math.max(0, cluster.rows.length - rows.length);
   const years = cluster.yearMin && cluster.yearMax
     ? (cluster.yearMin === cluster.yearMax ? cluster.yearMin : `${cluster.yearMin}-${cluster.yearMax}`)
@@ -1864,8 +1875,8 @@ function openClusterBrowser(cluster) {
     <h2 class="cc-title">${fmtNum(cluster.count)} ${currentLang === 'en' ? 'encounters in this area' : 'encuentros en esta zona'}</h2>
     <p class="cc-loc">📍 ${cluster.lat.toFixed(3)}, ${cluster.lng.toFixed(3)} · ${years}</p>
     <p class="cc-summary">${currentLang === 'en'
-      ? 'The group is expanded on the globe. Open any row to see the full case record.'
-      : 'El grupo queda desplegado sobre el globo. Abre cualquier fila para ver la ficha completa del caso.'}</p>
+      ? 'This area is too dense for precise marker picking. Open any row to see the full case record.'
+      : 'Esta zona es demasiado densa para seleccionar marcadores con precisión. Abre cualquier fila para ver la ficha completa del caso.'}</p>
     <div class="cluster-case-list">
       ${rows.map((r, i) => `
         <button class="cluster-case-row" data-i="${i}">
@@ -1890,19 +1901,27 @@ function handleClusterClick(cluster, el) {
   activateMarker(cluster, el);
   hideMarkerHover();
   const currentAlt = globe.pointOfView()?.altitude || 2.3;
-  const drillLimit = isMobile() ? MOBILE_CASE_CLUSTER_DRILLDOWN_LIMIT : CASE_CLUSTER_DRILLDOWN_LIMIT;
   const nearDrilldown = currentAlt <= 0.24 || cluster.cellDeg <= 0.9;
-  if (cluster.count <= CASE_CLUSTER_EXPAND_LIMIT && currentAlt <= 0.85) {
+  const shouldListDenseCluster = cluster.count > CASE_CLUSTER_INLINE_EXPAND_LIMIT && nearDrilldown;
+  if (shouldListDenseCluster) {
+    expandedClusterKey = null;
+    expandedClusterRows = [];
+    expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
+    renderCaseMarkersFromCurrent();
+    openClusterBrowser(cluster);
+    return;
+  }
+  if (cluster.count <= CASE_CLUSTER_INLINE_EXPAND_LIMIT && currentAlt <= 0.85) {
     expandedClusterKey = cluster._key;
     expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
-    expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
+    expandedClusterLimit = CASE_CLUSTER_INLINE_EXPAND_LIMIT;
     renderCaseMarkersFromCurrent();
     return;
   }
   if (nearDrilldown) {
-    expandedClusterKey = cluster._key;
-    expandedClusterRows = cluster.rows.map(r => ({ ...r, _clusterMeta: cluster }));
-    expandedClusterLimit = drillLimit;
+    expandedClusterKey = null;
+    expandedClusterRows = [];
+    expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
     renderCaseMarkersFromCurrent();
     openClusterBrowser(cluster);
     return;
