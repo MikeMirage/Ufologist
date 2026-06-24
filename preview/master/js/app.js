@@ -1551,14 +1551,16 @@ function streamingTileMaterial(tile) {
 function updateStreamingMapTiles() {
   if (!globe.tilesData) return;
   if (state.viewMode !== 'earth') {
-    globe.tilesData([]);
+    if (lastStreamingTileSignature) globe.tilesData([]);
+    lastStreamingTileSignature = '';
     window.__ufologistTileState = { enabled: false, count: 0 };
     return;
   }
   const pov = globe.pointOfView();
   const z = tileZoomForAltitude(pov.altitude);
   if (!z) {
-    globe.tilesData([]);
+    if (lastStreamingTileSignature) globe.tilesData([]);
+    lastStreamingTileSignature = '';
     window.__ufologistTileState = { enabled: false, count: 0, altitude: pov.altitude };
     return;
   }
@@ -1576,6 +1578,12 @@ function updateStreamingMapTiles() {
     }
   }
   const selected = tiles.slice(0, STREAMING_TILE_MAX_NODES);
+  const signature = selected.map(t => `${t.z}/${t.x}/${t.y}`).join('|');
+  if (signature === lastStreamingTileSignature) {
+    window.__ufologistTileState = { enabled: true, reused: true, z, count: selected.length, altitude: pov.altitude };
+    return;
+  }
+  lastStreamingTileSignature = signature;
   globe
     .tilesData(selected)
     .tileLat('lat')
@@ -1598,11 +1606,13 @@ let expandedClusterKey = null;
 let expandedClusterRows = [];
 let expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
 let preserveClusterDrilldownUntil = 0;
+let inspectedMarker = null;
 let currentSelectionHintBase = '';
 let currentSelectionMarkerTotal = 0;
 let politicalBoundaryPaths = [];
 const streamingTileMaterialCache = new Map();
 let streamingTileLoader = null;
+let lastStreamingTileSignature = '';
 
 function reportMarkerKey(d) {
   if (!d) return '';
@@ -1676,6 +1686,7 @@ function focusCameraOnReport(d, altitude = (isMobile() ? 1.28 : 1.08), duration 
     ? Math.max(EARTH_MIN_ALTITUDE, Math.min(currentAlt, altitude))
     : altitude;
   if (mode === 'inspect') preserveClusterDrilldownUntil = performance.now() + duration + 350;
+  else clearInspectedMarker();
   globe.controls().autoRotate = false;
   globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: targetAltitude }, duration);
   setTimeout(() => {
@@ -1691,6 +1702,15 @@ function activateMarker(d, el) {
   if (el) el.classList.add('is-active');
 }
 
+function pinInspectedMarker(d) {
+  inspectedMarker = d && hasCoords(d) ? { ...d, _inspected: true } : null;
+  if (inspectedMarker) activeMarkerKey = reportMarkerKey(inspectedMarker);
+}
+
+function clearInspectedMarker() {
+  inspectedMarker = null;
+}
+
 function clusterCaseMarkers(rows) {
   if (!rows.length) return { markers: [], clusters: 0, expanded: 0, total: 0 };
   const pov = globe.pointOfView ? globe.pointOfView() : { lat: 20, lng: -40, altitude: 2.3 };
@@ -1698,13 +1718,15 @@ function clusterCaseMarkers(rows) {
   const focus = { lat: Number.isFinite(pov.lat) ? pov.lat : 20, lng: Number.isFinite(pov.lng) ? pov.lng : -40 };
   const baseCell = markerLodCellDegrees(pov.altitude);
   const focusRadius = markerFocusRadiusDeg(pov.altitude);
+  const inspectedKey = inspectedMarker ? pointSampleKey(inspectedMarker) : '';
+  const inspectedRow = inspectedKey ? rows.find(r => pointSampleKey(r) === inspectedKey) : null;
   const expandedKeys = new Set(expandedClusterRows.map(pointSampleKey));
   const expanded = expandedClusterRows.length ? expandedRowsForCluster({
     ...(expandedClusterRows[0]?._clusterMeta || {}),
     rows: expandedClusterRows,
     count: expandedClusterRows.length,
     expandLimit: expandedClusterLimit,
-  }) : [];
+  }).filter(r => pointSampleKey(r) !== inspectedKey) : [];
 
   function build(cellMultiplier = 1) {
     const groups = new Map();
@@ -1717,11 +1739,13 @@ function clusterCaseMarkers(rows) {
       groups.get(key).rows.push(r);
     };
     rows.forEach(r => {
-      if (expandedKeys.has(pointSampleKey(r))) return;
+      const key = pointSampleKey(r);
+      if (key === inspectedKey || expandedKeys.has(key)) return;
       const inFocus = focusRadius >= 360 || angularDistanceDeg(focus, r) <= focusRadius;
       add(r, inFocus);
     });
-    const markers = expanded.slice();
+    const markers = inspectedRow ? [{ ...inspectedRow, _inspected: true }] : [];
+    markers.push(...expanded);
     let clusters = 0;
     groups.forEach(g => {
       if (g.rows.length === 1 && g.inFocus && g.cell <= 1.7) {
@@ -1808,6 +1832,8 @@ function zoomToCluster(cluster) {
 
 function openReportFromMarker(d, fly = true) {
   if (!d) return;
+  if (fly === 'inspect') pinInspectedMarker(d);
+  else clearInspectedMarker();
   d.official ? openOfficialReport(d, fly) : (d.geipan ? openGeipanReport(d, fly) : (d.mass ? openMassReport(d, fly) : openCase(d.id, fly)));
 }
 
@@ -1891,7 +1917,7 @@ function buildMarker(d) {
   el.className = 'globe-marker' + (activeMarkerKey === key ? ' is-active' : '');
   const color = d.cluster ? d.color : reportVisualColor(d);
   const reveal = revealCases && !(d.cluster || d.mass || d.geipan || d.official);
-  const cls = 'case-hex' + (d.cluster ? ' cluster' : '') + (d.mine ? ' mine' : '') + (d._expandedFrom ? ' expanded' : '') + (reveal ? ' reveal' : '');
+  const cls = 'case-hex' + (d.cluster ? ' cluster' : '') + (d.mine ? ' mine' : '') + (d._expandedFrom ? ' expanded' : '') + (d._inspected ? ' inspected' : '') + (reveal ? ' reveal' : '');
   const pip = '<circle class="pip" cx="12" cy="12" r="2.2"/>';
   const delay = reveal ? `;animation-delay:${Math.round(((d.lng + 180) / 360) * 1500)}ms` : '';
   const clusterText = d.cluster
@@ -1927,6 +1953,7 @@ globe.controls().autoRotateSpeed = 0.35;
 globe.controls().addEventListener('start', () => {
   globe.controls().autoRotate = false;
   if (performance.now() < preserveClusterDrilldownUntil) return;
+  clearInspectedMarker();
   expandedClusterKey = null;
   expandedClusterRows = [];
   expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
@@ -2638,6 +2665,7 @@ function refresh() {
 
   currentCaseMarkerRows = [];
   currentCaseMarkerRender = { markers: 0, clusters: 0, expanded: 0, total: 0 };
+  clearInspectedMarker();
   expandedClusterKey = null;
   expandedClusterRows = [];
   expandedClusterLimit = CASE_CLUSTER_EXPAND_LIMIT;
@@ -3286,6 +3314,8 @@ function openOfficialReport(d, fly) {
 $('btn-close-case').onclick = () => {
   $('panel-case').classList.add('hidden');
   state.selectedCase = null;
+  clearInspectedMarker();
+  renderCaseMarkersFromCurrent();
   scheduleHashUpdate();
 };
 
