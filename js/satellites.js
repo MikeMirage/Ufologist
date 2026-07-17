@@ -171,6 +171,25 @@
   }
   model.loadData = loadData;
 
+  // ---------- Lanzamientos (LL2 snapshot) ----------
+  async function loadLaunches() {
+    try { const r = await fetch('data/launches.json'); const j = await r.json(); return (j.launches || []); }
+    catch (e) { return []; }
+  }
+  // agrupa lanzamientos por sitio (pad) → [{lat,lng,padName,launches[]}]
+  function groupPads(launches) {
+    const m = new Map();
+    for (const L of launches) {
+      if (typeof L.lat !== 'number' || typeof L.lng !== 'number') continue;
+      const key = L.lat.toFixed(3) + ',' + L.lng.toFixed(3);
+      if (!m.has(key)) m.set(key, { lat: L.lat, lng: L.lng, padName: L.padName || '', launches: [] });
+      m.get(key).launches.push(L);
+    }
+    return [...m.values()];
+  }
+  model.loadLaunches = loadLaunches;
+  model.groupPads = groupPads;
+
   // ---------- Vista (SOLO navegador) ----------
   // Órbitas y satélites se dibujan como objetos THREE propios en la escena del
   // globo (LineSegments + Points, 1 draw call cada uno) → sin competir con
@@ -362,7 +381,13 @@
     let dx = 0, dy = 0, moved = false;
     VG._onDown = e => { dx = e.clientX; dy = e.clientY; moved = false; };
     VG._onMove = e => { if (Math.hypot(e.clientX - dx, e.clientY - dy) > 5) moved = true; };
-    VG._onUp = e => { if (moved || e.button !== 0) return; selectSat(pickSat(globe, e.clientX, e.clientY)); };
+    VG._onUp = e => {
+      if (moved || e.button !== 0) return;
+      const pad = pickPad(globe, e.clientX, e.clientY);   // los sitios tienen prioridad (marcador mayor)
+      if (pad) { selectPad(pad); return; }
+      selectPad(null);
+      selectSat(pickSat(globe, e.clientX, e.clientY));
+    };
     dom.addEventListener('pointerdown', VG._onDown);
     dom.addEventListener('pointermove', VG._onMove);
     dom.addEventListener('pointerup', VG._onUp);
@@ -376,6 +401,95 @@
     VG._pickDom = null;
   }
 
+  // ---------- Sitios de lanzamiento (pads) ----------
+  const PAD_ALT = 0.01;   // ligeramente sobre la superficie para evitar z-fighting
+  function nowMs() { return Date.parse(new Date().toISOString()); }
+  function padHasUpcoming(pad) { const n = nowMs(); return pad.launches.some(L => Date.parse(L.net) >= n); }
+  function padTexture() {
+    if (VG._padTex) return VG._padTex;
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d');
+    g.fillStyle = 'rgba(255,255,255,0.97)';
+    g.beginPath(); g.moveTo(32, 8); g.lineTo(54, 52); g.lineTo(10, 52); g.closePath(); g.fill();
+    VG._padTex = new (TH()).CanvasTexture(c);
+    return VG._padTex;
+  }
+  function buildPads(globe) {
+    const T = TH(), sc = globe.scene();
+    if (VG.padObj) { sc.remove(VG.padObj); VG.padObj.geometry.dispose(); VG.padObj = null; }
+    if (!VG.showPads || !VG.pads || !VG.pads.length) return;
+    const pos = new Float32Array(VG.pads.length * 3), col = new Float32Array(VG.pads.length * 3);
+    VG.padData = VG.pads;
+    for (let i = 0; i < VG.pads.length; i++) {
+      const p = VG.pads[i], v = coord(globe, p.lat, p.lng, PAD_ALT);
+      pos[i * 3] = v.x; pos[i * 3 + 1] = v.y; pos[i * 3 + 2] = v.z;
+      const up = padHasUpcoming(p);                     // próximos = ámbar vivo; solo pasados = tenue
+      col[i * 3] = 1; col[i * 3 + 1] = up ? 0.68 : 0.5; col[i * 3 + 2] = up ? 0.32 : 0.28;
+    }
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new T.BufferAttribute(col, 3));
+    const mat = new T.PointsMaterial({ size: 13, sizeAttenuation: false, map: padTexture(), vertexColors: true, transparent: true, alphaTest: 0.4 });
+    VG.padObj = new T.Points(geo, mat);
+    VG.padObj.renderOrder = 7;
+    sc.add(VG.padObj);
+  }
+  function pickPad(globe, clientX, clientY) {
+    if (!VG || !VG.padObj || !VG.padData) return null;
+    const T = TH(), cam = globe.camera();
+    const rect = globe.renderer().domElement.getBoundingClientRect();
+    const arr = VG.padObj.geometry.attributes.position.array;
+    const v = new T.Vector3();
+    let best = null, bestD = 16;
+    for (let i = 0; i < VG.padData.length; i++) {
+      const x = arr[i * 3], y = arr[i * 3 + 1], z = arr[i * 3 + 2];
+      v.set(x, y, z).project(cam);
+      if (v.z > 1) continue;
+      const sx = rect.left + (v.x * 0.5 + 0.5) * rect.width;
+      const sy = rect.top + (-v.y * 0.5 + 0.5) * rect.height;
+      const d = Math.hypot(sx - clientX, sy - clientY);
+      if (d < bestD && !occluded(globe, x, y, z)) { bestD = d; best = VG.padData[i]; }
+    }
+    return best;
+  }
+  function launchRow(L) {
+    const n = nowMs(), up = Date.parse(L.net) >= n;
+    const d = new Date(L.net);
+    const when = isFinite(d) ? d.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+    const sx = /spacex/i.test(L.prov || '');
+    const stCls = L.status === 'Failure' ? 'lc-fail' : (up ? 'lc-up' : 'lc-ok');
+    const stTxt = up ? 'Próximo' : (L.status === 'Failure' ? 'Fallo' : (L.status === 'Success' ? 'Éxito' : L.status || ''));
+    return `<li class="lc-row${sx ? ' lc-spacex' : ''}">` +
+      `<div class="lc-r1"><span class="lc-name">${L.name || L.rocket || ''}</span>` +
+      `<span class="lc-badge ${stCls}">${stTxt}</span></div>` +
+      `<div class="lc-r2">${L.rocket || ''} · ${L.prov || ''}${L.orbit ? ' · ' + L.orbit : ''}</div>` +
+      `<div class="lc-when">${when}</div></li>`;
+  }
+  function selectPad(pad) {
+    if (!VG) return;
+    selectSat(null);
+    VG.selPad = pad;
+    let el = document.getElementById('launch-card');
+    if (!pad) { if (el) el.style.display = 'none'; return; }
+    if (!el) { el = document.createElement('aside'); el.id = 'launch-card'; el.className = 'glass'; document.body.appendChild(el); }
+    const n = nowMs();
+    const sorted = pad.launches.slice().sort((a, b) => {
+      const ua = Date.parse(a.net) >= n, ub = Date.parse(b.net) >= n;
+      if (ua !== ub) return ua ? -1 : 1;                  // próximos primero
+      return ua ? Date.parse(a.net) - Date.parse(b.net) : Date.parse(b.net) - Date.parse(a.net);
+    });
+    const shown = sorted.slice(0, 7), extra = sorted.length - shown.length;
+    el.innerHTML =
+      '<button id="launch-card-close" class="sat-detail-close" aria-label="Cerrar">×</button>' +
+      `<div class="sd-head"><span class="sd-dot" style="background:#ffae4d;color:#ffae4d"></span><h3>${pad.padName || 'Sitio de lanzamiento'}</h3></div>` +
+      `<p class="sd-sub">${pad.lat.toFixed(2)}°, ${pad.lng.toFixed(2)}° · ${pad.launches.length} lanzamiento${pad.launches.length !== 1 ? 's' : ''}</p>` +
+      `<ul class="lc-list">${shown.map(launchRow).join('')}</ul>` +
+      (extra > 0 ? `<p class="sd-sub" style="margin:8px 0 0">+${extra} más</p>` : '');
+    el.style.display = '';
+    const close = el.querySelector('#launch-card-close');
+    if (close) close.onclick = () => selectPad(null);
+  }
+
   model.enter = async function enter() {
     const globe = root.__ufologistGlobe;
     if (!globe || !TH() || !globe.scene) { console.warn('[UFOSat] globo/THREE no disponible'); return; }
@@ -384,9 +498,14 @@
       try { const d = await loadData(); VG.sats = d.sats; VG.live = d.live; console.log('[UFOSat]', VG.sats.length, 'satélites', d.live ? '(vivo)' : '(respaldo)'); }
       catch (e) { console.warn('[UFOSat] sin datos', e); VG.sats = []; }
     }
+    if (!VG.pads) {
+      try { VG.pads = groupPads(await loadLaunches()); if (VG.showPads === undefined) VG.showPads = true; console.log('[UFOSat]', VG.pads.length, 'sitios de lanzamiento'); }
+      catch (e) { VG.pads = []; }
+    }
     VG.active = true;
     buildOrbits(globe);
     buildPoints(globe);
+    buildPads(globe);
     attachPick(globe);
     startClock();
     showPanel();
@@ -398,8 +517,11 @@
       if (sc && VG.orbitObj) sc.remove(VG.orbitObj);
       if (sc && VG.ptsObj) sc.remove(VG.ptsObj);
       if (sc && VG.selObj) sc.remove(VG.selObj);
+      if (sc && VG.padObj) sc.remove(VG.padObj);
       VG.orbitObj = null; VG.ptsObj = null; VG.selObj = null; VG.selSat = null;
+      VG.padObj = null; VG.selPad = null;
       const det = document.getElementById('sat-detail'); if (det) det.style.display = 'none';
+      const lc = document.getElementById('launch-card'); if (lc) lc.style.display = 'none';
     }
     hidePanel();
   };
@@ -420,6 +542,10 @@
         present.map(g => chip(g, constMeta(g).label, counts[g], constMeta(g).color)).join('') +
       '</div>' +
       '<p class="hint" style="margin-top:10px">Cada anillo = un plano orbital. Los puntos son satélites en tiempo simulado.</p>' +
+      (VG.pads && VG.pads.length
+        ? '<label class="sat-toggle"><input type="checkbox" id="sat-pads-toggle"' + (VG.showPads ? ' checked' : '') + '>' +
+          '<span class="st-tri"></span>Sitios de lanzamiento<b>' + VG.pads.length + '</b></label>'
+        : '') +
       '<label class="sat-speed">Velocidad de simulación · ×<span id="sat-speed-val">' + VG.simSpeed + '</span>' +
         '<input type="range" id="sat-speed" min="1" max="600" value="' + VG.simSpeed + '"></label>';
     el.querySelectorAll('.sat-chip').forEach(b => b.onclick = () => {
@@ -428,6 +554,8 @@
     });
     const sp = el.querySelector('#sat-speed');
     if (sp) sp.oninput = () => { model.setSpeed(+sp.value); const v = el.querySelector('#sat-speed-val'); if (v) v.textContent = sp.value; };
+    const pt = el.querySelector('#sat-pads-toggle');
+    if (pt) pt.onchange = () => model.togglePads(pt.checked);
     el.style.display = '';
   }
   function showPanel() {
@@ -446,6 +574,11 @@
     if (VG.selSat && g && VG.selSat.group !== g) selectSat(null);  // el seleccionado ya no está en el filtro
   };
   model.setSpeed = function (x) { if (VG) VG.simSpeed = x; };
+  model.togglePads = function (on) {
+    if (!VG) return; VG.showPads = on;
+    buildPads(root.__ufologistGlobe);
+    if (!on) selectPad(null);
+  };
   model.constellationsPresent = function () {
     if (!VG) return [];
     const set = new Set(VG.sats.map(s => s.group));
