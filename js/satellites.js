@@ -695,9 +695,10 @@
     const globe = root.__ufologistGlobe;
     if (!globe || !TH() || !globe.scene) { console.warn('[UFOSat] globo/THREE no disponible'); return; }
     if (!VG) VG = { sats: [], filter: null, simTime: new Date(), simSpeed: 90, raf: 0, orbitObj: null, ptsObj: null };
+    // Fase 1 (rápida): respaldo local para mostrar algo al instante
     if (!VG.sats.length) {
-      try { const d = await loadData(); VG.sats = d.sats; VG.live = d.live; console.log('[UFOSat]', VG.sats.length, 'satélites', d.live ? '(vivo)' : '(respaldo)'); }
-      catch (e) { console.warn('[UFOSat] sin datos', e); VG.sats = []; }
+      try { const r = await fetch('data/tle-snapshot.json'); VG.sats = buildFromSnapshot(await r.json()); VG.live = false; console.log('[UFOSat]', VG.sats.length, 'satélites (respaldo)'); }
+      catch (e) { console.warn('[UFOSat] sin respaldo', e); VG.sats = []; }
     }
     if (!VG.pads) {
       try { VG.pads = groupPads(await loadLaunches()); if (VG.showPads === undefined) VG.showPads = true; console.log('[UFOSat]', VG.pads.length, 'sitios de lanzamiento'); }
@@ -711,7 +712,17 @@
     startClock();
     showPanel();
     if (model._pendingSky) { const s = model._pendingSky; model._pendingSky = null; model.analyzeSkyAt(s.lat, s.lng, s.whenISO); }
+    // Fase 2 (en segundo plano): enriquecer con CelesTrak en vivo (solo una vez)
+    if (!VG._liveTried) { VG._liveTried = true; enrichLive(globe); }
   };
+  async function enrichLive(globe) {
+    let live; try { live = await loadLive(); } catch (e) { return; }   // se queda con el respaldo
+    const byId = new Map(VG.sats.map(s => [s.id, s]));
+    for (const s of live.sats) byId.set(s.id, s);
+    VG.sats = [...byId.values()]; VG.live = true;
+    console.log('[UFOSat]', VG.sats.length, 'satélites (vivo)');
+    if (VG.active) { buildOrbits(globe); buildPoints(globe); buildPanel(); if (VG.skyLoc) { VG.skyList = overheadSats(VG.sats, VG.skyLoc.lat, VG.skyLoc.lng, VG.simTime, 0); buildSkyLines(globe); skyCard(); } }
+  }
   model.exit = function exit() {
     const globe = root.__ufologistGlobe; const sc = globe && globe.scene && globe.scene();
     if (VG) {
