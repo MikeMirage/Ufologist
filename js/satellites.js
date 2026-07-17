@@ -116,6 +116,29 @@
     };
   }
 
+  // vector unitario geocéntrico (frame arbitrario pero consistente obs↔sat)
+  function unitVec(latDeg, lngDeg) {
+    const la = latDeg / DEG, lo = lngDeg / DEG, cl = Math.cos(la);
+    return [cl * Math.cos(lo), Math.sin(la), cl * Math.sin(lo)];
+  }
+  // satélites sobre el horizonte de un observador (lat,lng) en un instante:
+  // devuelve {sat, elev(°), range(km), alt, band} ordenado por elevación desc.
+  function overheadSats(sats, obsLat, obsLng, date, minElev) {
+    const R = EARTH_R_KM, u = unitVec(obsLat, obsLng);
+    const Ox = u[0] * R, Oy = u[1] * R, Oz = u[2] * R;
+    const res = [];
+    for (const s of sats) {
+      const p = propagate(s, date); if (!p) continue;
+      const us = unitVec(p.lat, p.lng), rs = R + p.alt;
+      const dx = us[0] * rs - Ox, dy = us[1] * rs - Oy, dz = us[2] * rs - Oz;
+      const rng = Math.sqrt(dx * dx + dy * dy + dz * dz); if (!rng) continue;
+      const elev = 90 - Math.acos((dx * u[0] + dy * u[1] + dz * u[2]) / rng) * DEG;
+      if (elev >= (minElev || 0)) res.push({ sat: s, elev, range: rng, alt: p.alt, band: orbitBand(p.alt) });
+    }
+    res.sort((a, b) => b.elev - a.elev);
+    return res;
+  }
+
   // --- Agregación por PLANO orbital (para dibujar planos, no 30k órbitas) ---
   // bucket de plano = constelación + inclinación (1°) + RAAN (~5°)
   function planeKey(sat, raanBucket) {
@@ -134,7 +157,7 @@
   const model = {
     CONSTELLATIONS, constMeta, orbitBand,
     parseTleText, buildFromSnapshot, buildSat,
-    propagate, satDetail, sampleOrbit, representativePlanes, planeKey,
+    propagate, satDetail, overheadSats, sampleOrbit, representativePlanes, planeKey,
     EARTH_R_KM,
   };
 
@@ -274,6 +297,7 @@
         VG.simTime = new Date(VG.simTime.getTime() + acc * VG.simSpeed);  // simSpeed× tiempo real
         updatePoints(globe);
         updateSel(globe);
+        updateSkyLines(globe);
         if ((VG._dcnt = (VG._dcnt || 0) + 1) % 8 === 0) refreshDetail();  // ficha ~2 Hz
         acc = 0;
       }
@@ -383,6 +407,11 @@
     VG._onMove = e => { if (Math.hypot(e.clientX - dx, e.clientY - dy) > 5) moved = true; };
     VG._onUp = e => {
       if (moved || e.button !== 0) return;
+      if (VG.skyMode) {                                   // modo cielo: clic = fijar observador
+        const loc = raycastGlobe(globe, e.clientX, e.clientY);
+        if (loc) setSkyLocation(globe, loc.lat, loc.lng);
+        return;
+      }
       const pad = pickPad(globe, e.clientX, e.clientY);   // los sitios tienen prioridad (marcador mayor)
       if (pad) { selectPad(pad); return; }
       selectPad(null);
@@ -490,6 +519,121 @@
     if (close) close.onclick = () => selectPad(null);
   }
 
+  // ---------- F3: análisis de cielo (correlación con satélites sobre un lugar) ----------
+  const SKY_TOP = 14;         // nº de líneas de visión a dibujar
+  const NAKED_EYE = new Set(['stations', 'starlink', 'oneweb']);  // LEO típicamente visibles
+  // clic en la superficie del globo → {lat,lng} (interseca esfera R=100)
+  function raycastGlobe(globe, clientX, clientY) {
+    const T = TH(), cam = globe.camera();
+    const rect = globe.renderer().domElement.getBoundingClientRect();
+    const ndc = new T.Vector3(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1, 0.5);
+    ndc.unproject(cam);
+    const C = cam.position, dir = ndc.sub(C).normalize();
+    const b = 2 * (dir.x * C.x + dir.y * C.y + dir.z * C.z);
+    const c = (C.x * C.x + C.y * C.y + C.z * C.z) - 100 * 100;
+    const disc = b * b - 4 * c; if (disc < 0) return null;
+    const t = (-b - Math.sqrt(disc)) / 2; if (t < 0) return null;
+    const P = { x: C.x + dir.x * t, y: C.y + dir.y * t, z: C.z + dir.z * t };
+    const g = globe.toGeoCoords(P);
+    return g ? { lat: g.lat, lng: g.lng } : null;
+  }
+  function buildSkyPin(globe) {
+    const T = TH(), sc = globe.scene();
+    if (VG.skyPinObj) { sc.remove(VG.skyPinObj); VG.skyPinObj.geometry.dispose(); VG.skyPinObj = null; }
+    if (!VG.skyLoc) return;
+    const v = coord(globe, VG.skyLoc.lat, VG.skyLoc.lng, 0.015);
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.Float32BufferAttribute([v.x, v.y, v.z], 3));
+    const mat = new T.PointsMaterial({ size: 22, sizeAttenuation: false, map: ringTexture(), color: 0x18d7ff, transparent: true, depthTest: false });
+    VG.skyPinObj = new T.Points(geo, mat); VG.skyPinObj.renderOrder = 9;
+    sc.add(VG.skyPinObj);
+  }
+  function buildSkyLines(globe) {
+    const T = TH(), sc = globe.scene();
+    if (VG.skyLinesObj) { sc.remove(VG.skyLinesObj); VG.skyLinesObj.geometry.dispose(); VG.skyLinesObj = null; }
+    if (!VG.skyLoc || !VG.skyList || !VG.skyList.length) return;
+    VG.skyLineSats = VG.skyList.slice(0, SKY_TOP).map(o => o.sat);
+    const n = VG.skyLineSats.length;
+    const pos = new Float32Array(n * 6), col = new Float32Array(n * 6);
+    for (let i = 0; i < n; i++) {
+      const c = hexRgb(constMeta(VG.skyLineSats[i].group).color);
+      col[i * 6] = col[i * 6 + 3] = c[0]; col[i * 6 + 1] = col[i * 6 + 4] = c[1]; col[i * 6 + 2] = col[i * 6 + 5] = c[2];
+    }
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new T.BufferAttribute(col, 3));
+    VG.skyLinesGeo = geo;
+    const mat = new T.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.55, depthTest: false });
+    VG.skyLinesObj = new T.LineSegments(geo, mat); VG.skyLinesObj.renderOrder = 8;
+    sc.add(VG.skyLinesObj);
+    updateSkyLines(globe);
+  }
+  function updateSkyLines(globe) {
+    if (!VG.skyLinesGeo || !VG.skyLineSats || !VG.skyLoc) return;
+    const o = coord(globe, VG.skyLoc.lat, VG.skyLoc.lng, 0.015);
+    const arr = VG.skyLinesGeo.attributes.position.array;
+    for (let i = 0; i < VG.skyLineSats.length; i++) {
+      const p = propagate(VG.skyLineSats[i], VG.simTime); if (!p) continue;
+      const s = coord(globe, p.lat, p.lng, p.altGlobe);
+      arr[i * 6] = o.x; arr[i * 6 + 1] = o.y; arr[i * 6 + 2] = o.z;
+      arr[i * 6 + 3] = s.x; arr[i * 6 + 4] = s.y; arr[i * 6 + 5] = s.z;
+    }
+    VG.skyLinesGeo.attributes.position.needsUpdate = true;
+  }
+  function skyCard() {
+    let el = document.getElementById('sky-card');
+    if (!VG.skyLoc || !VG.skyList) { if (el) el.style.display = 'none'; return; }
+    if (!el) { el = document.createElement('aside'); el.id = 'sky-card'; el.className = 'glass'; document.body.appendChild(el); }
+    const list = VG.skyList;
+    const leo = list.filter(o => o.band === 'LEO');
+    const naked = leo.filter(o => NAKED_EYE.has(o.sat.group) && o.elev > 10);
+    const high = list.filter(o => o.elev > 30).length;
+    const fmtLat = VG.skyLoc.lat.toFixed(2), fmtLng = VG.skyLoc.lng.toFixed(2);
+    const rows = naked.slice(0, 6).map(o =>
+      `<li class="sk-row"><span class="sk-dot" style="background:${constMeta(o.sat.group).color}"></span>` +
+      `<span class="sk-name">${o.sat.name}</span><span class="sk-elev">${o.elev.toFixed(0)}°</span></li>`).join('');
+    el.innerHTML =
+      '<button id="sky-card-close" class="sat-detail-close" aria-label="Cerrar">×</button>' +
+      '<div class="sd-head"><span class="sd-dot" style="background:#18d7ff;color:#18d7ff"></span><h3>Análisis de cielo</h3></div>' +
+      `<p class="sd-sub">${fmtLat}°, ${fmtLng}° · ${list.length.toLocaleString('es')} satélites sobre el horizonte</p>` +
+      '<dl class="sd-grid" style="margin-bottom:10px">' +
+        `<div><dt>Cielo alto &gt;30°</dt><dd>${high}</dd></div>` +
+        `<div><dt>Órbita baja (LEO)</dt><dd>${leo.length}</dd></div>` +
+      '</dl>' +
+      (naked.length
+        ? `<p class="sd-sub" style="margin:0 0 6px">Candidatos a simple vista (LEO, &gt;10°):</p><ul class="sk-list">${rows}</ul>`
+        : '<p class="sd-sub" style="margin:0">Ningún satélite LEO brillante sobre 10° ahora mismo.</p>') +
+      '<p class="sk-note">Solo los LEO iluminados por el Sol con cielo oscuro son visibles a simple vista. GPS/GEO no lo son. Posiciones para el instante simulado actual (TLE ~2026); no reconstruye fechas históricas.</p>';
+    el.style.display = '';
+    const close = el.querySelector('#sky-card-close'); if (close) close.onclick = () => clearSky();
+  }
+  function setSkyLocation(globe, lat, lng) {
+    VG.skyLoc = { lat, lng };
+    VG.skyList = overheadSats(VG.sats, lat, lng, VG.simTime, 0);
+    buildSkyPin(globe); buildSkyLines(globe); skyCard();
+  }
+  function clearSky() {
+    const globe = root.__ufologistGlobe, sc = globe && globe.scene();
+    VG.skyLoc = null; VG.skyList = null; VG.skyLineSats = null;
+    if (sc && VG.skyPinObj) sc.remove(VG.skyPinObj);
+    if (sc && VG.skyLinesObj) sc.remove(VG.skyLinesObj);
+    VG.skyPinObj = null; VG.skyLinesObj = null;
+    const el = document.getElementById('sky-card'); if (el) el.style.display = 'none';
+  }
+  model.toggleSky = function (on) {
+    if (!VG) return;
+    VG.skyMode = on;
+    document.body.classList.toggle('sky-analyzing', !!on);
+    if (on) {                                   // congela el tiempo para que el análisis sea coherente
+      if (VG._prevSpeed === undefined) VG._prevSpeed = VG.simSpeed;
+      VG.simSpeed = 0;
+      selectSat(null); selectPad(null);
+    } else {
+      if (VG._prevSpeed !== undefined) { VG.simSpeed = VG._prevSpeed; VG._prevSpeed = undefined; }
+      clearSky();
+    }
+  };
+
   model.enter = async function enter() {
     const globe = root.__ufologistGlobe;
     if (!globe || !TH() || !globe.scene) { console.warn('[UFOSat] globo/THREE no disponible'); return; }
@@ -520,6 +664,8 @@
       if (sc && VG.padObj) sc.remove(VG.padObj);
       VG.orbitObj = null; VG.ptsObj = null; VG.selObj = null; VG.selSat = null;
       VG.padObj = null; VG.selPad = null;
+      if (VG.skyMode) model.toggleSky(false); else clearSky();
+      document.body.classList.remove('sky-analyzing');
       const det = document.getElementById('sat-detail'); if (det) det.style.display = 'none';
       const lc = document.getElementById('launch-card'); if (lc) lc.style.display = 'none';
     }
@@ -546,6 +692,8 @@
         ? '<label class="sat-toggle"><input type="checkbox" id="sat-pads-toggle"' + (VG.showPads ? ' checked' : '') + '>' +
           '<span class="st-tri"></span>Sitios de lanzamiento<b>' + VG.pads.length + '</b></label>'
         : '') +
+      '<button id="sat-sky-btn" class="sat-sky-btn' + (VG.skyMode ? ' active' : '') + '">🔭 Analizar cielo sobre un lugar</button>' +
+      (VG.skyMode ? '<p class="hint" style="margin-top:6px">Clic en el globo para ver qué satélites hay sobre ese punto. El tiempo se pausa.</p>' : '') +
       '<label class="sat-speed">Velocidad de simulación · ×<span id="sat-speed-val">' + VG.simSpeed + '</span>' +
         '<input type="range" id="sat-speed" min="1" max="600" value="' + VG.simSpeed + '"></label>';
     el.querySelectorAll('.sat-chip').forEach(b => b.onclick = () => {
@@ -556,6 +704,8 @@
     if (sp) sp.oninput = () => { model.setSpeed(+sp.value); const v = el.querySelector('#sat-speed-val'); if (v) v.textContent = sp.value; };
     const pt = el.querySelector('#sat-pads-toggle');
     if (pt) pt.onchange = () => model.togglePads(pt.checked);
+    const sk = el.querySelector('#sat-sky-btn');
+    if (sk) sk.onclick = () => { model.toggleSky(!VG.skyMode); buildPanel(); };
     el.style.display = '';
   }
   function showPanel() {

@@ -512,6 +512,28 @@ body[data-view-mode="orbit"] #timeline {
 #launch-card .lc-badge.lc-ok { background: rgba(75,225,195,.15); color: #6fe6cd; }
 #launch-card .lc-badge.lc-fail { background: rgba(239,71,111,.18); color: #ff85a2; }
 
+/* Sky analysis (F3) */
+.sat-sky-btn {
+  display: block; width: 100%; margin-top: 12px; padding: 9px 10px;
+  border: 1px solid var(--glass-border); border-radius: 9px; background: rgba(24,215,255,.06);
+  color: var(--txt); font-family: var(--font-display); font-size: 12px; cursor: pointer;
+  text-align: left; transition: background .15s, border-color .15s;
+}
+.sat-sky-btn:hover { border-color: var(--accent); }
+.sat-sky-btn.active { border-color: var(--accent); background: rgba(24,215,255,.16); box-shadow: 0 0 0 1px var(--accent) inset; }
+body.sky-analyzing #globe, body.sky-analyzing #globe canvas { cursor: crosshair; }
+
+#sky-card {
+  position: fixed; right: 16px; bottom: 24px; width: 288px; max-height: 66vh; overflow-y: auto;
+  z-index: 47; padding: 15px 17px; border-radius: 14px;
+}
+#sky-card .sk-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+#sky-card .sk-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+#sky-card .sk-dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 6px currentColor; flex-shrink: 0; }
+#sky-card .sk-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#sky-card .sk-elev { font-family: var(--font-mono); font-size: 12px; color: var(--txt-dim); }
+#sky-card .sk-note { font-size: 10px; line-height: 1.45; color: var(--txt-dim); margin: 11px 0 0; padding-top: 9px; border-top: 1px solid var(--glass-border); }
+
 /* Empty state (no results) */
 #empty-state {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
