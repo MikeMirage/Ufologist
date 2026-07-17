@@ -71,6 +71,20 @@ const I18N = {
     officialGeoHint: '{geo} geolocalizados de {total}',
     officialShort: 'oficiales',
     mapShort: 'mapa',
+    countryFilter: 'País / región',
+    countryFilterHint: 'Filtro global aplicado a NUFORC, GEIPAN, archivos oficiales y casos curados.',
+    encounterFilter: 'Tipo de encuentro',
+    encounterFilterHint: 'Taxonomía Hynek extendida, inferida de forma conservadora cuando la fuente no la declara.',
+    spaceContext: 'Contexto aeroespacial',
+    spaceContextHint: 'Overlay opcional de bases espaciales, radares/observatorios y eventos meteóricos relevantes.',
+    spaceport: 'Base espacial',
+    tracking: 'Radar / seguimiento',
+    meteorContext: 'Meteorito / bólido',
+    observatory: 'Observatorio',
+    globalContext: 'Global',
+    inferredEncounter: 'tipo inferido',
+    geipanNormalizedSummary: 'Resumen normalizado: {kind}{where}{date}. Clasificación GEIPAN {class}.',
+    geipanOriginalFrench: 'Texto original en francés',
     geoQuality: 'Precisión geográfica',
     geoQualityHint: 'Separa coordenadas reportadas, locales, regionales y amplias para no mezclar patrones fuertes con ubicaciones aproximadas.',
     geoReported: 'Reportada',
@@ -306,6 +320,20 @@ const I18N = {
     officialGeoHint: '{geo} geolocated of {total}',
     officialShort: 'official',
     mapShort: 'map',
+    countryFilter: 'Country / region',
+    countryFilterHint: 'Global filter applied to NUFORC, GEIPAN, official archives, and curated cases.',
+    encounterFilter: 'Encounter type',
+    encounterFilterHint: 'Extended Hynek taxonomy, inferred conservatively when the source does not declare it.',
+    spaceContext: 'Aerospace context',
+    spaceContextHint: 'Optional overlay of spaceports, radar/tracking sites, observatories, and relevant meteor events.',
+    spaceport: 'Space base',
+    tracking: 'Radar / tracking',
+    meteorContext: 'Meteorite / bolide',
+    observatory: 'Observatory',
+    globalContext: 'Global',
+    inferredEncounter: 'inferred type',
+    geipanNormalizedSummary: 'Normalized summary: {kind}{where}{date}. GEIPAN classification {class}.',
+    geipanOriginalFrench: 'Original French text',
     geoQuality: 'Geographic precision',
     geoQualityHint: 'Separate reported, local, regional, and broad coordinates so strong patterns are not mixed with approximate locations.',
     geoReported: 'Reported',
@@ -571,6 +599,91 @@ const GEO_CONTEXT_META = [
   { id: 'coastal', color: '#8ecae6' },
   { id: 'inland', color: '#80ed99' },
 ];
+const COUNTRY_META = [
+  { id: 'United States', es: 'Estados Unidos', en: 'United States' },
+  { id: 'United Kingdom', es: 'Reino Unido', en: 'United Kingdom' },
+  { id: 'France', es: 'Francia', en: 'France' },
+  { id: 'Spain', es: 'España', en: 'Spain' },
+  { id: 'Chile', es: 'Chile', en: 'Chile' },
+  { id: 'Argentina', es: 'Argentina', en: 'Argentina' },
+  { id: 'Canada', es: 'Canadá', en: 'Canada' },
+  { id: 'Brazil', es: 'Brasil', en: 'Brazil' },
+  { id: 'Australia', es: 'Australia', en: 'Australia' },
+  { id: 'Mexico', es: 'México', en: 'Mexico' },
+  { id: 'New Zealand', es: 'Nueva Zelanda', en: 'New Zealand' },
+  { id: 'Germany', es: 'Alemania', en: 'Germany' },
+  { id: 'Italy', es: 'Italia', en: 'Italy' },
+  { id: 'Belgium', es: 'Bélgica', en: 'Belgium' },
+  { id: 'Denmark', es: 'Dinamarca', en: 'Denmark' },
+  { id: 'Sweden', es: 'Suecia', en: 'Sweden' },
+  { id: 'Norway', es: 'Noruega', en: 'Norway' },
+  { id: 'Russia', es: 'Rusia', en: 'Russia' },
+  { id: 'Other', es: 'Otros', en: 'Other' },
+];
+const COUNTRY_IDS = new Set(COUNTRY_META.map(c => c.id));
+const COUNTRY_CODE_MAP = {
+  us: 'United States', usa: 'United States', unitedstates: 'United States', estadosunidos: 'United States',
+  gb: 'United Kingdom', uk: 'United Kingdom', england: 'United Kingdom', scotland: 'United Kingdom', wales: 'United Kingdom', northernireland: 'United Kingdom', unitedkingdom: 'United Kingdom', reinounido: 'United Kingdom',
+  fr: 'France', france: 'France', francia: 'France',
+  es: 'Spain', spain: 'Spain', espana: 'Spain',
+  cl: 'Chile', chile: 'Chile',
+  ar: 'Argentina', argentina: 'Argentina',
+  ca: 'Canada', canada: 'Canada',
+  br: 'Brazil', brazil: 'Brazil', brasil: 'Brazil',
+  au: 'Australia', australia: 'Australia',
+  mx: 'Mexico', mexico: 'Mexico',
+  nz: 'New Zealand', newzealand: 'New Zealand', nuevazelanda: 'New Zealand',
+  de: 'Germany', germany: 'Germany', alemania: 'Germany',
+  it: 'Italy', italy: 'Italy', italia: 'Italy',
+  be: 'Belgium', belgium: 'Belgium', belgica: 'Belgium',
+  dk: 'Denmark', denmark: 'Denmark', dinamarca: 'Denmark',
+  se: 'Sweden', sweden: 'Sweden', suecia: 'Sweden',
+  no: 'Norway', norway: 'Norway', noruega: 'Norway',
+  ru: 'Russia', russia: 'Russia', rusia: 'Russia',
+};
+const US_STATE_CODES = new Set('al ak az ar ca co ct de fl ga hi ia id il in ks ky la ma md me mi mn mo ms mt nc nd ne nh nj nm nv ny oh ok or pa ri sc sd tn tx ut va vt wa wi wv wy dc'.split(' '));
+const ENCOUNTER_META = Object.keys(TYPE_META).map(id => ({ id, color: TYPE_META[id].color })).filter(e => e.id !== 'MINE');
+const SPACE_CONTEXT_META = [
+  { id: 'spaceport', color: '#ffd166' },
+  { id: 'tracking', color: '#8ecae6' },
+  { id: 'meteor', color: '#ff7a59' },
+  { id: 'observatory', color: '#c084fc' },
+];
+const SPACE_CONTEXT_POINTS = [
+  { kind: 'spaceport', lat: 28.5729, lng: -80.6490, name: 'Kennedy / Cape Canaveral', desc: 'Launch range, U.S. Space Force / NASA.' },
+  { kind: 'spaceport', lat: 34.7420, lng: -120.5724, name: 'Vandenberg Space Force Base', desc: 'Polar and sun-synchronous launch corridor.' },
+  { kind: 'spaceport', lat: 25.9972, lng: -97.1566, name: 'Starbase Boca Chica', desc: 'SpaceX launch and test site.' },
+  { kind: 'spaceport', lat: 45.9650, lng: 63.3050, name: 'Baikonur Cosmodrome', desc: 'Historic crewed and orbital launch site.' },
+  { kind: 'spaceport', lat: 62.9271, lng: 40.5750, name: 'Plesetsk Cosmodrome', desc: 'High-latitude Russian launch site.' },
+  { kind: 'spaceport', lat: 5.2390, lng: -52.7680, name: 'Guiana Space Centre / Kourou', desc: 'ESA/CNES equatorial launch site.' },
+  { kind: 'spaceport', lat: 40.9606, lng: 100.2983, name: 'Jiuquan Satellite Launch Center', desc: 'Chinese orbital and crewed launch center.' },
+  { kind: 'spaceport', lat: 19.6145, lng: 110.9511, name: 'Wenchang Space Launch Site', desc: 'Chinese coastal heavy-lift launch site.' },
+  { kind: 'spaceport', lat: 28.2460, lng: 102.0260, name: 'Xichang Satellite Launch Center', desc: 'Chinese inland orbital launch site.' },
+  { kind: 'spaceport', lat: 30.4000, lng: 111.5000, name: 'Taiyuan Satellite Launch Center', desc: 'Chinese launch center for polar orbits.' },
+  { kind: 'spaceport', lat: 30.3752, lng: 130.9570, name: 'Tanegashima Space Center', desc: 'JAXA launch site.' },
+  { kind: 'spaceport', lat: 13.7330, lng: 80.2350, name: 'Satish Dhawan Space Centre', desc: 'ISRO launch center.' },
+  { kind: 'spaceport', lat: -39.2600, lng: 177.8640, name: 'Rocket Lab Launch Complex 1', desc: 'Mahia Peninsula launch site.' },
+  { kind: 'spaceport', lat: 37.8338, lng: -75.4882, name: 'Wallops Flight Facility', desc: 'NASA suborbital/orbital launch range.' },
+  { kind: 'spaceport', lat: 57.4350, lng: -152.3390, name: 'Pacific Spaceport Complex Alaska', desc: 'Kodiak orbital/suborbital launch site.' },
+  { kind: 'spaceport', lat: 69.2930, lng: 16.0200, name: 'Andoya Space', desc: 'Norwegian sounding rocket and orbital site.' },
+  { kind: 'spaceport', lat: 67.8920, lng: 21.1040, name: 'Esrange Space Center', desc: 'Swedish sounding rocket and satellite launch site.' },
+  { kind: 'tracking', lat: 38.8050, lng: -104.5250, name: 'Cheyenne Mountain / NORAD', desc: 'Aerospace warning and tracking complex.' },
+  { kind: 'tracking', lat: 35.2472, lng: -116.7933, name: 'Goldstone DSN', desc: 'NASA Deep Space Network antenna complex.' },
+  { kind: 'tracking', lat: 40.4314, lng: -4.2481, name: 'Madrid DSN Robledo', desc: 'NASA Deep Space Network antenna complex.' },
+  { kind: 'tracking', lat: -35.4014, lng: 148.9817, name: 'Canberra DSN Tidbinbilla', desc: 'NASA Deep Space Network antenna complex.' },
+  { kind: 'tracking', lat: -31.3560, lng: 116.2620, name: 'ESA New Norcia', desc: 'Deep-space tracking station.' },
+  { kind: 'tracking', lat: 40.4270, lng: -4.2510, name: 'ESA Cebreros', desc: 'Deep-space tracking station.' },
+  { kind: 'tracking', lat: -32.9970, lng: 21.9930, name: 'ESA Malargue', desc: 'Deep-space tracking station.' },
+  { kind: 'observatory', lat: 19.8261, lng: -155.4700, name: 'Mauna Kea Observatories', desc: 'Major optical/infrared observatory complex.' },
+  { kind: 'observatory', lat: -24.6270, lng: -70.4040, name: 'Paranal Observatory', desc: 'ESO Very Large Telescope site.' },
+  { kind: 'observatory', lat: 18.3442, lng: -66.7528, name: 'Arecibo Observatory', desc: 'Historic radar/radio astronomy site.' },
+  { kind: 'observatory', lat: 34.0784, lng: -107.6184, name: 'Very Large Array', desc: 'Radio astronomy array.' },
+  { kind: 'meteor', lat: 60.8860, lng: 101.8940, name: 'Tunguska event', desc: '1908 large airburst over Siberia.' },
+  { kind: 'meteor', lat: 54.8160, lng: 61.1160, name: 'Chelyabinsk bolide', desc: '2013 daylight airburst over Russia.' },
+  { kind: 'meteor', lat: 46.1600, lng: 134.6530, name: 'Sikhote-Alin meteorite', desc: '1947 iron meteorite fall.' },
+  { kind: 'meteor', lat: 41.2900, lng: -73.9200, name: 'Peekskill meteorite', desc: '1992 fireball and meteorite fall.' },
+  { kind: 'meteor', lat: 26.9667, lng: -105.3167, name: 'Allende meteorite', desc: '1969 carbonaceous chondrite fall.' },
+];
 const MILITARY_SITES = [
   ['Wright-Patterson AFB', 39.82, -84.05], ['Nellis AFB / Area 51 corridor', 36.24, -115.03],
   ['Edwards AFB', 34.91, -117.88], ['Vandenberg SFB', 34.74, -120.57],
@@ -733,6 +846,102 @@ function contextAllowed(d) {
   for (const tag of tags) if (state.geoContexts.has(tag)) return true;
   return false;
 }
+function normalizeCountry(value) {
+  const raw = plainText(value).replace(/[^a-z0-9]+/g, '');
+  const canonical = COUNTRY_CODE_MAP[raw];
+  if (canonical) return canonical;
+  if (COUNTRY_IDS.has(value)) return value;
+  return 'Other';
+}
+function countryFromMassLocation(loc) {
+  const text = plainText(loc).trim();
+  if (!text) return 'Other';
+  const parts = text.split(',').map(p => p.trim()).filter(Boolean);
+  const tail = parts[parts.length - 1] || '';
+  const tailKey = tail.replace(/[^a-z0-9]+/g, '');
+  if (COUNTRY_CODE_MAP[tailKey]) return COUNTRY_CODE_MAP[tailKey];
+  if (US_STATE_CODES.has(tailKey)) return 'United States';
+  const prev = parts[parts.length - 2]?.replace(/[^a-z0-9]+/g, '') || '';
+  if (US_STATE_CODES.has(prev)) return 'United States';
+  for (const [code, country] of Object.entries(COUNTRY_CODE_MAP)) {
+    if (new RegExp(`\\b${code}\\b`).test(text)) return country;
+  }
+  return 'Other';
+}
+function countryKey(d) {
+  if (d?.official) return normalizeCountry(d.country || d.loc || d.source);
+  if (d?.geipan) return 'France';
+  if (d?.mass) return countryFromMassLocation(d.loc);
+  return normalizeCountry(caseCountry(d) || caseLoc(d));
+}
+function countryLabel(id) {
+  const row = COUNTRY_META.find(c => c.id === id);
+  return row ? row[currentLang] : id;
+}
+function countryAllowed(d) {
+  if (state.countries.size === COUNTRY_META.length) return true;
+  if (!state.countries.size) return false;
+  return state.countries.has(countryKey(d));
+}
+function encounterKey(d) {
+  if (d?.type && TYPE_META[d.type] && d.type !== 'MINE') return d.type;
+  const text = contextText(d);
+  if (/\b(occupant|entity|humanoid|entidad|ocupante|silhouette|etre|personnage)\b/.test(text)) return 'CE3';
+  if (/\b(abduction|abduccion|missing time|temps manquant|enlevement)\b/.test(text)) return 'CE4';
+  if (/\b(trace|traces|burn|brul|landing|atterr|soil|sol|physical|electromagnetic|interference|huella|quemadura|efecto)\b/.test(text)) return 'CE2';
+  if (/\b(radar|radar-visual|radar visual)\b/.test(text)) return 'RV';
+  if (geoContextTags(d).has('military')) return 'MIL';
+  if (geoContextTags(d).has('water') && /\b(underwater|submerged|submarine|sous-marin|submerg|uso|mar|sea|ocean|oceano)\b/.test(text)) return 'USO';
+  if (d?.geipan && /\b(lumiere|lumineux|feu|point lumineux|ovni lumineux)\b/.test(text)) return 'NL';
+  if (Number.isFinite(d?.h)) {
+    if (d.h >= 20 || (d.h >= 0 && d.h <= 6)) return 'NL';
+    if (d.h >= 7 && d.h <= 19) return 'DD';
+  }
+  if (d?.mass && [0, 1, 2, 8].includes(d.s)) return 'NL';
+  return 'DD';
+}
+function encounterAllowed(d) {
+  if (state.encounters.size === ENCOUNTER_META.length) return true;
+  if (!state.encounters.size) return false;
+  return state.encounters.has(encounterKey(d));
+}
+function spaceContextMeta(id) { return SPACE_CONTEXT_META.find(s => s.id === id) || SPACE_CONTEXT_META[0]; }
+function spaceContextLabel(id) {
+  return {
+    spaceport: t('spaceport'),
+    tracking: t('tracking'),
+    meteor: t('meteorContext'),
+    observatory: t('observatory'),
+  }[id] || id;
+}
+function spaceContextName(d) { return d.name; }
+function spaceContextDesc(d) { return d.desc; }
+function visibleSpaceContextPoints() {
+  if (!state.spaceContexts.size) return [];
+  return SPACE_CONTEXT_POINTS
+    .filter(p => state.spaceContexts.has(p.kind))
+    .map(p => ({ ...p, spaceContext: true }));
+}
+function geipanSummaryText(d) {
+  const text = contextText(d);
+  const kind = encounterKey(d);
+  const bits = [];
+  if (kind === 'NL') bits.push(currentLang === 'en' ? 'distant/nocturnal light observation' : 'observación de luz distante o nocturna');
+  else if (kind === 'RV') bits.push(currentLang === 'en' ? 'radar-visual or instrument-supported observation' : 'observación radar-visual o apoyada por instrumento');
+  else if (kind === 'CE2') bits.push(currentLang === 'en' ? 'close encounter with possible physical/electromagnetic effects' : 'encuentro cercano con posibles efectos físicos o electromagnéticos');
+  else if (kind === 'CE3') bits.push(currentLang === 'en' ? 'close encounter with alleged occupant/entity report' : 'encuentro cercano con presunta entidad u ocupante');
+  else bits.push(currentLang === 'en' ? 'aerial phenomenon observation' : 'observación de fenómeno aéreo');
+  if (/\b(deplacement|mobile|mouvement|trajet|direction|desplaz|movement)\b/.test(text)) bits.push(currentLang === 'en' ? 'with reported movement' : 'con desplazamiento reportado');
+  if (/\b(dispar|disparition|suddenly|brusque|instant)\b/.test(text)) bits.push(currentLang === 'en' ? 'and abrupt disappearance' : 'y desaparición abrupta');
+  const where = d.zone ? (currentLang === 'en' ? ` near ${d.zone}` : ` cerca de ${d.zone}`) : '';
+  const date = d.d ? (currentLang === 'en' ? ` on ${fmtDateInt(d.d)}` : ` el ${fmtDateInt(d.d)}`) : '';
+  return t('geipanNormalizedSummary', {
+    kind: bits.join(currentLang === 'en' ? ', ' : ', '),
+    where,
+    date,
+    class: GEIPAN_META[d.ci]?.code || '',
+  });
+}
 function sourceStatusLabel(status) {
   return status === 'active' ? t('sourceLoaded') : t('sourceCandidate');
 }
@@ -830,31 +1039,33 @@ function applyStaticI18n() {
     setText(blocks[3].querySelector('.switch-row span'), t('officialSwitch'));
     setText('#official-hint', t('officialHint'));
   }
-  if (blocks[4]) {
-    setText('#geo-quality-title', t('geoQuality'));
-    setText('#geo-quality-hint', t('geoQualityHint'));
-  }
-  if (blocks[5]) {
-    setText('#geo-context-title', t('geoContext'));
-    setText('#geo-context-hint', t('geoContextHint'));
-  }
-  if (blocks[6]) {
-    setText(blocks[6].querySelector('h3'), t('timeBand'));
+  setText('#country-filter-title', t('countryFilter'));
+  setText('#country-filter-hint', t('countryFilterHint'));
+  setText('#encounter-filter-title', t('encounterFilter'));
+  setText('#encounter-filter-hint', t('encounterFilterHint'));
+  setText('#geo-quality-title', t('geoQuality'));
+  setText('#geo-quality-hint', t('geoQualityHint'));
+  setText('#geo-context-title', t('geoContext'));
+  setText('#geo-context-hint', t('geoContextHint'));
+  setText('#space-context-title', t('spaceContext'));
+  setText('#space-context-hint', t('spaceContextHint'));
+  if (blocks[9]) {
+    setText(blocks[9].querySelector('h3'), t('timeBand'));
     const tod = $('tod-filter');
     if (tod) tod.title = t('timeFilterTitle');
     setText('#tod-filter [data-tod="day"]', `☀ ${t('day')}`);
     setText('#tod-filter [data-tod="night"]', `☾ ${t('night')}`);
   }
-  if (blocks[7]) {
-    setFirstText(blocks[7].querySelector('h3'), t('curatedType'));
+  if (blocks[10]) {
+    setFirstText(blocks[10].querySelector('h3'), t('curatedType'));
     setText('#types-all', t('all'));
     setText('#types-none', t('none'));
   }
-  if (blocks[8]) {
-    setText(blocks[8].querySelector('h3'), t('minCredibility'));
-    setText(blocks[8].querySelector('.hint'), t('credibilityHint'));
+  if (blocks[11]) {
+    setText(blocks[11].querySelector('h3'), t('minCredibility'));
+    setText(blocks[11].querySelector('.hint'), t('credibilityHint'));
   }
-  if (blocks[9]) setFirstText(blocks[9].querySelector('h3'), t('selection'));
+  if (blocks[12]) setFirstText(blocks[12].querySelector('h3'), t('selection'));
   ['btn-export-csv', 'btn-export-json'].forEach(id => { if ($(id)) $(id).title = t('exportSelection'); });
   if ($('btn-permalink')) { $('btn-permalink').title = t('copyFiltersLink'); $('btn-permalink').textContent = `🔗 ${t('permalink')}`; }
 
@@ -863,12 +1074,6 @@ function applyStaticI18n() {
   if ($('tour-pause')) $('tour-pause').textContent = `⏸ ${t('pause')}`;
   if ($('tour-next')) $('tour-next').textContent = `${t('next')} ⏭`;
   if ($('btn-play')) $('btn-play').title = t('playTimeline');
-  setText('#play-mode [data-pmode="cumulative"]', t('cumulative'));
-  setText('#play-mode [data-pmode="window"]', t('windowMode'));
-  const cumulative = document.querySelector('#play-mode [data-pmode="cumulative"]');
-  const windowMode = document.querySelector('#play-mode [data-pmode="window"]');
-  if (cumulative) cumulative.title = t('cumulativeTitle');
-  if (windowMode) windowMode.title = t('windowModeTitle');
   setText('.tl-speed label', t('speed'));
 
   setText('#sight-form h3', `➕ ${t('sightingTitle')}`);
@@ -930,8 +1135,12 @@ function setLanguage(lang) {
   buildTypeFilters();
   buildShapeFilters();
   buildGeipanFilters();
+  buildCountryFilters();
+  buildEncounterFilters();
   buildGeoQualityFilters();
   buildGeoContextFilters();
+  buildSpaceContextFilters();
+  if (typeof syncWindowFromSlider === 'function') syncWindowFromSlider(false);  // re-translate the period label
   refresh();
   if (!$('panel-stats').classList.contains('hidden')) renderStats();
   if (!$('modal-overlay').classList.contains('hidden')) {
@@ -1057,6 +1266,25 @@ updateAudioButton();
   el.addEventListener('click', finish);      // tap anywhere / "Entrar" to skip
 })();
 
+// ---------- Theme (dark / light) ----------
+(function theme() {
+  const root = document.documentElement;
+  const btn = document.getElementById('btn-theme');
+  let saved = null;
+  try { saved = localStorage.getItem('ufologist-theme'); } catch (e) {}
+  function apply(mode) {
+    root.setAttribute('data-theme', mode);
+    if (btn) { btn.textContent = mode === 'light' ? '☀' : '☾'; btn.setAttribute('aria-pressed', String(mode === 'light')); }
+  }
+  apply(saved === 'light' ? 'light' : 'dark');
+  if (btn) btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    apply(next);
+    try { localStorage.setItem('ufologist-theme', next); } catch (e) {}
+    if (typeof drawHistogram === 'function') drawHistogram();   // canvas colors are theme-aware
+  });
+})();
+
 // ---------- State ----------
 const YEAR_MIN = 1942, YEAR_MAX = 2026;
 const state = {
@@ -1066,7 +1294,8 @@ const state = {
   credMin: 1,
   layerMode: 'both',            // both | heat | points
   playing: false,
-  playMode: 'cumulative',       // cumulative | window
+  playMode: 'cumulative',       // cumulative | window (derived from windowYears)
+  windowYears: 'all',           // active period span: 1..50 years or 'all'
   speed: 4,
   selectedCase: null,
   massOn: true,
@@ -1076,8 +1305,11 @@ const state = {
   geipanClasses: new Set(GEIPAN_META.map((_, i) => i)),
   officialOn: true,
   officialSources: new Set(),
+  countries: new Set(COUNTRY_META.map(c => c.id)),
+  encounters: new Set(ENCOUNTER_META.map(e => e.id)),
   geoQuality: new Set(GEO_QUALITY_META.map(g => g.id)),
   geoContexts: new Set(GEO_CONTEXT_META.map(g => g.id)),
+  spaceContexts: new Set(),
   hotspots: false,
   pickMode: false,
   viewMode: 'earth',             // earth | orbit
@@ -1100,6 +1332,7 @@ function allCuratedPool() { return CASES.concat(journal); }
 let casesReady = false;   // gate: density layer draws first, cases revealed after the landing
 let revealCases = false;  // active during the sweep-in animation
 let officialData = null;  // normalized official/archive candidates loaded from compact JSON
+let lastMassCount = 0;
 
 // Legacy H3 column support: keep curated cases aligned with old bar heights when
 // the weather-density layer is disabled.
@@ -1274,6 +1507,8 @@ function massFiltered() {
     if (!shapes.has(r.s)) return false;
     if (!geoAllowed(r)) return false;
     if (!contextAllowed(r)) return false;
+    if (!countryAllowed(r)) return false;
+    if (!encounterAllowed(r)) return false;
     if (tod === 'day' && !(r.h >= 7 && r.h <= 19)) return false;
     if (tod === 'night' && !(r.h >= 20 || (r.h >= 0 && r.h <= 6))) return false;
     return true;
@@ -1306,7 +1541,7 @@ fetch('data/geipan.json?v=1')
 function geipanFiltered() {
   if (!state.geipanOn || !geipanData) return [];
   const { yearFrom, yearTo, geipanClasses } = state;
-  return geipanData.filter(r => r.year >= yearFrom && r.year <= yearTo && geipanClasses.has(r.ci) && geoAllowed(r) && contextAllowed(r));
+  return geipanData.filter(r => r.year >= yearFrom && r.year <= yearTo && geipanClasses.has(r.ci) && geoAllowed(r) && contextAllowed(r) && countryAllowed(r) && encounterAllowed(r));
 }
 
 // ---------- Official archive candidates ----------
@@ -1342,6 +1577,8 @@ function officialFiltered() {
     if (!officialSources.has(r.sid)) return false;
     if (!geoAllowed(r)) return false;
     if (!contextAllowed(r)) return false;
+    if (!countryAllowed(r)) return false;
+    if (!encounterAllowed(r)) return false;
     if (tod === 'day' && !(r.h >= 7 && r.h <= 19)) return false;
     if (tod === 'night' && !(r.h >= 20 || (r.h >= 0 && r.h <= 6))) return false;
     return true;
@@ -1377,11 +1614,8 @@ const globe = Globe()($('globe'))
   .htmlLng(d => d._displayLng ?? d.lng)
   .htmlAltitude(d => {
     if (d.cluster) return 0.016;
-    // hybrid view: curated case hexagons ride on top of their heatmap column
-    // (like the lid of the 3D hex). Mass/GEIPAN points and "only cases" view stay low.
     if (d.mass || d.geipan) return 0.007;
-    if (!WEATHER_HEATMAP_ENABLED && state.layerMode === 'both' && d._capAlt != null) return d._capAlt;
-    return 0.013;
+    return 0.013;   // curated cases sit on the surface (case-height cap reverted — was a mistake)
   })
   .htmlElement(d => buildMarker(d))
   .pointLat(d => d.lat)
@@ -1407,20 +1641,20 @@ const globe = Globe()($('globe'))
     <div style="font-family:'JetBrains Mono',monospace;background:rgba(8,12,26,.92);border:1px solid rgba(120,200,255,.25);border-radius:8px;padding:6px 10px;color:#e8eefc;font-size:11px;">
       ${fmtNum(d.sumWeight)} ${currentLang === 'en' ? (d.sumWeight === 1 ? 'report' : 'reports') + ' in this area' : `reporte${d.sumWeight > 1 ? 's' : ''} en la zona`}</div>`)
   .labelLat(d => d.lat).labelLng(d => d.lng)
-  .labelText(d => hotspotName(d))
-  .labelSize(0.65).labelDotRadius(0.35)
-  .labelColor(() => '#ffd166')
+  .labelText(d => d.spaceContext ? spaceContextName(d) : hotspotName(d))
+  .labelSize(0.5).labelDotRadius(0.28)
+  .labelColor(d => d.spaceContext ? spaceContextMeta(d.kind).color : '#ffd166')
   .labelResolution(2)
   .labelLabel(d => `
-    <div style="font-family:'Space Grotesk',sans-serif;background:rgba(8,12,26,.94);border:1px solid rgba(255,209,102,.4);border-radius:10px;padding:9px 12px;max-width:260px;">
-      <div style="color:#ffd166;font-weight:700;">${d.solar ? '☉' : '🔥'} ${hotspotName(d)}</div>
-      <div style="color:#cdd8ef;font-size:11.5px;margin-top:4px;line-height:1.5;">${hotspotDesc(d)}</div>
+    <div style="font-family:'Space Grotesk',sans-serif;background:rgba(8,12,26,.94);border:1px solid ${d.spaceContext ? spaceContextMeta(d.kind).color : '#ffd166'}66;border-radius:10px;padding:9px 12px;max-width:280px;">
+      <div style="color:${d.spaceContext ? spaceContextMeta(d.kind).color : '#ffd166'};font-weight:700;">${d.spaceContext ? '◇' : (d.solar ? '☉' : '🔥')} ${d.spaceContext ? spaceContextName(d) : hotspotName(d)}</div>
+      <div style="color:#cdd8ef;font-size:11.5px;margin-top:4px;line-height:1.5;">${d.spaceContext ? `${spaceContextLabel(d.kind)} · ${spaceContextDesc(d)}` : hotspotDesc(d)}</div>
     </div>`)
   .onLabelClick(d => {
     globe.controls().autoRotate = false;
     globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 1.1 }, 900);
   })
-  .onGlobeClick(({ lat, lng }) => { if (state.pickMode) pickLocation(lat, lng); });
+  .onGlobeClick(({ lat, lng }) => { lastGlobeClick = { lat, lng }; if (state.pickMode) pickLocation(lat, lng); });
 
 window.__globeTileSupport = !!globe.globeTileEngineUrl;
 window.__ufologistGlobe = globe;
@@ -1982,6 +2216,12 @@ function buildMarker(d) {
 
 globe.controls().autoRotate = true;
 globe.controls().autoRotateSpeed = 0.35;
+// Smoother, more consistent zoom — trackpads fire many small wheel events, so we
+// damp the accumulation and slow the per-event step to avoid jumpy zooming.
+globe.controls().enableDamping = true;
+globe.controls().dampingFactor = 0.12;
+globe.controls().zoomSpeed = 0.6;
+globe.controls().rotateSpeed = 0.8;
 globe.controls().addEventListener('start', () => {
   globe.controls().autoRotate = false;
   if (performance.now() < preserveClusterDrilldownUntil) return;
@@ -1996,6 +2236,39 @@ globe.controls().addEventListener('end', () => {
   scheduleMarkerLodRender(90);
 });
 globe.pointOfView({ lat: 30, lng: -40, altitude: 2.3 });
+
+// ---------- Navigation: constant-size hotspot labels + Google-Maps-style zoom ----------
+let lastGlobeClick = null;
+let _lastLabelSize = -1;
+function updateLabelScale() {
+  const pov = globe.pointOfView();
+  const alt = (pov && pov.altitude) || 2.3;
+  // label size in geo-degrees ∝ altitude → roughly constant on-screen size at any zoom
+  let s = Math.max(0.06, Math.min(0.7, alt * 0.28));
+  s = Math.round(s / 0.03) * 0.03;
+  if (s !== _lastLabelSize) { _lastLabelSize = s; globe.labelSize(s); }
+}
+globe.controls().addEventListener('change', updateLabelScale);
+updateLabelScale();
+
+function zoomTowardGlobe(factor, coords) {
+  const pov = globe.pointOfView();
+  const target = coords || lastGlobeClick || { lat: pov.lat, lng: pov.lng };
+  globe.controls().autoRotate = false;
+  const alt = Math.max(EARTH_MIN_ALTITUDE, Math.min(EARTH_MAX_ALTITUDE, pov.altitude * factor));
+  globe.pointOfView({ lat: target.lat, lng: target.lng, altitude: alt }, 450);
+}
+(function setupMapZoom() {
+  const el = $('globe');
+  if (!el) return;
+  el.addEventListener('dblclick', e => { e.preventDefault(); zoomTowardGlobe(0.55); });   // desktop: zoom in toward point
+  let lastTap = 0;
+  el.addEventListener('touchend', e => {                                                    // mobile: double-tap to zoom in
+    if (e.changedTouches && e.changedTouches.length > 1) return;
+    const now = performance.now();
+    if (now - lastTap < 300) { zoomTowardGlobe(0.55); lastTap = 0; } else lastTap = now;
+  }, { passive: true });
+})();
 if (globe.customLayerData && globe.customThreeObject) {
   globe
     .customLayerData([])
@@ -2676,11 +2949,12 @@ function filteredCases() {
     state.types.has(c.type) &&
     (c.mine || c.cred >= state.credMin) &&
     geoAllowed(c) &&
-    contextAllowed(c)
+    contextAllowed(c) &&
+    countryAllowed(c) &&
+    encounterAllowed(c)
   );
 }
 
-let lastMassCount = 0;
 function refresh() {
   const curated = filteredCases();
   const mass = massFiltered();
@@ -2708,7 +2982,9 @@ function refresh() {
   globe.pointsData([]);
   updateWeatherHeatmap(heatPoints, WEATHER_HEATMAP_ENABLED && showHeatLayer);
   globe.hexBinPointsData([]);
-  const labels = (state.viewMode === 'earth' && state.hotspots ? HOTSPOTS.slice() : []);
+  const labels = state.viewMode === 'earth'
+    ? (state.hotspots ? HOTSPOTS.slice() : []).concat(visibleSpaceContextPoints())
+    : [];
   globe.labelsData(labels);
 
   renderCaseList(curated, official);
@@ -2716,8 +2992,11 @@ function refresh() {
   renderShapeCounts();
   renderGeipanCounts();
   renderOfficialCounts();
+  renderCountryCounts();
+  renderEncounterCounts();
   renderGeoQualityCounts();
   renderGeoContextCounts();
+  renderSpaceContextCounts();
   $('case-count').textContent = fmtNum(curated.length + mass.length + geipan.length + official.length);
   const parts = [`${fmtNum(curated.length)} ${t('curated')}`];
   if (mass.length) parts.push(`${fmtNum(mass.length)} NUFORC`);
@@ -2874,6 +3153,99 @@ function renderOfficialCounts() {
 }
 $('official-toggle').onchange = e => { state.officialOn = e.target.checked; refresh(); };
 
+// ---------- Global country filters ----------
+function buildCountryFilters() {
+  const wrap = $('country-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  COUNTRY_META.forEach(country => {
+    const el = document.createElement('span');
+    el.className = 'shape-pill' + (state.countries.has(country.id) ? '' : ' off');
+    el.dataset.country = country.id;
+    el.innerHTML = `<span class="sdot" style="background:#4be1c3"></span>${countryLabel(country.id)} <span class="c-count"></span>`;
+    el.onclick = () => {
+      state.countries.has(country.id) ? state.countries.delete(country.id) : state.countries.add(country.id);
+      el.classList.toggle('off', !state.countries.has(country.id));
+      refresh();
+    };
+    wrap.appendChild(el);
+  });
+  renderCountryCounts();
+}
+function renderCountryCounts() {
+  const counts = Object.fromEntries(COUNTRY_META.map(c => [c.id, 0]));
+  const add = d => { const k = countryKey(d); counts[k in counts ? k : 'Other']++; };
+  allCuratedPool().forEach(c => {
+    if (c.year >= state.yearFrom && c.year <= state.yearTo && state.types.has(c.type) && (c.mine || c.cred >= state.credMin) && geoAllowed(c) && contextAllowed(c) && encounterAllowed(c)) add(c);
+  });
+  if (state.massOn && massData) {
+    massData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.shapes.has(r.s) && geoAllowed(r) && contextAllowed(r) && encounterAllowed(r)) add(r);
+    });
+  }
+  if (state.geipanOn && geipanData) {
+    geipanData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.geipanClasses.has(r.ci) && geoAllowed(r) && contextAllowed(r) && encounterAllowed(r)) add(r);
+    });
+  }
+  if (state.officialOn && officialData) {
+    officialData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.officialSources.has(r.sid) && geoAllowed(r) && contextAllowed(r) && encounterAllowed(r)) add(r);
+    });
+  }
+  document.querySelectorAll('#country-filters .shape-pill').forEach(el => {
+    const n = counts[el.dataset.country] || 0;
+    el.querySelector('.c-count').textContent = n > 999 ? (n / 1000).toFixed(1) + 'k' : n;
+  });
+}
+
+// ---------- Global encounter filters ----------
+function buildEncounterFilters() {
+  const wrap = $('encounter-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  ENCOUNTER_META.forEach(enc => {
+    const el = document.createElement('span');
+    el.className = 'shape-pill' + (state.encounters.has(enc.id) ? '' : ' off');
+    el.dataset.encounter = enc.id;
+    el.title = typeDesc(enc.id);
+    el.innerHTML = `<span class="sdot" style="background:${enc.color}"></span>${typeLabel(enc.id)} <span class="e-count"></span>`;
+    el.onclick = () => {
+      state.encounters.has(enc.id) ? state.encounters.delete(enc.id) : state.encounters.add(enc.id);
+      el.classList.toggle('off', !state.encounters.has(enc.id));
+      refresh();
+    };
+    wrap.appendChild(el);
+  });
+  renderEncounterCounts();
+}
+function renderEncounterCounts() {
+  const counts = Object.fromEntries(ENCOUNTER_META.map(e => [e.id, 0]));
+  const add = d => { const k = encounterKey(d); if (k in counts) counts[k]++; };
+  allCuratedPool().forEach(c => {
+    if (c.year >= state.yearFrom && c.year <= state.yearTo && state.types.has(c.type) && (c.mine || c.cred >= state.credMin) && geoAllowed(c) && contextAllowed(c) && countryAllowed(c)) add(c);
+  });
+  if (state.massOn && massData) {
+    massData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.shapes.has(r.s) && geoAllowed(r) && contextAllowed(r) && countryAllowed(r)) add(r);
+    });
+  }
+  if (state.geipanOn && geipanData) {
+    geipanData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.geipanClasses.has(r.ci) && geoAllowed(r) && contextAllowed(r) && countryAllowed(r)) add(r);
+    });
+  }
+  if (state.officialOn && officialData) {
+    officialData.forEach(r => {
+      if (r.year >= state.yearFrom && r.year <= state.yearTo && state.officialSources.has(r.sid) && geoAllowed(r) && contextAllowed(r) && countryAllowed(r)) add(r);
+    });
+  }
+  document.querySelectorAll('#encounter-filters .shape-pill').forEach(el => {
+    const n = counts[el.dataset.encounter] || 0;
+    el.querySelector('.e-count').textContent = n > 999 ? (n / 1000).toFixed(1) + 'k' : n;
+  });
+}
+
 // ---------- Geographic precision filters ----------
 function buildGeoQualityFilters() {
   const wrap = $('geo-quality-filters');
@@ -2966,6 +3338,33 @@ function renderGeoContextCounts() {
   document.querySelectorAll('#geo-context-filters .shape-pill').forEach(el => {
     const n = counts[el.dataset.geoContext] || 0;
     el.querySelector('.x-count').textContent = n > 999 ? (n / 1000).toFixed(1) + 'k' : n;
+  });
+}
+
+// ---------- Aerospace context overlay ----------
+function buildSpaceContextFilters() {
+  const wrap = $('space-context-filters');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  SPACE_CONTEXT_META.forEach(g => {
+    const el = document.createElement('span');
+    el.className = 'shape-pill' + (state.spaceContexts.has(g.id) ? '' : ' off');
+    el.dataset.spaceContext = g.id;
+    el.innerHTML = `<span class="sdot" style="background:${g.color}"></span>${spaceContextLabel(g.id)} <span class="sp-count"></span>`;
+    el.onclick = () => {
+      state.spaceContexts.has(g.id) ? state.spaceContexts.delete(g.id) : state.spaceContexts.add(g.id);
+      el.classList.toggle('off', !state.spaceContexts.has(g.id));
+      refresh();
+    };
+    wrap.appendChild(el);
+  });
+  renderSpaceContextCounts();
+}
+function renderSpaceContextCounts() {
+  const counts = Object.fromEntries(SPACE_CONTEXT_META.map(g => [g.id, 0]));
+  SPACE_CONTEXT_POINTS.forEach(p => { counts[p.kind] = (counts[p.kind] || 0) + 1; });
+  document.querySelectorAll('#space-context-filters .shape-pill').forEach(el => {
+    el.querySelector('.sp-count').textContent = counts[el.dataset.spaceContext] || 0;
   });
 }
 
@@ -3277,7 +3676,8 @@ function openGeipanReport(d, fly = false) {
       <div class="cc-stat"><label>${t('date')}</label><span class="v">${fmtDateInt(d.d)}</span></div>
       <div class="cc-stat"><label>${t('classification')}</label><span class="v">${g.code}</span></div>
     </div>
-    <p class="cc-summary">${d.resume || t('geipanSummary')}</p>
+    <p class="cc-summary">${geipanSummaryText(d)}</p>
+    ${d.resume ? `<details class="source-original"><summary>${t('geipanOriginalFrench')}</summary><p>${esc(d.resume)}</p></details>` : ''}
     <p class="hint">${geipanDesc(d.ci)}</p>
     ${renderAstroBlock(astroContext)}
     <div class="cc-sources"><h4>${t('officialSource')}</h4>
@@ -3459,12 +3859,15 @@ function drawHistogram() {
   // log scale (mass DB is exponentially skewed toward 2000s)
   const max = Math.max(1, ...counts);
   const bw = W / span;
+  const light = document.documentElement.getAttribute('data-theme') === 'light';
+  const cIn = light ? 'rgba(10,126,168,0.92)' : 'rgba(75,225,195,0.85)';
+  const cOut = light ? 'rgba(20,44,70,0.22)' : 'rgba(120,140,180,0.28)';
   for (let i = 0; i < span; i++) {
     if (!counts[i]) continue;
     const h = Math.max(2, (Math.log10(1 + counts[i]) / Math.log10(1 + max)) * (H - 6));
     const year = YEAR_MIN + i;
     const inRange = year >= state.yearFrom && year <= state.yearTo;
-    ctx.fillStyle = inRange ? 'rgba(75,225,195,0.85)' : 'rgba(120,140,180,0.28)';
+    ctx.fillStyle = inRange ? cIn : cOut;
     ctx.fillRect(i * bw + 1, H - h, Math.max(1.5, bw - 2), h);
   }
 }
@@ -3539,7 +3942,7 @@ attachDrag(hMin, true);
 attachDrag(hMax, false);
 
 range.addEventListener('pointerdown', e => {
-  if (e.target.classList.contains('tl-handle')) return;
+  if (e.target.classList.contains('tl-handle') || e.target === fill) return;
   const rect = range.getBoundingClientRect();
   const y = xToYear(e.clientX - rect.left);
   if (Math.abs(y - state.yearFrom) < Math.abs(y - state.yearTo)) state.yearFrom = Math.min(y, state.yearTo);
@@ -3547,17 +3950,56 @@ range.addEventListener('pointerdown', e => {
   positionHandles(); refresh();
 });
 
+// Drag the active band to slide the whole range (keeps its width).
+fill.addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation();
+  stopPlayback();
+  fill.setPointerCapture(e.pointerId);
+  const rect = range.getBoundingClientRect();
+  const span = state.yearTo - state.yearFrom;
+  const grabOffset = xToYear(e.clientX - rect.left) - state.yearFrom;
+  const move = ev => {
+    let from = xToYear(ev.clientX - rect.left) - grabOffset;
+    from = Math.max(YEAR_MIN, Math.min(from, YEAR_MAX - span));
+    state.yearFrom = from;
+    state.yearTo = from + span;
+    positionHandles();
+    refresh();
+  };
+  const up = () => {
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', up);
+  };
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', up);
+});
+
 // ---------- Timeline: playback ----------
 let rafId = null, lastT = 0, playCursor = 0, lastAppliedYear = null;
-const WINDOW_YEARS = 10;
-
-document.querySelectorAll('#play-mode button').forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll('#play-mode button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.playMode = btn.dataset.pmode;
-  };
-});
+const WINDOW_STOPS = [1, 2, 3, 4, 5, 10, 15, 20, 25, 50, 'all'];
+function windowLabel(v) {
+  if (v === 'all') return (typeof currentLang !== 'undefined' && currentLang === 'en') ? 'All' : 'Todo';
+  const en = (typeof currentLang !== 'undefined' && currentLang === 'en');
+  return en ? `${v} yr` : `${v} ${v === 1 ? 'año' : 'años'}`;
+}
+function syncWindowFromSlider(applyRange) {
+  const el = $('window-size');
+  const v = WINDOW_STOPS[el ? +el.value : 10] ?? 'all';
+  state.windowYears = v;
+  state.playMode = (v === 'all') ? 'cumulative' : 'window';
+  const lbl = $('window-label'); if (lbl) lbl.textContent = windowLabel(v);
+  if (applyRange && !state.playing) {
+    if (v === 'all') { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; }
+    else { state.yearFrom = Math.max(YEAR_MIN, state.yearTo - v + 1); }
+    positionHandles();
+    refresh();
+  }
+}
+if ($('window-size')) {
+  $('window-size').value = String(Math.max(0, WINDOW_STOPS.indexOf(state.windowYears)));
+  $('window-size').oninput = () => syncWindowFromSlider(true);
+}
+syncWindowFromSlider(false);   // sync state + label to the slider's initial value
 $('speed').oninput = e => { state.speed = +e.target.value; };
 
 function startPlayback() {
@@ -3587,12 +4029,12 @@ function tick(t) {
   if (y > YEAR_MAX) { stopPlayback(); return; }
   if (y !== lastAppliedYear) {       // only re-filter when the year actually changes
     lastAppliedYear = y;
-    if (state.playMode === 'cumulative') {
+    if (state.playMode === 'cumulative' || state.windowYears === 'all') {
       state.yearFrom = YEAR_MIN;
       state.yearTo = Math.min(y, YEAR_MAX);
     } else {
       state.yearTo = Math.min(y, YEAR_MAX);
-      state.yearFrom = Math.max(YEAR_MIN, state.yearTo - WINDOW_YEARS + 1);
+      state.yearFrom = Math.max(YEAR_MIN, state.yearTo - state.windowYears + 1);
     }
     positionHandles();
     refresh();
@@ -3610,6 +4052,57 @@ $('btn-expand-left').onclick = () => {
   $('panel-left').classList.remove('collapsed');
   $('btn-expand-left').classList.add('hidden');
 };
+
+// ---------- Collapsible filter sections (tame the crowded panel) ----------
+(function filterAccordion() {
+  const panel = $('panel-left');
+  if (!panel) return;
+  const blocks = () => [...panel.querySelectorAll('.filter-block')];
+  try {
+    const saved = JSON.parse(localStorage.getItem('ufologist-collapsed') || '[]');
+    blocks().forEach((b, i) => { if (saved.includes(i)) b.classList.add('collapsed'); });
+  } catch (e) {}
+  panel.addEventListener('click', e => {
+    if (e.target.closest('button, a, input, select, label')) return; // let inner controls work
+    const h3 = e.target.closest('h3');
+    if (!h3) return;
+    const block = h3.parentElement;
+    if (!block || !block.classList.contains('filter-block')) return;
+    block.classList.toggle('collapsed');
+    const idxs = blocks().map((b, i) => b.classList.contains('collapsed') ? i : -1).filter(i => i >= 0);
+    try { localStorage.setItem('ufologist-collapsed', JSON.stringify(idxs)); } catch (e) {}
+  });
+})();
+
+// ---------- Empty-state (no results) — self-contained, watches the count ----------
+(function emptyState() {
+  const countEl = $('case-count');
+  const host = $('globe-container') || document.body;
+  if (!countEl) return;
+  const el = document.createElement('div');
+  el.id = 'empty-state';
+  el.className = 'glass hidden';
+  el.innerHTML = '<div class="es-icon">🔭</div>'
+    + '<div class="es-title">Sin resultados</div>'
+    + '<div class="es-text">Ningún avistamiento coincide con los filtros actuales.</div>'
+    + '<button id="es-reset" class="btn-ghost" type="button">Ampliar rango y credibilidad</button>';
+  host.appendChild(el);
+  el.querySelector('#es-reset').onclick = () => {
+    state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX;
+    state.credMin = 1; state.tod = 'all';
+    const cr = $('cred-range'); if (cr) cr.value = 1;
+    const cs = $('cred-stars'); if (cs) cs.textContent = '★☆☆☆☆';
+    document.querySelectorAll('#tod-filter button').forEach(b => b.classList.toggle('active', b.dataset.tod === 'all'));
+    if (typeof positionHandles === 'function') positionHandles();
+    refresh();
+  };
+  const sync = () => {
+    const digits = (countEl.textContent || '').replace(/\D/g, '');
+    el.classList.toggle('hidden', digits !== '0');
+  };
+  new MutationObserver(sync).observe(countEl, { childList: true, characterData: true, subtree: true });
+  sync();
+})();
 
 // ---------- Stats panel ----------
 function hbar(label, n, max, suffix) {
@@ -3712,7 +4205,7 @@ function exportRows() {
     source: 'GEIPAN (CNES)',
     name: (r.zone || 'France') + ' ' + Math.floor(r.d / 10000), date: `${Math.floor(r.d / 10000)}-${String(Math.floor(r.d / 100) % 100).padStart(2, '0')}-${String(r.d % 100).padStart(2, '0')}`,
     time: '', lat: r.lat, lng: r.lng, type: GEIPAN_META[r.ci].code, type_label: geipanLabel(r.ci),
-    location: r.zone || '', credibility: '', summary: r.resume || '', sources: 'https://www.cnes-geipan.fr/fr/recherche/cas',
+    location: r.zone || '', credibility: '', summary: geipanSummaryText(r), original_summary_fr: r.resume || '', sources: 'https://www.cnes-geipan.fr/fr/recherche/cas',
   }));
   const official = officialFiltered().map(r => ({
     source: r.source || 'Official archive',
@@ -3765,8 +4258,11 @@ function encodeHash() {
   if (state.tod !== 'all') p.set('h', state.tod);
   if (!state.geipanOn) p.set('g', '0');
   if (state.geipanClasses.size !== GEIPAN_META.length) p.set('gc', [...state.geipanClasses].join('.'));
+  if (state.countries.size !== COUNTRY_META.length) p.set('co', [...state.countries].join('|'));
+  if (state.encounters.size !== ENCOUNTER_META.length) p.set('e', [...state.encounters].join('.'));
   if (state.geoQuality.size !== GEO_QUALITY_META.length) p.set('q', [...state.geoQuality].join('.'));
   if (state.geoContexts.size !== GEO_CONTEXT_META.length) p.set('x', [...state.geoContexts].join('.'));
+  if (state.spaceContexts.size) p.set('sp', [...state.spaceContexts].join('.'));
   if (state.hotspots) p.set('hs', '1');
   if (state.selectedCase) p.set('case', state.selectedCase);
   return p.toString();
@@ -3794,8 +4290,11 @@ function applyHash() {
     if (p.get('h') && ['day', 'night'].includes(p.get('h'))) state.tod = p.get('h');
     if (p.get('g') === '0') state.geipanOn = false;
     if (p.get('gc')) state.geipanClasses = new Set(p.get('gc').split('.').map(Number).filter(i => i >= 0 && i < GEIPAN_META.length));
+    if (p.get('co')) state.countries = new Set(p.get('co').split('|').filter(c => COUNTRY_META.some(row => row.id === c)));
+    if (p.get('e')) state.encounters = new Set(p.get('e').split('.').filter(e => ENCOUNTER_META.some(row => row.id === e)));
     if (p.get('q')) state.geoQuality = new Set(p.get('q').split('.').filter(q => GEO_QUALITY_META.some(g => g.id === q)));
     if (p.get('x')) state.geoContexts = new Set(p.get('x').split('.').filter(x => GEO_CONTEXT_META.some(g => g.id === x)));
+    if (p.get('sp')) state.spaceContexts = new Set(p.get('sp').split('.').filter(x => SPACE_CONTEXT_META.some(g => g.id === x)));
     if (p.get('hs') === '1') state.hotspots = true;
     return p.get('case');
   } finally { applyingHash = false; }
@@ -4280,8 +4779,11 @@ document.querySelectorAll('#tod-filter button').forEach(b => b.classList.toggle(
 buildTypeFilters();
 buildShapeFilters();
 buildGeipanFilters();
+buildCountryFilters();
+buildEncounterFilters();
 buildGeoQualityFilters();
 buildGeoContextFilters();
+buildSpaceContextFilters();
 positionHandles();
 renderTimelineEvents();
 refresh();

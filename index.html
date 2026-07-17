@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=24" />
+<link rel="stylesheet" href="css/styles.css?v=31" />
 <link rel="icon" type="image/png" href="assets/ufologist-app-icon.png" />
 </head>
 <body>
@@ -57,6 +57,7 @@
     <button type="button" data-lang="es">ES</button>
   </div>
   <button id="btn-audio" class="btn-audio" type="button" title="Apagar ambiente" aria-label="Apagar ambiente" aria-pressed="true">◉</button>
+  <button id="btn-theme" class="btn-audio" type="button" title="Modo claro / oscuro" aria-label="Cambiar tema claro u oscuro" aria-pressed="false">☾</button>
 
   <div class="topbar-actions">
     <button id="btn-knowledge" class="btn-ghost" title="Centro de conocimiento">◎ Conocimiento</button>
@@ -134,6 +135,18 @@
     </section>
 
     <section class="filter-block">
+      <h3 id="country-filter-title">País / región</h3>
+      <p class="hint" id="country-filter-hint">Filtro global aplicado a NUFORC, GEIPAN, archivos oficiales y casos curados.</p>
+      <div id="country-filters"></div>
+    </section>
+
+    <section class="filter-block">
+      <h3 id="encounter-filter-title">Tipo de encuentro</h3>
+      <p class="hint" id="encounter-filter-hint">Taxonomía Hynek extendida, inferida de forma conservadora cuando la fuente no la declara.</p>
+      <div id="encounter-filters"></div>
+    </section>
+
+    <section class="filter-block">
       <h3 id="geo-quality-title">Precisión geográfica</h3>
       <p class="hint" id="geo-quality-hint">Separa coordenadas reportadas, locales, regionales y amplias para no mezclar patrones fuertes con ubicaciones aproximadas.</p>
       <div id="geo-quality-filters">
@@ -153,6 +166,12 @@
         <span class="shape-pill" data-geo-context="coastal"><span class="sdot" style="background:#8ecae6"></span>Costa <span class="x-count"></span></span>
         <span class="shape-pill" data-geo-context="inland"><span class="sdot" style="background:#80ed99"></span>Interior <span class="x-count"></span></span>
       </div>
+    </section>
+
+    <section class="filter-block">
+      <h3 id="space-context-title">Contexto aeroespacial</h3>
+      <p class="hint" id="space-context-hint">Overlay opcional de bases espaciales, radares/observatorios y eventos meteóricos relevantes.</p>
+      <div id="space-context-filters"></div>
     </section>
 
     <section class="filter-block">
@@ -225,9 +244,9 @@
 <footer id="timeline" class="glass">
   <div class="tl-controls">
     <button id="btn-play" class="btn-play" title="Reproducir línea de tiempo (espacio)">▶</button>
-    <div class="seg-control small" id="play-mode">
-      <button data-pmode="cumulative" class="active" title="Acumula los casos desde el inicio">Acumulado</button>
-      <button data-pmode="window" title="Ventana móvil de 10 años">Ventana 10a</button>
+    <div class="tl-window">
+      <label>Periodo <span id="window-label">Todo</span></label>
+      <input type="range" id="window-size" min="0" max="10" step="1" value="10" aria-label="Tamaño del periodo activo" />
     </div>
     <div class="tl-speed">
       <label>Velocidad</label>
@@ -379,6 +398,6 @@
 <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
 <script src="js/data.js?v=13"></script>
 <script src="js/astro.js?v=1"></script>
-<script src="js/app.js?v=53"></script>
+<script src="js/app.js?v=60"></script>
 </body>
 </html>
