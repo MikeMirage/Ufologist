@@ -293,8 +293,14 @@ body::before {
   font-family: var(--font-mono);
 }
 body[data-layer-mode="points"] #density-legend,
-body[data-view-mode="orbit"] #density-legend {
+body[data-view-mode="orbit"] #density-legend,
+body[data-view-mode="satellites"] #density-legend {
   opacity: 0;
+}
+/* La línea de tiempo muestra avistamientos UFO: no aplica en la vista de satélites */
+body[data-view-mode="satellites"] #timeline,
+body[data-view-mode="orbit"] #timeline {
+  display: none;
 }
 #view-toggle {
   position: fixed;
