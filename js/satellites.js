@@ -139,11 +139,18 @@
     throw new Error('live TLE unavailable');
   }
   async function loadData() {
-    try { return await loadLive(); }
-    catch (e) {
-      const r = await fetch('data/tle-snapshot.json');
-      const json = await r.json();
-      return { sats: buildFromSnapshot(json), live: false };
+    // Base fiable (respaldo local, siempre incluye muestra de Starlink), luego
+    // enriquecer con CelesTrak en vivo (prioridad a lo vivo por NORAD id). Así
+    // ninguna constelación desaparece si un grupo en vivo falla/limita.
+    let base = [];
+    try { const r = await fetch('data/tle-snapshot.json'); base = buildFromSnapshot(await r.json()); } catch (e) {}
+    try {
+      const live = await loadLive();
+      const byId = new Map(base.map(s => [s.id, s]));
+      for (const s of live.sats) byId.set(s.id, s);
+      return { sats: [...byId.values()], live: true };
+    } catch (e) {
+      return { sats: base, live: base.length > 0 ? false : false };
     }
   }
   model.loadData = loadData;
@@ -251,6 +258,7 @@
     buildOrbits(globe);
     buildPoints(globe);
     startClock();
+    showPanel();
   };
   model.exit = function exit() {
     const globe = root.__ufologistGlobe; const sc = globe && globe.scene && globe.scene();
@@ -260,7 +268,44 @@
       if (sc && VG.ptsObj) sc.remove(VG.ptsObj);
       VG.orbitObj = null; VG.ptsObj = null;
     }
+    hidePanel();
   };
+  // --- Panel contextual del modo satélite (constelaciones + leyenda + velocidad) ---
+  function groupCounts() { const c = {}; if (VG) VG.sats.forEach(s => c[s.group] = (c[s.group] || 0) + 1); return c; }
+  function buildPanel() {
+    let el = document.getElementById('sat-panel');
+    if (!el) { el = document.createElement('aside'); el.id = 'sat-panel'; el.className = 'glass'; document.body.appendChild(el); }
+    const counts = groupCounts(), present = model.constellationsPresent(), total = VG.sats.length;
+    const chip = (g, label, n, color) =>
+      `<button class="sat-chip${(VG.filter || '') === g ? ' active' : ''}" data-g="${g}" style="--c:${color}">` +
+      `<span class="sc-dot"></span>${label}<b>${(n || 0).toLocaleString('es')}</b></button>`;
+    el.innerHTML =
+      '<div class="panel-head"><h2>Satélites</h2></div>' +
+      `<p class="hint">${total.toLocaleString('es')} en órbita · ${VG.live ? 'CelesTrak (vivo)' : 'respaldo local'}</p>` +
+      '<div class="sat-chips">' +
+        chip('', 'Todas', total, '#93a1c0') +
+        present.map(g => chip(g, constMeta(g).label, counts[g], constMeta(g).color)).join('') +
+      '</div>' +
+      '<p class="hint" style="margin-top:10px">Cada anillo = un plano orbital. Los puntos son satélites en tiempo simulado.</p>' +
+      '<label class="sat-speed">Velocidad de simulación · ×<span id="sat-speed-val">' + VG.simSpeed + '</span>' +
+        '<input type="range" id="sat-speed" min="1" max="600" value="' + VG.simSpeed + '"></label>';
+    el.querySelectorAll('.sat-chip').forEach(b => b.onclick = () => {
+      model.setFilter(b.dataset.g || null);
+      el.querySelectorAll('.sat-chip').forEach(x => x.classList.toggle('active', x === b));
+    });
+    const sp = el.querySelector('#sat-speed');
+    if (sp) sp.oninput = () => { model.setSpeed(+sp.value); const v = el.querySelector('#sat-speed-val'); if (v) v.textContent = sp.value; };
+    el.style.display = '';
+  }
+  function showPanel() {
+    buildPanel();
+    const p = document.getElementById('panel-left');
+    if (p) { if (VG._panelPrev === undefined) VG._panelPrev = p.style.display; p.style.display = 'none'; }
+  }
+  function hidePanel() {
+    const e = document.getElementById('sat-panel'); if (e) e.style.display = 'none';
+    const p = document.getElementById('panel-left'); if (p) p.style.display = (VG && VG._panelPrev !== undefined) ? VG._panelPrev : '';
+  }
   model.setFilter = function (g) {
     if (!VG) return; VG.filter = g;
     const globe = root.__ufologistGlobe;
