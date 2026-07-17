@@ -148,54 +148,129 @@
   }
   model.loadData = loadData;
 
-  // ---------- Vista (SOLO navegador — no se ejecuta al cargar el módulo) ----------
-  // Se conecta desde app.js cuando viewMode === 'satellites'. Requiere globe.gl + THREE.
-  // NOTA: pendiente de verificación en navegador (F1); aquí queda la estructura.
-  model.mountView = function (globe, opts) {
-    opts = opts || {};
-    const state = { sats: [], planes: [], filter: null, simTime: new Date(), simSpeed: 60, playing: false, raf: 0 };
+  // ---------- Vista (SOLO navegador) ----------
+  // Órbitas y satélites se dibujan como objetos THREE propios en la escena del
+  // globo (LineSegments + Points, 1 draw call cada uno) → sin competir con
+  // pathsData (capa política) ni objectsData. Coordenadas vía globe.getCoords.
+  let VG = null;
+  function TH() { return (typeof THREE !== 'undefined') ? THREE : root.THREE; }
+  function hexRgb(hex) {
+    const h = hex.replace('#', '');
+    const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+    return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+  }
+  function coord(globe, lat, lng, alt) {
+    if (globe.getCoords) return globe.getCoords(lat, lng, alt);
+    const R = 100 * (1 + alt), phi = (90 - lat) * Math.PI / 180, th = (lng + 180) * Math.PI / 180;
+    return { x: -R * Math.sin(phi) * Math.cos(th), y: R * Math.cos(phi), z: R * Math.sin(phi) * Math.sin(th) };
+  }
+  function activeSet() { return VG.filter ? VG.sats.filter(s => s.group === VG.filter) : VG.sats; }
 
-    function activeSats() {
-      return state.filter ? state.sats.filter(s => s.group === state.filter) : state.sats;
-    }
-    // Órbitas = líneas por plano representativo (barato + estructural)
-    function orbitPaths() {
-      const reps = representativePlanes(activeSats());
-      return reps.map(s => ({
-        group: s.group, color: constMeta(s.group).color,
-        coords: sampleOrbit(s, state.simTime, 96),
-      }));
-    }
-    // Puntos vivos = posición de cada satélite del set activo
-    function livePoints() {
-      const now = state.simTime, out = [];
-      for (const s of activeSats()) {
-        const p = propagate(s, now);
-        if (p) out.push({ sat: s, lat: p.lat, lng: p.lng, alt: p.altGlobe, color: constMeta(s.group).color });
+  function buildOrbits(globe) {
+    const T = TH(); const sc = globe.scene && globe.scene();
+    if (!T || !sc) return;
+    if (VG.orbitObj) { sc.remove(VG.orbitObj); VG.orbitObj.geometry.dispose(); VG.orbitObj = null; }
+    const reps = representativePlanes(activeSet());
+    const pos = [], col = [];
+    for (const s of reps) {
+      const pts = sampleOrbit(s, VG.simTime, 72);
+      const c = hexRgb(constMeta(s.group).color);
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = coord(globe, pts[i][0], pts[i][1], pts[i][2]);
+        const b = coord(globe, pts[i + 1][0], pts[i + 1][1], pts[i + 1][2]);
+        pos.push(a.x, a.y, a.z, b.x, b.y, b.z);
+        col.push(c[0], c[1], c[2], c[0], c[1], c[2]);
       }
-      return out;
     }
-    function render() {
-      if (globe.pathsData) globe.pathsData(orbitPaths())
-        .pathPointLat(d => d[0]).pathPointLng(d => d[1]).pathPointAlt(d => d[2])
-        .pathColor(p => p.color).pathStroke(1.2);
-      // puntos vivos → capa de objetos/points (globe.gl); wiring exacto en F1
-      if (typeof opts.onPoints === 'function') opts.onPoints(livePoints());
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.Float32BufferAttribute(pos, 3));
+    geo.setAttribute('color', new T.Float32BufferAttribute(col, 3));
+    const mat = new T.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.4 });
+    VG.orbitObj = new T.LineSegments(geo, mat);
+    VG.orbitObj.renderOrder = 5;
+    sc.add(VG.orbitObj);
+  }
+  function buildPoints(globe) {
+    const T = TH(); const sc = globe.scene && globe.scene();
+    if (!T || !sc) return;
+    if (VG.ptsObj) { sc.remove(VG.ptsObj); VG.ptsObj.geometry.dispose(); VG.ptsObj = null; }
+    const set = activeSet();
+    VG.pointSats = set;
+    const pos = new Float32Array(set.length * 3), col = new Float32Array(set.length * 3);
+    for (let i = 0; i < set.length; i++) {
+      const c = hexRgb(constMeta(set[i].group).color);
+      col[i * 3] = c[0]; col[i * 3 + 1] = c[1]; col[i * 3 + 2] = c[2];
     }
-    function tick(t) {
-      if (!state.playing) return;
-      state.simTime = new Date(state.simTime.getTime() + 1000 * state.simSpeed / 60);
-      render();
-      state.raf = requestAnimationFrame(tick);
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.BufferAttribute(pos, 3));
+    geo.setAttribute('color', new T.BufferAttribute(col, 3));
+    VG.ptsGeo = geo;
+    updatePoints(globe);
+    const mat = new T.PointsMaterial({ size: 2.6, sizeAttenuation: false, vertexColors: true });
+    VG.ptsObj = new T.Points(geo, mat);
+    VG.ptsObj.renderOrder = 6;
+    sc.add(VG.ptsObj);
+  }
+  function updatePoints(globe) {
+    if (!VG.ptsGeo || !VG.pointSats) return;
+    const arr = VG.ptsGeo.attributes.position.array;
+    for (let i = 0; i < VG.pointSats.length; i++) {
+      const p = propagate(VG.pointSats[i], VG.simTime);
+      if (p) { const v = coord(globe, p.lat, p.lng, p.altGlobe); arr[i * 3] = v.x; arr[i * 3 + 1] = v.y; arr[i * 3 + 2] = v.z; }
     }
-    return {
-      setSats(sats) { state.sats = sats; render(); },
-      setFilter(g) { state.filter = g; render(); },
-      setSpeed(x) { state.simSpeed = x; },
-      play() { if (!state.playing) { state.playing = true; state.raf = requestAnimationFrame(tick); } },
-      pause() { state.playing = false; cancelAnimationFrame(state.raf); },
-      render, activeSats, orbitPaths, livePoints, state,
+    VG.ptsGeo.attributes.position.needsUpdate = true;
+  }
+  function startClock() {
+    stopClock();
+    const globe = root.__ufologistGlobe;
+    let lastReal = (typeof performance !== 'undefined' ? performance.now() : 0), acc = 0;
+    const step = (ts) => {
+      if (!VG || !VG.active) return;
+      const dt = ts - lastReal; lastReal = ts;
+      acc += dt;
+      if (acc >= 66) {                       // reposicionar ~15 Hz (12k propagaciones/frame es caro)
+        VG.simTime = new Date(VG.simTime.getTime() + acc * VG.simSpeed);  // simSpeed× tiempo real
+        updatePoints(globe);
+        acc = 0;
+      }
+      VG.raf = requestAnimationFrame(step);
     };
+    VG.raf = requestAnimationFrame(step);
+  }
+  function stopClock() { if (VG && VG.raf) { cancelAnimationFrame(VG.raf); VG.raf = 0; } }
+
+  model.enter = async function enter() {
+    const globe = root.__ufologistGlobe;
+    if (!globe || !TH() || !globe.scene) { console.warn('[UFOSat] globo/THREE no disponible'); return; }
+    if (!VG) VG = { sats: [], filter: null, simTime: new Date(), simSpeed: 90, raf: 0, orbitObj: null, ptsObj: null };
+    if (!VG.sats.length) {
+      try { const d = await loadData(); VG.sats = d.sats; VG.live = d.live; console.log('[UFOSat]', VG.sats.length, 'satélites', d.live ? '(vivo)' : '(respaldo)'); }
+      catch (e) { console.warn('[UFOSat] sin datos', e); VG.sats = []; }
+    }
+    VG.active = true;
+    buildOrbits(globe);
+    buildPoints(globe);
+    startClock();
+  };
+  model.exit = function exit() {
+    const globe = root.__ufologistGlobe; const sc = globe && globe.scene && globe.scene();
+    if (VG) {
+      VG.active = false; stopClock();
+      if (sc && VG.orbitObj) sc.remove(VG.orbitObj);
+      if (sc && VG.ptsObj) sc.remove(VG.ptsObj);
+      VG.orbitObj = null; VG.ptsObj = null;
+    }
+  };
+  model.setFilter = function (g) {
+    if (!VG) return; VG.filter = g;
+    const globe = root.__ufologistGlobe;
+    buildOrbits(globe); buildPoints(globe);
+  };
+  model.setSpeed = function (x) { if (VG) VG.simSpeed = x; };
+  model.constellationsPresent = function () {
+    if (!VG) return [];
+    const set = new Set(VG.sats.map(s => s.group));
+    return Object.keys(CONSTELLATIONS).filter(g => set.has(g));
   };
 
   // ---------- Export (Node: pruebas · browser: global) ----------

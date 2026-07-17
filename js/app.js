@@ -36,7 +36,7 @@ const I18N = {
     navTour: 'Expedición',
     navPass: 'Pass',
     viewEarth: 'Tierra',
-    viewOrbit: 'Órbita',
+    viewOrbit: 'Satélites',
     titleKnowledge: 'Centro de conocimiento',
     titleStats: 'Panel de análisis y tendencias',
     titleReport: 'Reportar o registrar un avistamiento propio',
@@ -285,7 +285,7 @@ const I18N = {
     navTour: 'Expedition',
     navPass: 'Pass',
     viewEarth: 'Earth',
-    viewOrbit: 'Orbit',
+    viewOrbit: 'Satellites',
     titleKnowledge: 'Knowledge center',
     titleStats: 'Analysis and trends panel',
     titleReport: 'Report or register your own sighting',
@@ -2872,19 +2872,21 @@ function setGlobeSurfaceVisible(visible) {
   if (material) material.visible = visible;
 }
 function setViewMode(mode) {
-  if (!['earth', 'orbit'].includes(mode)) return;
+  if (!['earth', 'orbit', 'satellites'].includes(mode)) return;
   state.viewMode = mode;
   document.querySelectorAll('#view-toggle button').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === mode);
   });
   configurePoliticalOverlay();
   updateStreamingMapTiles();
-  setEarthSceneVisible(mode === 'earth');
-  setGlobeSurfaceVisible(mode === 'earth');
-  if (globe.showAtmosphere) globe.showAtmosphere(mode === 'earth');
-  globe.atmosphereAltitude(mode === 'earth' ? 0.155 : 0);
+  // 'satellites' comparte el globo terráqueo (superficie + atmósfera) como 'earth'
+  setEarthSceneVisible(mode !== 'orbit');
+  setGlobeSurfaceVisible(mode !== 'orbit');
+  if (globe.showAtmosphere) globe.showAtmosphere(mode !== 'orbit');
+  globe.atmosphereAltitude(mode !== 'orbit' ? 0.155 : 0);
   if (solarSystemGroup) solarSystemGroup.visible = mode === 'earth';
   if (orbitSystemGroup) orbitSystemGroup.visible = mode === 'orbit';
+  if (mode !== 'satellites' && window.UFOSat && window.UFOSat.exit) window.UFOSat.exit();
   if (mode === 'orbit') {
     ensureOrbitSystemScene();
     if (!currentAstroContext && window.UFOAstro) {
@@ -2896,6 +2898,11 @@ function setViewMode(mode) {
     if (currentAstroContext) updateOrbitSystemScene(currentAstroContext);
     globe.controls().autoRotate = false;
     globe.pointOfView({ lat: 48, lng: -58, altitude: 5.9 }, 900);
+  } else if (mode === 'satellites') {
+    setEarthSceneVisible(true);
+    globe.controls().autoRotate = false;
+    globe.pointOfView({ lat: 20, lng: -40, altitude: 2.7 }, 900);
+    if (window.UFOSat && window.UFOSat.enter) window.UFOSat.enter();
   } else {
     setEarthSceneVisible(true);
     if (currentAstroContext) updateSolarSystemScene(currentAstroContext);
@@ -2904,7 +2911,7 @@ function setViewMode(mode) {
   refresh();
 }
 $('btn-view-earth').onclick = () => setViewMode('earth');
-$('btn-view-orbit').onclick = () => setViewMode('orbit');
+$('btn-view-orbit').onclick = () => setViewMode('satellites');
 
 // adaptive heat scale (log) — recomputed on refresh
 let heatRef = 15;
