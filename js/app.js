@@ -2874,6 +2874,7 @@ function setGlobeSurfaceVisible(visible) {
 function setViewMode(mode) {
   if (!['earth', 'orbit', 'satellites'].includes(mode)) return;
   state.viewMode = mode;
+  if (mode !== 'earth' && typeof tour !== 'undefined' && tour.active) tourEnd();  // el tour es de la vista Tierra
   document.querySelectorAll('#view-toggle button').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === mode);
   });
@@ -3584,6 +3585,7 @@ function openCase(id, fly) {
     ${c.sources && c.sources.length ? `<div class="cc-sources"><h4>${t('originalSources')}</h4>
       ${c.sources.map((s, i) => `<a class="cc-source-link" href="${s[1]}" target="_blank" rel="noopener">${caseSourceLabel(c, i)}</a>`).join('')}</div>` : ''}
     <div class="cc-actions">
+      <button id="cc-sky" class="btn-ghost small">🔭 ${currentLang === 'en' ? 'Was it a satellite?' : '¿Fue un satélite?'}</button>
       <button id="cc-share" class="btn-ghost small">🔗 ${t('copyLink')}</button>
       ${c.mine ? `<button id="cc-delete" class="btn-ghost small" style="color:#ef476f;border-color:#ef476f55">🗑 ${t('delete')}</button>` : ''}
     </div>
@@ -3601,6 +3603,13 @@ function openCase(id, fly) {
   $('cc-share').onclick = () => {
     scheduleHashUpdate.flush && scheduleHashUpdate.flush();
     navigator.clipboard.writeText(location.href).then(() => toast(t('linkCopied')));
+  };
+  $('cc-sky').onclick = () => {
+    const when = c.date ? (c.date + (c.time ? 'T' + c.time : 'T22:00')) : undefined;
+    $('panel-case').classList.add('hidden');
+    state.selectedCase = null;
+    setViewMode('satellites');
+    if (window.UFOSat && UFOSat.analyzeSkyAt) UFOSat.analyzeSkyAt(c.lat, c.lng, when);
   };
   if (c.mine) $('cc-delete').onclick = () => {
     journal = journal.filter(j => j.id !== c.id);

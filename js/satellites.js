@@ -603,7 +603,11 @@
       (naked.length
         ? `<p class="sd-sub" style="margin:0 0 6px">Candidatos a simple vista (LEO, &gt;10°):</p><ul class="sk-list">${rows}</ul>`
         : '<p class="sd-sub" style="margin:0">Ningún satélite LEO brillante sobre 10° ahora mismo.</p>') +
-      '<p class="sk-note">Solo los LEO iluminados por el Sol con cielo oscuro son visibles a simple vista. GPS/GEO no lo son. Posiciones para el instante simulado actual (TLE ~2026); no reconstruye fechas históricas.</p>';
+      '<p class="sk-note">' +
+        (VG.skyExact
+          ? 'Posiciones calculadas para la fecha y hora reales del avistamiento (dentro de la validez del TLE). '
+          : 'Posiciones para el instante simulado actual: los TLE (~2026) no reconstruyen con precisión fechas fuera de unas semanas. ') +
+        'Solo los satélites LEO iluminados por el Sol con cielo oscuro son visibles a simple vista; GPS/GEO no lo son.</p>';
     el.style.display = '';
     const close = el.querySelector('#sky-card-close'); if (close) close.onclick = () => clearSky();
   }
@@ -620,6 +624,22 @@
     VG.skyPinObj = null; VG.skyLinesObj = null;
     const el = document.getElementById('sky-card'); if (el) el.style.display = 'none';
   }
+  // API pública: analizar el cielo sobre un punto (puente desde una ficha de caso).
+  // Si whenISO cae dentro de la validez del TLE (~45 días de hoy), usa ese instante
+  // exacto (correlación real); si no, usa el tiempo actual con la advertencia.
+  model.analyzeSkyAt = function (lat, lng, whenISO) {
+    if (!VG || !VG.sats || !VG.sats.length) { model._pendingSky = { lat, lng, whenISO }; return; }
+    if (!VG.skyMode) model.toggleSky(true);
+    const globe = root.__ufologistGlobe;
+    if (whenISO) {
+      const t = Date.parse(whenISO), now = Date.parse(new Date().toISOString());
+      if (isFinite(t) && Math.abs(t - now) < 45 * 864e5) { VG.simTime = new Date(t); VG.skyExact = true; }
+      else VG.skyExact = false;
+    }
+    if (globe.pointOfView) globe.pointOfView({ lat, lng, altitude: 2.2 }, 800);
+    setSkyLocation(globe, lat, lng);
+    buildPanel();
+  };
   model.toggleSky = function (on) {
     if (!VG) return;
     VG.skyMode = on;
@@ -653,6 +673,7 @@
     attachPick(globe);
     startClock();
     showPanel();
+    if (model._pendingSky) { const s = model._pendingSky; model._pendingSky = null; model.analyzeSkyAt(s.lat, s.lng, s.whenISO); }
   };
   model.exit = function exit() {
     const globe = root.__ufologistGlobe; const sc = globe && globe.scene && globe.scene();
