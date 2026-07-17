@@ -100,6 +100,22 @@
     return pts;
   }
 
+  // detalle instantáneo de un satélite (posición + cinemática) para la ficha
+  function satDetail(sat, date) {
+    const S = lib(); if (!S || !sat) return null;
+    let pv; try { pv = S.propagate(sat.satrec, date); } catch (e) { return null; }
+    if (!pv || !pv.position) return null;
+    const gd = S.eciToGeodetic(pv.position, S.gstime(date));
+    const lat = S.degreesLat(gd.latitude), lng = S.degreesLong(gd.longitude), alt = gd.height;
+    const v = pv.velocity ? Math.sqrt(pv.velocity.x ** 2 + pv.velocity.y ** 2 + pv.velocity.z ** 2) : null;
+    return {
+      name: sat.name, id: sat.id, group: sat.group, label: constMeta(sat.group).label,
+      lat, lng, alt, band: orbitBand(alt),
+      periodMin: sat.meanMotion > 0 ? 1440 / sat.meanMotion : null,
+      incDeg: sat.incDeg, speedKmS: v,
+    };
+  }
+
   // --- Agregación por PLANO orbital (para dibujar planos, no 30k órbitas) ---
   // bucket de plano = constelación + inclinación (1°) + RAAN (~5°)
   function planeKey(sat, raanBucket) {
@@ -118,7 +134,7 @@
   const model = {
     CONSTELLATIONS, constMeta, orbitBand,
     parseTleText, buildFromSnapshot, buildSat,
-    propagate, sampleOrbit, representativePlanes, planeKey,
+    propagate, satDetail, sampleOrbit, representativePlanes, planeKey,
     EARTH_R_KM,
   };
 
@@ -238,6 +254,8 @@
       if (acc >= 66) {                       // reposicionar ~15 Hz (12k propagaciones/frame es caro)
         VG.simTime = new Date(VG.simTime.getTime() + acc * VG.simSpeed);  // simSpeed× tiempo real
         updatePoints(globe);
+        updateSel(globe);
+        if ((VG._dcnt = (VG._dcnt || 0) + 1) % 8 === 0) refreshDetail();  // ficha ~2 Hz
         acc = 0;
       }
       VG.raf = requestAnimationFrame(step);
@@ -245,6 +263,118 @@
     VG.raf = requestAnimationFrame(step);
   }
   function stopClock() { if (VG && VG.raf) { cancelAnimationFrame(VG.raf); VG.raf = 0; } }
+
+  // ---------- Selección / picking de un satélite ----------
+  // ¿la Tierra (esfera R=100 en el origen) tapa el punto P visto desde la cámara?
+  function occluded(globe, x, y, z) {
+    const C = globe.camera().position;
+    const dx = x - C.x, dy = y - C.y, dz = z - C.z;
+    const L = Math.sqrt(dx * dx + dy * dy + dz * dz); if (!L) return false;
+    const ux = dx / L, uy = dy / L, uz = dz / L;
+    const b = 2 * (ux * C.x + uy * C.y + uz * C.z);
+    const c = (C.x * C.x + C.y * C.y + C.z * C.z) - 100 * 100;
+    const disc = b * b - 4 * c;
+    if (disc <= 0) return false;
+    const t1 = (-b - Math.sqrt(disc)) / 2;
+    return t1 > 0.5 && t1 < L - 0.5;   // la esfera cruza entre cámara y punto
+  }
+  // satélite más cercano al cursor (espacio de pantalla), no ocluido
+  function pickSat(globe, clientX, clientY) {
+    if (!VG || !VG.ptsGeo || !VG.pointSats) return null;
+    const T = TH(), cam = globe.camera();
+    const rect = globe.renderer().domElement.getBoundingClientRect();
+    const arr = VG.ptsGeo.attributes.position.array;
+    const v = new T.Vector3();
+    let best = null, bestD = 14;       // umbral en px
+    for (let i = 0; i < VG.pointSats.length; i++) {
+      const x = arr[i * 3], y = arr[i * 3 + 1], z = arr[i * 3 + 2];
+      if (x === 0 && y === 0 && z === 0) continue;
+      v.set(x, y, z).project(cam);
+      if (v.z > 1) continue;           // detrás de la cámara
+      const sx = rect.left + (v.x * 0.5 + 0.5) * rect.width;
+      const sy = rect.top + (-v.y * 0.5 + 0.5) * rect.height;
+      const d = Math.hypot(sx - clientX, sy - clientY);
+      if (d < bestD && !occluded(globe, x, y, z)) { bestD = d; best = VG.pointSats[i]; }
+    }
+    return best;
+  }
+  function ringTexture() {
+    if (VG._ringTex) return VG._ringTex;
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d');
+    g.strokeStyle = 'rgba(255,255,255,0.95)'; g.lineWidth = 5;
+    g.beginPath(); g.arc(32, 32, 25, 0, Math.PI * 2); g.stroke();
+    VG._ringTex = new (TH()).CanvasTexture(c);
+    return VG._ringTex;
+  }
+  function buildSelObj(globe) {
+    const T = TH(), sc = globe.scene();
+    if (VG.selObj) { sc.remove(VG.selObj); VG.selObj.geometry.dispose(); VG.selObj = null; }
+    if (!VG.selSat) return;
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.BufferAttribute(new Float32Array(3), 3));
+    const mat = new T.PointsMaterial({ size: 18, sizeAttenuation: false, map: ringTexture(), transparent: true, depthTest: false });
+    VG.selObj = new T.Points(geo, mat);
+    VG.selObj.renderOrder = 8;
+    sc.add(VG.selObj);
+    updateSel(globe);
+  }
+  function updateSel(globe) {
+    if (!VG.selObj || !VG.selSat) return;
+    const p = propagate(VG.selSat, VG.simTime); if (!p) return;
+    const v = coord(globe, p.lat, p.lng, p.altGlobe);
+    const a = VG.selObj.geometry.attributes.position.array;
+    a[0] = v.x; a[1] = v.y; a[2] = v.z;
+    VG.selObj.geometry.attributes.position.needsUpdate = true;
+  }
+  function refreshDetail() {
+    const el = document.getElementById('sat-detail'); if (!el || !VG || !VG.selSat) return;
+    const d = satDetail(VG.selSat, VG.simTime); if (!d) return;
+    const c = constMeta(d.group).color;
+    el.innerHTML =
+      '<button id="sat-detail-close" class="sat-detail-close" aria-label="Cerrar">×</button>' +
+      `<div class="sd-head"><span class="sd-dot" style="background:${c};color:${c}"></span><h3>${d.name}</h3></div>` +
+      `<p class="sd-sub">${d.label} · NORAD ${d.id}</p>` +
+      '<dl class="sd-grid">' +
+        `<div><dt>Régimen</dt><dd>${d.band}</dd></div>` +
+        `<div><dt>Altitud</dt><dd>${Math.round(d.alt).toLocaleString('es')} km</dd></div>` +
+        `<div><dt>Velocidad</dt><dd>${d.speedKmS ? d.speedKmS.toFixed(2) : '—'} km/s</dd></div>` +
+        `<div><dt>Periodo</dt><dd>${d.periodMin ? d.periodMin.toFixed(0) : '—'} min</dd></div>` +
+        `<div><dt>Inclinación</dt><dd>${d.incDeg.toFixed(1)}°</dd></div>` +
+        `<div><dt>Posición</dt><dd>${d.lat.toFixed(1)}°, ${d.lng.toFixed(1)}°</dd></div>` +
+      '</dl>';
+    const close = el.querySelector('#sat-detail-close');
+    if (close) close.onclick = () => selectSat(null);
+  }
+  function selectSat(sat) {
+    if (!VG) return;
+    VG.selSat = sat;
+    buildSelObj(root.__ufologistGlobe);
+    let el = document.getElementById('sat-detail');
+    if (sat) {
+      if (!el) { el = document.createElement('aside'); el.id = 'sat-detail'; el.className = 'glass'; document.body.appendChild(el); }
+      el.style.display = '';
+      refreshDetail();
+    } else if (el) { el.style.display = 'none'; }
+  }
+  function attachPick(globe) {
+    const dom = globe.renderer().domElement;
+    let dx = 0, dy = 0, moved = false;
+    VG._onDown = e => { dx = e.clientX; dy = e.clientY; moved = false; };
+    VG._onMove = e => { if (Math.hypot(e.clientX - dx, e.clientY - dy) > 5) moved = true; };
+    VG._onUp = e => { if (moved || e.button !== 0) return; selectSat(pickSat(globe, e.clientX, e.clientY)); };
+    dom.addEventListener('pointerdown', VG._onDown);
+    dom.addEventListener('pointermove', VG._onMove);
+    dom.addEventListener('pointerup', VG._onUp);
+    VG._pickDom = dom;
+  }
+  function detachPick() {
+    const dom = VG && VG._pickDom; if (!dom) return;
+    dom.removeEventListener('pointerdown', VG._onDown);
+    dom.removeEventListener('pointermove', VG._onMove);
+    dom.removeEventListener('pointerup', VG._onUp);
+    VG._pickDom = null;
+  }
 
   model.enter = async function enter() {
     const globe = root.__ufologistGlobe;
@@ -257,16 +387,19 @@
     VG.active = true;
     buildOrbits(globe);
     buildPoints(globe);
+    attachPick(globe);
     startClock();
     showPanel();
   };
   model.exit = function exit() {
     const globe = root.__ufologistGlobe; const sc = globe && globe.scene && globe.scene();
     if (VG) {
-      VG.active = false; stopClock();
+      VG.active = false; stopClock(); detachPick();
       if (sc && VG.orbitObj) sc.remove(VG.orbitObj);
       if (sc && VG.ptsObj) sc.remove(VG.ptsObj);
-      VG.orbitObj = null; VG.ptsObj = null;
+      if (sc && VG.selObj) sc.remove(VG.selObj);
+      VG.orbitObj = null; VG.ptsObj = null; VG.selObj = null; VG.selSat = null;
+      const det = document.getElementById('sat-detail'); if (det) det.style.display = 'none';
     }
     hidePanel();
   };
@@ -310,6 +443,7 @@
     if (!VG) return; VG.filter = g;
     const globe = root.__ufologistGlobe;
     buildOrbits(globe); buildPoints(globe);
+    if (VG.selSat && g && VG.selSat.group !== g) selectSat(null);  // el seleccionado ya no está en el filtro
   };
   model.setSpeed = function (x) { if (VG) VG.simSpeed = x; };
   model.constellationsPresent = function () {
@@ -317,6 +451,8 @@
     const set = new Set(VG.sats.map(s => s.group));
     return Object.keys(CONSTELLATIONS).filter(g => set.has(g));
   };
+
+  model._vg = () => VG;   // accesor de depuración (posición/tiempo simulado)
 
   // ---------- Export (Node: pruebas · browser: global) ----------
   if (typeof module !== 'undefined' && module.exports) module.exports = model;
