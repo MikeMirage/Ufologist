@@ -24,18 +24,20 @@
 
   // --- Constelaciones: grupo CelesTrak → metadatos (label, color, régimen) ---
   const CONSTELLATIONS = {
-    stations: { label: 'Tripuladas / ISS', color: '#ffd166' },
-    starlink: { label: 'Starlink', color: '#18d7ff' },
-    oneweb:   { label: 'OneWeb', color: '#4be1c3' },
-    'gps-ops':{ label: 'GPS', color: '#80ed99' },
-    galileo:  { label: 'Galileo', color: '#7fd0ff' },
-    'glo-ops':{ label: 'GLONASS', color: '#ef476f' },
-    beidou:   { label: 'BeiDou', color: '#f78c6b' },
-    geo:      { label: 'Geoestacionarios', color: '#b388ff' },
-    weather:  { label: 'Meteorológicos', color: '#9d7bff' },
-    science:  { label: 'Científicos', color: '#f4a8ff' },
+    stations: { label: 'Tripuladas / ISS', en: 'Crewed / ISS', color: '#ffd166' },
+    starlink: { label: 'Starlink', en: 'Starlink', color: '#18d7ff' },
+    oneweb:   { label: 'OneWeb', en: 'OneWeb', color: '#4be1c3' },
+    'gps-ops':{ label: 'GPS', en: 'GPS', color: '#80ed99' },
+    galileo:  { label: 'Galileo', en: 'Galileo', color: '#7fd0ff' },
+    'glo-ops':{ label: 'GLONASS', en: 'GLONASS', color: '#ef476f' },
+    beidou:   { label: 'BeiDou', en: 'BeiDou', color: '#f78c6b' },
+    geo:      { label: 'Geoestacionarios', en: 'Geostationary', color: '#b388ff' },
+    weather:  { label: 'Meteorológicos', en: 'Weather', color: '#9d7bff' },
+    science:  { label: 'Científicos', en: 'Science', color: '#f4a8ff' },
   };
-  function constMeta(group) { return CONSTELLATIONS[group] || { label: group, color: '#93a1c0' }; }
+  function constMeta(group) { return CONSTELLATIONS[group] || { label: group, en: group, color: '#93a1c0' }; }
+  function lang() { return (root.__ufologistLang === 'en') ? 'en' : 'es'; }
+  function constLabel(group) { const m = constMeta(group); return lang() === 'en' ? (m.en || m.label) : m.label; }
 
   function orbitBand(altKm) {
     if (altKm < 2000) return 'LEO';
@@ -219,6 +221,43 @@
   // pathsData (capa política) ni objectsData. Coordenadas vía globe.getCoords.
   let VG = null;
   function TH() { return (typeof THREE !== 'undefined') ? THREE : root.THREE; }
+  // --- i18n del UI satelital (lee root.__ufologistLang que fija app.js) ---
+  const I18N_SAT = {
+    es: {
+      sats: 'Satélites', inOrbit: 'en órbita', live: 'CelesTrak (vivo)', backup: 'respaldo local',
+      all: 'Todas', ringNote: 'Cada anillo = un plano orbital. Los puntos son satélites en tiempo simulado.',
+      launchSites: 'Sitios de lanzamiento', analyzeSky: '🔭 Analizar cielo sobre un lugar',
+      skyHint: 'Clic en el globo para ver qué satélites hay sobre ese punto. El tiempo se pausa.',
+      simSpeed: 'Velocidad de simulación · ×', regime: 'Régimen', altitude: 'Altitud', speed: 'Velocidad',
+      period: 'Periodo', inclination: 'Inclinación', position: 'Posición', close: 'Cerrar',
+      launchSite: 'Sitio de lanzamiento', upcoming: 'Próximo', success: 'Éxito', failure: 'Fallo',
+      skyTitle: 'Análisis de cielo', highSky: 'Cielo alto &gt;30°', leoOrbit: 'Órbita baja (LEO)',
+      nakedEye: 'Candidatos a simple vista (LEO, &gt;10°):', noneVisible: 'Ningún satélite LEO brillante sobre 10° ahora mismo.',
+      noteExact: 'Posiciones calculadas para la fecha y hora reales del avistamiento (dentro de la validez del TLE). ',
+      noteNow: 'Posiciones para el instante simulado actual: los TLE (~2026) no reconstruyen con precisión fechas fuera de unas semanas. ',
+      noteTail: 'Solo los satélites LEO iluminados por el Sol con cielo oscuro son visibles a simple vista; GPS/GEO no lo son.',
+      launches: n => `${n} lanzamiento${n !== 1 ? 's' : ''}`, more: n => `+${n} más`,
+      overHorizon: n => `${n.toLocaleString('es')} satélites sobre el horizonte`,
+    },
+    en: {
+      sats: 'Satellites', inOrbit: 'in orbit', live: 'CelesTrak (live)', backup: 'local backup',
+      all: 'All', ringNote: 'Each ring is one orbital plane. Dots are satellites in simulated time.',
+      launchSites: 'Launch sites', analyzeSky: '🔭 Analyze the sky over a place',
+      skyHint: 'Click the globe to see which satellites are above that point. Time is paused.',
+      simSpeed: 'Simulation speed · ×', regime: 'Regime', altitude: 'Altitude', speed: 'Speed',
+      period: 'Period', inclination: 'Inclination', position: 'Position', close: 'Close',
+      launchSite: 'Launch site', upcoming: 'Upcoming', success: 'Success', failure: 'Failure',
+      skyTitle: 'Sky analysis', highSky: 'High sky &gt;30°', leoOrbit: 'Low orbit (LEO)',
+      nakedEye: 'Naked-eye candidates (LEO, &gt;10°):', noneVisible: 'No bright LEO satellite above 10° right now.',
+      noteExact: 'Positions computed for the sighting’s real date and time (within TLE validity). ',
+      noteNow: 'Positions for the current simulated instant: TLEs (~2026) don’t accurately reconstruct dates beyond a few weeks. ',
+      noteTail: 'Only sunlit LEO satellites under a dark sky are visible to the naked eye; GPS/GEO are not.',
+      launches: n => `${n} launch${n !== 1 ? 'es' : ''}`, more: n => `+${n} more`,
+      overHorizon: n => `${n.toLocaleString('en')} satellites above the horizon`,
+    },
+  };
+  function L(key) { const d = I18N_SAT[lang()] || I18N_SAT.es; return d[key] !== undefined ? d[key] : I18N_SAT.es[key]; }
+  function loc() { return lang() === 'en' ? 'en-US' : 'es-ES'; }
   function hexRgb(hex) {
     const h = hex.replace('#', '');
     const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
@@ -375,16 +414,16 @@
     const d = satDetail(VG.selSat, VG.simTime); if (!d) return;
     const c = constMeta(d.group).color;
     el.innerHTML =
-      '<button id="sat-detail-close" class="sat-detail-close" aria-label="Cerrar">×</button>' +
+      `<button id="sat-detail-close" class="sat-detail-close" aria-label="${L('close')}">×</button>` +
       `<div class="sd-head"><span class="sd-dot" style="background:${c};color:${c}"></span><h3>${d.name}</h3></div>` +
-      `<p class="sd-sub">${d.label} · NORAD ${d.id}</p>` +
+      `<p class="sd-sub">${constLabel(d.group)} · NORAD ${d.id}</p>` +
       '<dl class="sd-grid">' +
-        `<div><dt>Régimen</dt><dd>${d.band}</dd></div>` +
-        `<div><dt>Altitud</dt><dd>${Math.round(d.alt).toLocaleString('es')} km</dd></div>` +
-        `<div><dt>Velocidad</dt><dd>${d.speedKmS ? d.speedKmS.toFixed(2) : '—'} km/s</dd></div>` +
-        `<div><dt>Periodo</dt><dd>${d.periodMin ? d.periodMin.toFixed(0) : '—'} min</dd></div>` +
-        `<div><dt>Inclinación</dt><dd>${d.incDeg.toFixed(1)}°</dd></div>` +
-        `<div><dt>Posición</dt><dd>${d.lat.toFixed(1)}°, ${d.lng.toFixed(1)}°</dd></div>` +
+        `<div><dt>${L('regime')}</dt><dd>${d.band}</dd></div>` +
+        `<div><dt>${L('altitude')}</dt><dd>${Math.round(d.alt).toLocaleString(loc())} km</dd></div>` +
+        `<div><dt>${L('speed')}</dt><dd>${d.speedKmS ? d.speedKmS.toFixed(2) : '—'} km/s</dd></div>` +
+        `<div><dt>${L('period')}</dt><dd>${d.periodMin ? d.periodMin.toFixed(0) : '—'} min</dd></div>` +
+        `<div><dt>${L('inclination')}</dt><dd>${d.incDeg.toFixed(1)}°</dd></div>` +
+        `<div><dt>${L('position')}</dt><dd>${d.lat.toFixed(1)}°, ${d.lng.toFixed(1)}°</dd></div>` +
       '</dl>';
     const close = el.querySelector('#sat-detail-close');
     if (close) close.onclick = () => selectSat(null);
@@ -481,17 +520,17 @@
     }
     return best;
   }
-  function launchRow(L) {
-    const n = nowMs(), up = Date.parse(L.net) >= n;
-    const d = new Date(L.net);
-    const when = isFinite(d) ? d.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
-    const sx = /spacex/i.test(L.prov || '');
-    const stCls = L.status === 'Failure' ? 'lc-fail' : (up ? 'lc-up' : 'lc-ok');
-    const stTxt = up ? 'Próximo' : (L.status === 'Failure' ? 'Fallo' : (L.status === 'Success' ? 'Éxito' : L.status || ''));
+  function launchRow(lch) {
+    const n = nowMs(), up = Date.parse(lch.net) >= n;
+    const d = new Date(lch.net);
+    const when = isFinite(d) ? d.toLocaleDateString(loc(), { day: '2-digit', month: 'short', year: 'numeric' }) : '';
+    const sx = /spacex/i.test(lch.prov || '');
+    const stCls = lch.status === 'Failure' ? 'lc-fail' : (up ? 'lc-up' : 'lc-ok');
+    const stTxt = up ? L('upcoming') : (lch.status === 'Failure' ? L('failure') : (lch.status === 'Success' ? L('success') : lch.status || ''));
     return `<li class="lc-row${sx ? ' lc-spacex' : ''}">` +
-      `<div class="lc-r1"><span class="lc-name">${L.name || L.rocket || ''}</span>` +
+      `<div class="lc-r1"><span class="lc-name">${lch.name || lch.rocket || ''}</span>` +
       `<span class="lc-badge ${stCls}">${stTxt}</span></div>` +
-      `<div class="lc-r2">${L.rocket || ''} · ${L.prov || ''}${L.orbit ? ' · ' + L.orbit : ''}</div>` +
+      `<div class="lc-r2">${lch.rocket || ''} · ${lch.prov || ''}${lch.orbit ? ' · ' + lch.orbit : ''}</div>` +
       `<div class="lc-when">${when}</div></li>`;
   }
   function selectPad(pad) {
@@ -509,11 +548,11 @@
     });
     const shown = sorted.slice(0, 7), extra = sorted.length - shown.length;
     el.innerHTML =
-      '<button id="launch-card-close" class="sat-detail-close" aria-label="Cerrar">×</button>' +
-      `<div class="sd-head"><span class="sd-dot" style="background:#ffae4d;color:#ffae4d"></span><h3>${pad.padName || 'Sitio de lanzamiento'}</h3></div>` +
-      `<p class="sd-sub">${pad.lat.toFixed(2)}°, ${pad.lng.toFixed(2)}° · ${pad.launches.length} lanzamiento${pad.launches.length !== 1 ? 's' : ''}</p>` +
+      `<button id="launch-card-close" class="sat-detail-close" aria-label="${L('close')}">×</button>` +
+      `<div class="sd-head"><span class="sd-dot" style="background:#ffae4d;color:#ffae4d"></span><h3>${pad.padName || L('launchSite')}</h3></div>` +
+      `<p class="sd-sub">${pad.lat.toFixed(2)}°, ${pad.lng.toFixed(2)}° · ${L('launches')(pad.launches.length)}</p>` +
       `<ul class="lc-list">${shown.map(launchRow).join('')}</ul>` +
-      (extra > 0 ? `<p class="sd-sub" style="margin:8px 0 0">+${extra} más</p>` : '');
+      (extra > 0 ? `<p class="sd-sub" style="margin:8px 0 0">${L('more')(extra)}</p>` : '');
     el.style.display = '';
     const close = el.querySelector('#launch-card-close');
     if (close) close.onclick = () => selectPad(null);
@@ -593,21 +632,19 @@
       `<li class="sk-row"><span class="sk-dot" style="background:${constMeta(o.sat.group).color}"></span>` +
       `<span class="sk-name">${o.sat.name}</span><span class="sk-elev">${o.elev.toFixed(0)}°</span></li>`).join('');
     el.innerHTML =
-      '<button id="sky-card-close" class="sat-detail-close" aria-label="Cerrar">×</button>' +
-      '<div class="sd-head"><span class="sd-dot" style="background:#18d7ff;color:#18d7ff"></span><h3>Análisis de cielo</h3></div>' +
-      `<p class="sd-sub">${fmtLat}°, ${fmtLng}° · ${list.length.toLocaleString('es')} satélites sobre el horizonte</p>` +
+      `<button id="sky-card-close" class="sat-detail-close" aria-label="${L('close')}">×</button>` +
+      `<div class="sd-head"><span class="sd-dot" style="background:#18d7ff;color:#18d7ff"></span><h3>${L('skyTitle')}</h3></div>` +
+      `<p class="sd-sub">${fmtLat}°, ${fmtLng}° · ${L('overHorizon')(list.length)}</p>` +
       '<dl class="sd-grid" style="margin-bottom:10px">' +
-        `<div><dt>Cielo alto &gt;30°</dt><dd>${high}</dd></div>` +
-        `<div><dt>Órbita baja (LEO)</dt><dd>${leo.length}</dd></div>` +
+        `<div><dt>${L('highSky')}</dt><dd>${high}</dd></div>` +
+        `<div><dt>${L('leoOrbit')}</dt><dd>${leo.length}</dd></div>` +
       '</dl>' +
       (naked.length
-        ? `<p class="sd-sub" style="margin:0 0 6px">Candidatos a simple vista (LEO, &gt;10°):</p><ul class="sk-list">${rows}</ul>`
-        : '<p class="sd-sub" style="margin:0">Ningún satélite LEO brillante sobre 10° ahora mismo.</p>') +
+        ? `<p class="sd-sub" style="margin:0 0 6px">${L('nakedEye')}</p><ul class="sk-list">${rows}</ul>`
+        : `<p class="sd-sub" style="margin:0">${L('noneVisible')}</p>`) +
       '<p class="sk-note">' +
-        (VG.skyExact
-          ? 'Posiciones calculadas para la fecha y hora reales del avistamiento (dentro de la validez del TLE). '
-          : 'Posiciones para el instante simulado actual: los TLE (~2026) no reconstruyen con precisión fechas fuera de unas semanas. ') +
-        'Solo los satélites LEO iluminados por el Sol con cielo oscuro son visibles a simple vista; GPS/GEO no lo son.</p>';
+        (VG.skyExact ? L('noteExact') : L('noteNow')) +
+        L('noteTail') + '</p>';
     el.style.display = '';
     const close = el.querySelector('#sky-card-close'); if (close) close.onclick = () => clearSky();
   }
@@ -700,22 +737,22 @@
     const counts = groupCounts(), present = model.constellationsPresent(), total = VG.sats.length;
     const chip = (g, label, n, color) =>
       `<button class="sat-chip${(VG.filter || '') === g ? ' active' : ''}" data-g="${g}" style="--c:${color}">` +
-      `<span class="sc-dot"></span>${label}<b>${(n || 0).toLocaleString('es')}</b></button>`;
+      `<span class="sc-dot"></span>${label}<b>${(n || 0).toLocaleString(loc())}</b></button>`;
     el.innerHTML =
-      '<div class="panel-head"><h2>Satélites</h2></div>' +
-      `<p class="hint">${total.toLocaleString('es')} en órbita · ${VG.live ? 'CelesTrak (vivo)' : 'respaldo local'}</p>` +
+      `<div class="panel-head"><h2>${L('sats')}</h2></div>` +
+      `<p class="hint">${total.toLocaleString(loc())} ${L('inOrbit')} · ${VG.live ? L('live') : L('backup')}</p>` +
       '<div class="sat-chips">' +
-        chip('', 'Todas', total, '#93a1c0') +
-        present.map(g => chip(g, constMeta(g).label, counts[g], constMeta(g).color)).join('') +
+        chip('', L('all'), total, '#93a1c0') +
+        present.map(g => chip(g, constLabel(g), counts[g], constMeta(g).color)).join('') +
       '</div>' +
-      '<p class="hint" style="margin-top:10px">Cada anillo = un plano orbital. Los puntos son satélites en tiempo simulado.</p>' +
+      `<p class="hint" style="margin-top:10px">${L('ringNote')}</p>` +
       (VG.pads && VG.pads.length
         ? '<label class="sat-toggle"><input type="checkbox" id="sat-pads-toggle"' + (VG.showPads ? ' checked' : '') + '>' +
-          '<span class="st-tri"></span>Sitios de lanzamiento<b>' + VG.pads.length + '</b></label>'
+          `<span class="st-tri"></span>${L('launchSites')}<b>` + VG.pads.length + '</b></label>'
         : '') +
-      '<button id="sat-sky-btn" class="sat-sky-btn' + (VG.skyMode ? ' active' : '') + '">🔭 Analizar cielo sobre un lugar</button>' +
-      (VG.skyMode ? '<p class="hint" style="margin-top:6px">Clic en el globo para ver qué satélites hay sobre ese punto. El tiempo se pausa.</p>' : '') +
-      '<label class="sat-speed">Velocidad de simulación · ×<span id="sat-speed-val">' + VG.simSpeed + '</span>' +
+      `<button id="sat-sky-btn" class="sat-sky-btn${VG.skyMode ? ' active' : ''}">${L('analyzeSky')}</button>` +
+      (VG.skyMode ? `<p class="hint" style="margin-top:6px">${L('skyHint')}</p>` : '') +
+      `<label class="sat-speed">${L('simSpeed')}<span id="sat-speed-val">` + VG.simSpeed + '</span>' +
         '<input type="range" id="sat-speed" min="1" max="600" value="' + VG.simSpeed + '"></label>';
     el.querySelectorAll('.sat-chip').forEach(b => b.onclick = () => {
       model.setFilter(b.dataset.g || null);
@@ -749,6 +786,14 @@
     if (!VG) return; VG.showPads = on;
     buildPads(root.__ufologistGlobe);
     if (!on) selectPad(null);
+  };
+  // re-render del UI satelital al cambiar de idioma (lo llama app.js)
+  model.relang = function () {
+    if (!VG || !VG.active) return;
+    buildPanel();
+    if (VG.selSat) refreshDetail();
+    if (VG.selPad) selectPad(VG.selPad);
+    if (VG.skyLoc) skyCard();
   };
   model.constellationsPresent = function () {
     if (!VG) return [];

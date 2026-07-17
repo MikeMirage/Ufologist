@@ -545,6 +545,7 @@ const GEIPAN_TEXT = {
 };
 let currentLang = localStorage.getItem(LANG_KEY) || 'es';
 if (!I18N[currentLang]) currentLang = 'es';
+if (typeof window !== 'undefined') window.__ufologistLang = currentLang;   // leído por satellites.js
 let audioEnabled = localStorage.getItem(AUDIO_KEY) !== 'off';
 let selectedPassPlan = 'monthly';
 function t(key, vars) {
@@ -1128,6 +1129,8 @@ function applyStaticI18n() {
 function setLanguage(lang) {
   if (!I18N[lang] || lang === currentLang) return;
   currentLang = lang;
+  if (typeof window !== 'undefined') window.__ufologistLang = currentLang;
+  if (window.UFOSat && UFOSat.relang) UFOSat.relang();
   localStorage.setItem(LANG_KEY, lang);
   applyStaticI18n();
   if (massData) $('mass-status').textContent = fmtNum(massData.length);
