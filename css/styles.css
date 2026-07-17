@@ -534,6 +534,20 @@ body.sky-analyzing #globe, body.sky-analyzing #globe canvas { cursor: crosshair;
 #sky-card .sk-elev { font-family: var(--font-mono); font-size: 12px; color: var(--txt-dim); }
 #sky-card .sk-note { font-size: 10px; line-height: 1.45; color: var(--txt-dim); margin: 11px 0 0; padding-top: 9px; border-top: 1px solid var(--glass-border); }
 
+/* Satellite view — mobile: panel and cards become bottom sheets */
+@media (max-width: 760px) {
+  #sat-panel {
+    top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-width: 100%;
+    max-height: 46vh; border-radius: 18px 18px 0 0;
+    padding: 12px 16px calc(18px + env(safe-area-inset-bottom)); z-index: 96;
+  }
+  #sat-detail, #launch-card, #sky-card {
+    left: 0; right: 0; bottom: 0; top: auto; width: 100%; max-width: 100%;
+    border-radius: 18px 18px 0 0; max-height: 62vh;
+    padding: 15px 16px calc(18px + env(safe-area-inset-bottom)); z-index: 97;
+  }
+}
+
 /* Empty state (no results) */
 #empty-state {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
