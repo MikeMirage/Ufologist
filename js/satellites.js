@@ -65,6 +65,13 @@
     });
     return sats;
   }
+  // Año de lanzamiento desde el designador internacional (COSPAR) del TLE:
+  // línea 1, columnas 10-11 = últimos 2 dígitos del año (>=57 → 19xx, si no 20xx).
+  function launchYear(l1) {
+    const yy = parseInt((l1 || '').slice(9, 11), 10);
+    if (!isFinite(yy)) return null;
+    return yy >= 57 ? 1900 + yy : 2000 + yy;
+  }
   function buildSat(name, id, group, l1, l2) {
     const S = lib(); if (!S) return null;
     let satrec;
@@ -75,7 +82,18 @@
       incDeg: satrec.inclo * DEG,
       raanDeg: satrec.nodeo * DEG,
       meanMotion: satrec.no ? (satrec.no * 1440 / (2 * Math.PI)) : 0, // revs/día
+      launchYear: launchYear(l1),
     };
+  }
+  // histograma de satélites por año de lanzamiento (apilado por constelación)
+  function launchHistogram(sats) {
+    const byYear = {}; let min = 9999, max = 0;
+    for (const s of sats) {
+      const y = s.launchYear; if (!y) continue;
+      (byYear[y] = byYear[y] || {})[s.group] = ((byYear[y] || {})[s.group] || 0) + 1;
+      if (y < min) min = y; if (y > max) max = y;
+    }
+    return { byYear, minYear: min, maxYear: max };
   }
 
   // --- Propagación ---
@@ -171,7 +189,7 @@
     CONSTELLATIONS, constMeta, orbitBand,
     parseTleText, buildFromSnapshot, buildSat,
     propagate, satDetail, overheadSats, sampleOrbit, representativePlanes, planeKey,
-    EARTH_R_KM,
+    launchYear, launchHistogram, EARTH_R_KM,
   };
 
   // ---------- Carga de datos (browser: vivo + respaldo) ----------
@@ -249,6 +267,9 @@
       noteTail: 'Solo los satélites LEO iluminados por el Sol con cielo oscuro son visibles a simple vista; GPS/GEO no lo son.',
       scaleReal: 'Escala de altitud: real', scaleCompressed: 'Escala de altitud: comprimida',
       scaleHint: 'La escala real es fiel a la distancia (LEO pega a la superficie, GEO a 6.6×); la comprimida separa los regímenes para verlos mejor.',
+      tlTitle: 'Satélites en órbita por año de lanzamiento',
+      tlUpTo: (n, y) => `${n.toLocaleString('es')} lanzados hasta ${y}`,
+      tlPlayTitle: 'Reproducir la evolución',
       launches: n => `${n} lanzamiento${n !== 1 ? 's' : ''}`, more: n => `+${n} más`,
       overHorizon: n => `${n.toLocaleString('es')} satélites sobre el horizonte`,
     },
@@ -267,6 +288,9 @@
       noteTail: 'Only sunlit LEO satellites under a dark sky are visible to the naked eye; GPS/GEO are not.',
       scaleReal: 'Altitude scale: real', scaleCompressed: 'Altitude scale: compressed',
       scaleHint: 'Real scale is true to distance (LEO hugs the surface, GEO at 6.6×); compressed separates the regimes so they are easier to see.',
+      tlTitle: 'Satellites in orbit by launch year',
+      tlUpTo: (n, y) => `${n.toLocaleString('en')} launched through ${y}`,
+      tlPlayTitle: 'Play the evolution',
       launches: n => `${n} launch${n !== 1 ? 'es' : ''}`, more: n => `+${n} more`,
       overHorizon: n => `${n.toLocaleString('en')} satellites above the horizon`,
     },
@@ -290,7 +314,11 @@
   const SCALE_K = 0.7;
   function vAlt(a) { return (VG && VG.realScale) ? a : SCALE_K * Math.sqrt(Math.max(0, a)); }
   function coordSat(globe, lat, lng, altGlobe) { return coord(globe, lat, lng, vAlt(altGlobe)); }
-  function activeSet() { return VG.filter ? VG.sats.filter(s => s.group === VG.filter) : VG.sats; }
+  function activeSet() {
+    let set = VG.filter ? VG.sats.filter(s => s.group === VG.filter) : VG.sats;
+    if (VG.yearMax != null) set = set.filter(s => !s.launchYear || s.launchYear <= VG.yearMax);  // acumulativo hasta el año
+    return set;
+  }
 
   function buildOrbits(globe) {
     const T = TH(); const sc = globe.scene && globe.scene();
@@ -765,6 +793,8 @@
       try { VG.pads = groupPads(await loadLaunches()); if (VG.showPads === undefined) VG.showPads = true; console.log('[UFOSat]', VG.pads.length, 'sitios de lanzamiento'); }
       catch (e) { VG.pads = []; }
     }
+    VG.hist = launchHistogram(VG.sats);
+    VG.yearMax = VG.hist.maxYear;                 // empezar mostrando todo
     VG.active = true;
     buildOrbits(globe);
     buildPoints(globe);
@@ -773,6 +803,7 @@
     attachPick(globe);
     startClock();
     showPanel();
+    buildTimeline();
     if (model._pendingSky) { const s = model._pendingSky; model._pendingSky = null; model.analyzeSkyAt(s.lat, s.lng, s.whenISO); }
     // Fase 2 (en segundo plano): enriquecer con CelesTrak en vivo (solo una vez)
     if (!VG._liveTried) { VG._liveTried = true; enrichLive(globe); }
@@ -783,7 +814,10 @@
     for (const s of live.sats) byId.set(s.id, s);
     VG.sats = [...byId.values()]; VG.live = true;
     console.log('[UFOSat]', VG.sats.length, 'satélites (vivo)');
-    if (VG.active) { buildOrbits(globe); buildPoints(globe); ensureZoomRange(globe); buildPanel(); if (VG.skyLoc) { VG.skyList = overheadSats(VG.sats, VG.skyLoc.lat, VG.skyLoc.lng, VG.simTime, 0); buildSkyLines(globe); skyCard(); } }
+    const wasAll = VG.hist && VG.yearMax === VG.hist.maxYear;
+    VG.hist = launchHistogram(VG.sats);
+    if (wasAll || VG.yearMax == null) VG.yearMax = VG.hist.maxYear;   // seguir mostrando todo tras enriquecer
+    if (VG.active) { buildOrbits(globe); buildPoints(globe); ensureZoomRange(globe); buildPanel(); drawTimeline(); if (VG.skyLoc) { VG.skyList = overheadSats(VG.sats, VG.skyLoc.lat, VG.skyLoc.lng, VG.simTime, 0); buildSkyLines(globe); skyCard(); } }
   }
   model.exit = function exit() {
     const globe = root.__ufologistGlobe; const sc = globe && globe.scene && globe.scene();
@@ -796,6 +830,7 @@
       VG.orbitObj = null; VG.ptsObj = null; VG.selObj = null; VG.selSat = null;
       VG.padObj = null; VG.selPad = null;
       restoreZoomRange(globe);
+      hideTimeline();
       if (VG.skyMode) model.toggleSky(false); else clearSky();
       document.body.classList.remove('sky-analyzing');
       const det = document.getElementById('sat-detail'); if (det) det.style.display = 'none';
@@ -852,6 +887,119 @@
     const e = document.getElementById('sat-panel'); if (e) e.style.display = 'none';
     const p = document.getElementById('panel-left'); if (p) p.style.display = (VG && VG._panelPrev !== undefined) ? VG._panelPrev : '';
   }
+
+  // ---------- Línea de tiempo de satélites (por año de lanzamiento) ----------
+  const MILESTONES = { 1957: 'Sputnik', 1998: 'ISS', 2019: 'Starlink' };
+  function yearTotals() {                       // {year:{total,domColor}} + max
+    const h = VG.hist; const out = {}; let maxN = 1;
+    for (let y = h.minYear; y <= h.maxYear; y++) {
+      const g = h.byYear[y]; if (!g) continue;
+      let total = 0, domN = -1, domG = null;
+      for (const k in g) { total += g[k]; if (g[k] > domN) { domN = g[k]; domG = k; } }
+      out[y] = { total, color: constMeta(domG).color };
+      if (total > maxN) maxN = total;
+    }
+    return { out, maxN };
+  }
+  function cumUpTo(y) { let c = 0; const h = VG.hist; for (let k = h.minYear; k <= y; k++) if (h.byYear[k]) for (const gg in h.byYear[k]) c += h.byYear[k][gg]; return c; }
+  function buildTimeline() {
+    let el = document.getElementById('sat-timeline');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'sat-timeline'; el.className = 'glass';
+      el.innerHTML = '<button id="stl-play" class="stl-play" aria-label="play">▶</button>' +
+        '<div class="stl-body"><div class="stl-readout"><span class="stl-title"></span><span id="stl-read"></span></div>' +
+        '<canvas id="stl-canvas"></canvas></div>';
+      document.body.appendChild(el);
+      const cv = el.querySelector('#stl-canvas');
+      const onScrub = e => { const y = yearAtX(e.clientX); if (y != null) applyYear(y); };
+      cv.addEventListener('pointerdown', e => { stopPlay(); cv.setPointerCapture(e.pointerId); VG._scrub = true; onScrub(e); });
+      cv.addEventListener('pointermove', e => { if (VG._scrub) onScrub(e); });
+      cv.addEventListener('pointerup', e => { VG._scrub = false; });
+      el.querySelector('#stl-play').onclick = () => VG._playing ? stopPlay() : playTimeline();
+    }
+    el.querySelector('.stl-title').textContent = L('tlTitle');
+    el.style.display = '';
+    drawTimeline();
+  }
+  function yearAtX(clientX) {
+    const cv = document.getElementById('stl-canvas'); if (!cv || !VG.hist) return null;
+    const r = cv.getBoundingClientRect(); const h = VG.hist;
+    const f = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    return Math.round(h.minYear + f * (h.maxYear - h.minYear));
+  }
+  function drawTimeline() {
+    const cv = document.getElementById('stl-canvas'); if (!cv || !VG.hist) return;
+    const rect = cv.getBoundingClientRect(); if (!rect.width) return;
+    const dpr = root.devicePixelRatio || 1;
+    cv.width = rect.width * dpr; cv.height = rect.height * dpr;
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const W = rect.width, H = rect.height, padB = 16, padT = 14;
+    ctx.clearRect(0, 0, W, H);
+    const h = VG.hist, span = Math.max(1, h.maxYear - h.minYear);
+    const { out, maxN } = yearTotals();
+    const xOf = y => ((y - h.minYear) / span) * (W - 2) + 1;
+    const light = document.documentElement.getAttribute('data-theme') === 'light';
+    // barras por año (altura ∝ raíz del recuento para que se vean años pequeños y grandes)
+    const bw = Math.max(2, (W - 2) / (span + 1) - 1);
+    for (let y = h.minYear; y <= h.maxYear; y++) {
+      const d = out[y]; if (!d) continue;
+      const hgt = Math.sqrt(d.total / maxN) * (H - padB - padT);
+      const active = y <= VG.yearMax;
+      ctx.fillStyle = active ? d.color : (light ? 'rgba(20,44,70,0.18)' : 'rgba(120,140,180,0.20)');
+      ctx.globalAlpha = active ? 0.9 : 1;
+      ctx.fillRect(xOf(y) - bw / 2, H - padB - hgt, bw, hgt);
+    }
+    ctx.globalAlpha = 1;
+    // curva acumulativa (crecimiento total) normalizada
+    const totalAll = cumUpTo(h.maxYear) || 1; let cum = 0;
+    ctx.beginPath();
+    for (let y = h.minYear; y <= h.maxYear; y++) { if (h.byYear[y]) for (const gg in h.byYear[y]) cum += h.byYear[y][gg]; const yy = H - padB - (cum / totalAll) * (H - padB - padT); if (y === h.minYear) ctx.moveTo(xOf(y), yy); else ctx.lineTo(xOf(y), yy); }
+    ctx.strokeStyle = light ? 'rgba(10,126,168,0.75)' : 'rgba(120,230,255,0.7)'; ctx.lineWidth = 1.5; ctx.stroke();
+    // hitos
+    ctx.font = '9px ui-monospace, monospace'; ctx.textAlign = 'center';
+    for (const yr in MILESTONES) { const y = +yr; if (y < h.minYear || y > h.maxYear) continue; const x = xOf(y);
+      ctx.strokeStyle = light ? 'rgba(20,44,70,0.3)' : 'rgba(200,210,230,0.3)'; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, H - padB); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = light ? 'rgba(20,44,70,0.7)' : 'rgba(210,220,240,0.75)'; ctx.fillText(MILESTONES[yr], x, padT - 3);
+    }
+    // cursor del año seleccionado
+    const cx = xOf(VG.yearMax);
+    ctx.strokeStyle = light ? '#0a7ea8' : '#18d7ff'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(cx, padT - 2); ctx.lineTo(cx, H - padB); ctx.stroke();
+    // eje de años (extremos + cursor)
+    ctx.fillStyle = light ? 'rgba(20,44,70,0.6)' : 'rgba(190,200,220,0.6)'; ctx.font = '9px ui-monospace, monospace';
+    ctx.textAlign = 'left'; ctx.fillText(h.minYear, 2, H - 4);
+    ctx.textAlign = 'right'; ctx.fillText(h.maxYear, W - 2, H - 4);
+    // lectura
+    const rd = document.getElementById('stl-read'); if (rd) rd.textContent = L('tlUpTo')(cumUpTo(VG.yearMax), VG.yearMax);
+  }
+  function applyYear(y) {
+    if (!VG.hist) return;
+    VG.yearMax = Math.max(VG.hist.minYear, Math.min(VG.hist.maxYear, y));
+    drawTimeline();
+    // reconstrucción del globo con debounce (setTimeout, robusto aunque la
+    // pestaña no renderice) para no rehacer geometría en cada evento de arrastre
+    if (VG._stlTimer) clearTimeout(VG._stlTimer);
+    VG._stlTimer = setTimeout(() => { VG._stlTimer = 0; const g = root.__ufologistGlobe; buildOrbits(g); buildPoints(g); }, 70);
+  }
+  function playTimeline() {
+    if (!VG.hist) return; stopPlay(); VG._playing = true;
+    const btn = document.getElementById('stl-play'); if (btn) btn.textContent = '⏸';
+    if (VG.yearMax >= VG.hist.maxYear) VG.yearMax = VG.hist.minYear;   // reinicia si está al final
+    const perYear = 320;                                              // ms por año
+    const step = () => {
+      if (!VG._playing) return;
+      applyYear(VG.yearMax + 1);
+      if (VG.yearMax >= VG.hist.maxYear) { stopPlay(); return; }
+      VG._playTimer = setTimeout(step, perYear);
+    };
+    VG._playTimer = setTimeout(step, perYear);
+  }
+  function stopPlay() {
+    if (VG._playTimer) clearTimeout(VG._playTimer); VG._playTimer = 0; VG._playing = false;
+    const btn = document.getElementById('stl-play'); if (btn) btn.textContent = '▶';
+  }
+  function hideTimeline() { stopPlay(); const e = document.getElementById('sat-timeline'); if (e) e.style.display = 'none'; }
   model.setFilter = function (g) {
     if (!VG) return; VG.filter = g;
     const globe = root.__ufologistGlobe;
@@ -880,6 +1028,7 @@
     if (VG.selSat) refreshDetail();
     if (VG.selPad) selectPad(VG.selPad);
     if (VG.skyLoc) skyCard();
+    const stlTitle = document.querySelector('#sat-timeline .stl-title'); if (stlTitle) { stlTitle.textContent = L('tlTitle'); drawTimeline(); }
   };
   model.constellationsPresent = function () {
     if (!VG) return [];

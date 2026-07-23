@@ -534,8 +534,26 @@ body.sky-analyzing #globe, body.sky-analyzing #globe canvas { cursor: crosshair;
 #sky-card .sk-elev { font-family: var(--font-mono); font-size: 12px; color: var(--txt-dim); }
 #sky-card .sk-note { font-size: 10px; line-height: 1.45; color: var(--txt-dim); margin: 11px 0 0; padding-top: 9px; border-top: 1px solid var(--glass-border); }
 
+/* Satellite launch timeline (bottom bar) */
+#sat-timeline {
+  position: fixed; left: 282px; right: 16px; bottom: 16px; height: 104px;
+  z-index: 45; display: flex; align-items: stretch; gap: 12px; padding: 12px 14px; border-radius: 14px;
+}
+#sat-timeline .stl-play {
+  flex-shrink: 0; width: 40px; align-self: center; height: 40px; border-radius: 50%;
+  border: 1px solid var(--glass-border); background: rgba(24,215,255,.10); color: var(--txt);
+  font-size: 13px; cursor: pointer; transition: background .15s, border-color .15s;
+}
+#sat-timeline .stl-play:hover { border-color: var(--accent); background: rgba(24,215,255,.2); }
+#sat-timeline .stl-body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+#sat-timeline .stl-readout { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+#sat-timeline .stl-title { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--txt-dim); }
+#sat-timeline #stl-read { font-family: var(--font-mono); font-size: 12px; color: var(--txt); white-space: nowrap; }
+#sat-timeline #stl-canvas { flex: 1; width: 100%; height: 100%; cursor: crosshair; display: block; }
+
 /* Satellite view — mobile: panel and cards become bottom sheets */
 @media (max-width: 760px) {
+  #sat-timeline { left: 0; right: 0; bottom: 0; height: 96px; border-radius: 14px 14px 0 0; z-index: 95; }
   #sat-panel {
     top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-width: 100%;
     max-height: 46vh; border-radius: 18px 18px 0 0;
