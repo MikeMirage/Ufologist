@@ -247,6 +247,8 @@
       noteExact: 'Posiciones calculadas para la fecha y hora reales del avistamiento (dentro de la validez del TLE). ',
       noteNow: 'Posiciones para el instante simulado actual: los TLE (~2026) no reconstruyen con precisión fechas fuera de unas semanas. ',
       noteTail: 'Solo los satélites LEO iluminados por el Sol con cielo oscuro son visibles a simple vista; GPS/GEO no lo son.',
+      scaleReal: 'Escala de altitud: real', scaleCompressed: 'Escala de altitud: comprimida',
+      scaleHint: 'La escala real es fiel a la distancia (LEO pega a la superficie, GEO a 6.6×); la comprimida separa los regímenes para verlos mejor.',
       launches: n => `${n} lanzamiento${n !== 1 ? 's' : ''}`, more: n => `+${n} más`,
       overHorizon: n => `${n.toLocaleString('es')} satélites sobre el horizonte`,
     },
@@ -263,6 +265,8 @@
       noteExact: 'Positions computed for the sighting’s real date and time (within TLE validity). ',
       noteNow: 'Positions for the current simulated instant: TLEs (~2026) don’t accurately reconstruct dates beyond a few weeks. ',
       noteTail: 'Only sunlit LEO satellites under a dark sky are visible to the naked eye; GPS/GEO are not.',
+      scaleReal: 'Altitude scale: real', scaleCompressed: 'Altitude scale: compressed',
+      scaleHint: 'Real scale is true to distance (LEO hugs the surface, GEO at 6.6×); compressed separates the regimes so they are easier to see.',
       launches: n => `${n} launch${n !== 1 ? 'es' : ''}`, more: n => `+${n} more`,
       overHorizon: n => `${n.toLocaleString('en')} satellites above the horizon`,
     },
@@ -279,6 +283,13 @@
     const R = 100 * (1 + alt), phi = (90 - lat) * Math.PI / 180, th = (lng + 180) * Math.PI / 180;
     return { x: -R * Math.sin(phi) * Math.cos(th), y: R * Math.cos(phi), z: R * Math.sin(phi) * Math.sin(th) };
   }
+  // Altitud VISUAL de los satélites. A escala real, LEO (~0.08 R⊕) se pega a la
+  // superficie y MEO/GEO quedan a 4–6.6×, poco legible. Con compresión (raíz)
+  // se mantiene el orden pero se separan los regímenes: LEO≈1.2×, MEO≈2.2×,
+  // GEO≈2.7×. No afecta a los datos (la ficha muestra la altitud real).
+  const SCALE_K = 0.7;
+  function vAlt(a) { return (VG && VG.realScale) ? a : SCALE_K * Math.sqrt(Math.max(0, a)); }
+  function coordSat(globe, lat, lng, altGlobe) { return coord(globe, lat, lng, vAlt(altGlobe)); }
   function activeSet() { return VG.filter ? VG.sats.filter(s => s.group === VG.filter) : VG.sats; }
 
   function buildOrbits(globe) {
@@ -291,8 +302,8 @@
       const pts = sampleOrbit(s, VG.simTime, 72);
       const c = hexRgb(constMeta(s.group).color);
       for (let i = 0; i < pts.length - 1; i++) {
-        const a = coord(globe, pts[i][0], pts[i][1], pts[i][2]);
-        const b = coord(globe, pts[i + 1][0], pts[i + 1][1], pts[i + 1][2]);
+        const a = coordSat(globe, pts[i][0], pts[i][1], pts[i][2]);
+        const b = coordSat(globe, pts[i + 1][0], pts[i + 1][1], pts[i + 1][2]);
         pos.push(a.x, a.y, a.z, b.x, b.y, b.z);
         col.push(c[0], c[1], c[2], c[0], c[1], c[2]);
       }
@@ -341,11 +352,37 @@
   function updatePoints(globe) {
     if (!VG.ptsGeo || !VG.pointSats) return;
     const arr = VG.ptsGeo.attributes.position.array;
+    let maxA = 0;
     for (let i = 0; i < VG.pointSats.length; i++) {
       const p = propagate(VG.pointSats[i], VG.simTime);
-      if (p) { const v = coord(globe, p.lat, p.lng, p.altGlobe); arr[i * 3] = v.x; arr[i * 3 + 1] = v.y; arr[i * 3 + 2] = v.z; }
+      if (p) { const v = coordSat(globe, p.lat, p.lng, p.altGlobe); arr[i * 3] = v.x; arr[i * 3 + 1] = v.y; arr[i * 3 + 2] = v.z; if (p.altGlobe > maxA) maxA = p.altGlobe; }
     }
+    VG.maxAltGlobe = maxA;
     VG.ptsGeo.attributes.position.needsUpdate = true;
+  }
+  // Asegura que el zoom-out (OrbitControls.maxDistance) rebase el radio visual del
+  // satélite más lejano; también amplía el plano lejano de la cámara si hace falta.
+  function ensureZoomRange(globe) {
+    const ctrl = globe.controls && globe.controls(); if (!ctrl) return;
+    const farR = 100 * (1 + vAlt(VG.maxAltGlobe || 5.7));   // GEO como respaldo
+    if (VG._prevMaxDist === undefined) VG._prevMaxDist = ctrl.maxDistance;   // el de la vista Tierra
+    ctrl.maxDistance = Math.max(VG._prevMaxDist || 0, farR * 1.8);
+    const cam = globe.camera && globe.camera();
+    if (cam) {
+      if (VG._prevFar === undefined) VG._prevFar = cam.far;
+      // al alejar del todo, los satélites del lado opuesto quedan a
+      // maxDistance + farR de la cámara → el plano lejano debe superarlo
+      const need = ctrl.maxDistance + farR * 1.4;
+      if (cam.far < need) { cam.far = need; cam.updateProjectionMatrix(); }
+    }
+    if (ctrl.update) ctrl.update();
+  }
+  function restoreZoomRange(globe) {
+    const ctrl = globe.controls && globe.controls();
+    if (ctrl && VG._prevMaxDist !== undefined) { ctrl.maxDistance = VG._prevMaxDist; if (ctrl.update) ctrl.update(); }
+    const cam = globe.camera && globe.camera();
+    if (cam && VG._prevFar !== undefined) { cam.far = VG._prevFar; cam.updateProjectionMatrix(); }
+    VG._prevMaxDist = undefined; VG._prevFar = undefined;
   }
   function startClock() {
     stopClock();
@@ -428,7 +465,7 @@
   function updateSel(globe) {
     if (!VG.selObj || !VG.selSat) return;
     const p = propagate(VG.selSat, VG.simTime); if (!p) return;
-    const v = coord(globe, p.lat, p.lng, p.altGlobe);
+    const v = coordSat(globe, p.lat, p.lng, p.altGlobe);
     const a = VG.selObj.geometry.attributes.position.array;
     a[0] = v.x; a[1] = v.y; a[2] = v.z;
     VG.selObj.geometry.attributes.position.needsUpdate = true;
@@ -637,7 +674,7 @@
     const arr = VG.skyLinesGeo.attributes.position.array;
     for (let i = 0; i < VG.skyLineSats.length; i++) {
       const p = propagate(VG.skyLineSats[i], VG.simTime); if (!p) continue;
-      const s = coord(globe, p.lat, p.lng, p.altGlobe);
+      const s = coordSat(globe, p.lat, p.lng, p.altGlobe);
       arr[i * 6] = o.x; arr[i * 6 + 1] = o.y; arr[i * 6 + 2] = o.z;
       arr[i * 6 + 3] = s.x; arr[i * 6 + 4] = s.y; arr[i * 6 + 5] = s.z;
     }
@@ -732,6 +769,7 @@
     buildOrbits(globe);
     buildPoints(globe);
     buildPads(globe);
+    ensureZoomRange(globe);
     attachPick(globe);
     startClock();
     showPanel();
@@ -745,7 +783,7 @@
     for (const s of live.sats) byId.set(s.id, s);
     VG.sats = [...byId.values()]; VG.live = true;
     console.log('[UFOSat]', VG.sats.length, 'satélites (vivo)');
-    if (VG.active) { buildOrbits(globe); buildPoints(globe); buildPanel(); if (VG.skyLoc) { VG.skyList = overheadSats(VG.sats, VG.skyLoc.lat, VG.skyLoc.lng, VG.simTime, 0); buildSkyLines(globe); skyCard(); } }
+    if (VG.active) { buildOrbits(globe); buildPoints(globe); ensureZoomRange(globe); buildPanel(); if (VG.skyLoc) { VG.skyList = overheadSats(VG.sats, VG.skyLoc.lat, VG.skyLoc.lng, VG.simTime, 0); buildSkyLines(globe); skyCard(); } }
   }
   model.exit = function exit() {
     const globe = root.__ufologistGlobe; const sc = globe && globe.scene && globe.scene();
@@ -757,6 +795,7 @@
       if (sc && VG.padObj) sc.remove(VG.padObj);
       VG.orbitObj = null; VG.ptsObj = null; VG.selObj = null; VG.selSat = null;
       VG.padObj = null; VG.selPad = null;
+      restoreZoomRange(globe);
       if (VG.skyMode) model.toggleSky(false); else clearSky();
       document.body.classList.remove('sky-analyzing');
       const det = document.getElementById('sat-detail'); if (det) det.style.display = 'none';
@@ -785,6 +824,7 @@
         ? '<label class="sat-toggle"><input type="checkbox" id="sat-pads-toggle"' + (VG.showPads ? ' checked' : '') + '>' +
           `<span class="st-tri"></span>${L('launchSites')}<b>` + VG.pads.length + '</b></label>'
         : '') +
+      `<button id="sat-scale-btn" class="sat-sky-btn" title="${L('scaleHint')}">${VG.realScale ? L('scaleReal') : L('scaleCompressed')}</button>` +
       `<button id="sat-sky-btn" class="sat-sky-btn${VG.skyMode ? ' active' : ''}">${L('analyzeSky')}</button>` +
       (VG.skyMode ? `<p class="hint" style="margin-top:6px">${L('skyHint')}</p>` : '') +
       `<label class="sat-speed">${L('simSpeed')}<span id="sat-speed-val">` + VG.simSpeed + '</span>' +
@@ -799,6 +839,8 @@
     if (pt) pt.onchange = () => model.togglePads(pt.checked);
     const sk = el.querySelector('#sat-sky-btn');
     if (sk) sk.onclick = () => { model.toggleSky(!VG.skyMode); buildPanel(); };
+    const scb = el.querySelector('#sat-scale-btn');
+    if (scb) scb.onclick = () => model.toggleScale();
     el.style.display = '';
   }
   function showPanel() {
@@ -821,6 +863,15 @@
     if (!VG) return; VG.showPads = on;
     buildPads(root.__ufologistGlobe);
     if (!on) selectPad(null);
+  };
+  model.toggleScale = function () {
+    if (!VG) return; VG.realScale = !VG.realScale;
+    const globe = root.__ufologistGlobe;
+    buildOrbits(globe); buildPoints(globe);
+    if (VG.selSat) buildSelObj(globe);
+    if (VG.skyLoc) buildSkyLines(globe);
+    ensureZoomRange(globe);
+    buildPanel();
   };
   // re-render del UI satelital al cambiar de idioma (lo llama app.js)
   model.relang = function () {
