@@ -890,17 +890,6 @@
 
   // ---------- Línea de tiempo de satélites (por año de lanzamiento) ----------
   const MILESTONES = { 1957: 'Sputnik', 1998: 'ISS', 2019: 'Starlink' };
-  function yearTotals() {                       // {year:{total,domColor}} + max
-    const h = VG.hist; const out = {}; let maxN = 1;
-    for (let y = h.minYear; y <= h.maxYear; y++) {
-      const g = h.byYear[y]; if (!g) continue;
-      let total = 0, domN = -1, domG = null;
-      for (const k in g) { total += g[k]; if (g[k] > domN) { domN = g[k]; domG = k; } }
-      out[y] = { total, color: constMeta(domG).color };
-      if (total > maxN) maxN = total;
-    }
-    return { out, maxN };
-  }
   function cumUpTo(y) { let c = 0; const h = VG.hist; for (let k = h.minYear; k <= y; k++) if (h.byYear[k]) for (const gg in h.byYear[k]) c += h.byYear[k][gg]; return c; }
   function buildTimeline() {
     let el = document.getElementById('sat-timeline');
@@ -936,18 +925,28 @@
     const W = rect.width, H = rect.height, padB = 16, padT = 14;
     ctx.clearRect(0, 0, W, H);
     const h = VG.hist, span = Math.max(1, h.maxYear - h.minYear);
-    const { out, maxN } = yearTotals();
     const xOf = y => ((y - h.minYear) / span) * (W - 2) + 1;
     const light = document.documentElement.getAttribute('data-theme') === 'light';
-    // barras por año (altura ∝ raíz del recuento para que se vean años pequeños y grandes)
+    // total máximo anual (para normalizar la altura)
+    let maxN = 1; for (let y = h.minYear; y <= h.maxYear; y++) { const g = h.byYear[y]; if (!g) continue; let t = 0; for (const k in g) t += g[k]; if (t > maxN) maxN = t; }
+    // barras APILADAS por constelación (altura total ∝ raíz del recuento; segmentos
+    // proporcionales a cada constelación) → se ve qué impulsó el crecimiento
+    const order = Object.keys(CONSTELLATIONS);
     const bw = Math.max(2, (W - 2) / (span + 1) - 1);
+    const dim = light ? 'rgba(20,44,70,0.18)' : 'rgba(120,140,180,0.20)';
     for (let y = h.minYear; y <= h.maxYear; y++) {
-      const d = out[y]; if (!d) continue;
-      const hgt = Math.sqrt(d.total / maxN) * (H - padB - padT);
+      const g = h.byYear[y]; if (!g) continue;
+      let total = 0; for (const k in g) total += g[k];
+      const barH = Math.sqrt(total / maxN) * (H - padB - padT);
       const active = y <= VG.yearMax;
-      ctx.fillStyle = active ? d.color : (light ? 'rgba(20,44,70,0.18)' : 'rgba(120,140,180,0.20)');
-      ctx.globalAlpha = active ? 0.9 : 1;
-      ctx.fillRect(xOf(y) - bw / 2, H - padB - hgt, bw, hgt);
+      const x = xOf(y) - bw / 2;
+      let yTop = H - padB;
+      if (active) {
+        ctx.globalAlpha = 0.92;
+        for (const grp of order) { const c = g[grp]; if (!c) continue; const segH = (c / total) * barH; ctx.fillStyle = constMeta(grp).color; ctx.fillRect(x, yTop - segH, bw, segH); yTop -= segH; }
+      } else {
+        ctx.globalAlpha = 1; ctx.fillStyle = dim; ctx.fillRect(x, H - padB - barH, bw, barH);
+      }
     }
     ctx.globalAlpha = 1;
     // curva acumulativa (crecimiento total) normalizada
