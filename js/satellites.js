@@ -89,15 +89,26 @@
     if (!isFinite(lat) || !isFinite(lng) || !isFinite(alt)) return null;
     return { lat, lng, alt, altGlobe: alt / EARTH_R_KM };
   }
-  // muestrea una vuelta completa → polilínea [[lat,lng,altGlobe],...]
+  // muestrea UNA ÓRBITA COMPLETA (elipse inercial), no la traza terrestre.
+  // Clave: se usa un gmst FIJO (la rotación de la Tierra en el instante de
+  // referencia) para todas las muestras, en vez de gstime(t) por muestra. Así
+  // el anillo es la órbita real en el espacio (círculo/elipse cerrada para
+  // LEO/MEO/GEO) anclada a la posición actual del satélite; si se usara
+  // gstime(t) se restaría la rotación terrestre y saldría la traza (analema
+  // en GEO, onda en MEO) → aspecto "extraño" para órbitas lejanas.
   function sampleOrbit(sat, date, n) {
+    const S = lib(); if (!S || !sat) return [];
     n = n || 96;
     const periodMin = sat.meanMotion > 0 ? 1440 / sat.meanMotion : 90;
+    const gmst = S.gstime(date);
     const pts = [];
     for (let k = 0; k <= n; k++) {
       const t = new Date(date.getTime() + (k / n) * periodMin * 60000);
-      const p = propagate(sat, t);
-      if (p) pts.push([p.lat, p.lng, p.altGlobe]);
+      let pv; try { pv = S.propagate(sat.satrec, t); } catch (e) { continue; }
+      if (!pv || !pv.position) continue;
+      const gd = S.eciToGeodetic(pv.position, gmst);
+      const lat = S.degreesLat(gd.latitude), lng = S.degreesLong(gd.longitude), alt = gd.height;
+      if (isFinite(lat) && isFinite(lng) && isFinite(alt)) pts.push([lat, lng, alt / EARTH_R_KM]);
     }
     return pts;
   }
@@ -292,7 +303,19 @@
     const mat = new T.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.4 });
     VG.orbitObj = new T.LineSegments(geo, mat);
     VG.orbitObj.renderOrder = 5;
+    // Los anillos son inerciales, anclados a la orientación de la Tierra en este
+    // instante. Al avanzar el tiempo simulado se rotan sobre el eje Y con la
+    // rotación terrestre para que los satélites (en ECEF) sigan sobre su anillo.
+    const S = lib(); VG.orbitRefGmst = S ? S.gstime(VG.simTime) : 0;
+    VG.orbitObj.rotation.y = 0;
     sc.add(VG.orbitObj);
+  }
+  function updateOrbitSpin() {
+    if (!VG.orbitObj || VG.orbitRefGmst === undefined) return;
+    const S = lib(); if (!S) return;
+    // -Δgmst en el frame de globe.getCoords (valida: el punto permanece sobre
+    // el anillo <1% durante 40 min de simulación; +Δgmst lo desvía >15%).
+    VG.orbitObj.rotation.y = -(S.gstime(VG.simTime) - VG.orbitRefGmst);
   }
   function buildPoints(globe) {
     const T = TH(); const sc = globe.scene && globe.scene();
@@ -337,6 +360,7 @@
         updatePoints(globe);
         updateSel(globe);
         updateSkyLines(globe);
+        updateOrbitSpin(globe);
         if ((VG._dcnt = (VG._dcnt || 0) + 1) % 8 === 0) refreshDetail();  // ficha ~2 Hz
         acc = 0;
       }
