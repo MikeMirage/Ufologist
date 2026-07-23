@@ -3589,6 +3589,7 @@ function openCase(id, fly) {
       ${c.sources.map((s, i) => `<a class="cc-source-link" href="${s[1]}" target="_blank" rel="noopener">${caseSourceLabel(c, i)}</a>`).join('')}</div>` : ''}
     <div class="cc-actions">
       <button id="cc-sky" class="btn-ghost small">🔭 ${currentLang === 'en' ? 'Was it a satellite?' : '¿Fue un satélite?'}</button>
+      <button id="cc-forum" class="btn-ghost small">${currentLang === 'en' ? '💬 Discuss / investigate' : '💬 Discutir / investigar'}</button>
       <button id="cc-share" class="btn-ghost small">🔗 ${t('copyLink')}</button>
       ${c.mine ? `<button id="cc-delete" class="btn-ghost small" style="color:#ef476f;border-color:#ef476f55">🗑 ${t('delete')}</button>` : ''}
     </div>
@@ -3614,6 +3615,7 @@ function openCase(id, fly) {
     setViewMode('satellites');
     if (window.UFOSat && UFOSat.analyzeSkyAt) UFOSat.analyzeSkyAt(c.lat, c.lng, when);
   };
+  $('cc-forum').onclick = () => { if (window.UFOForum) UFOForum.openCase(c.id, caseName(c)); };
   if (c.mine) $('cc-delete').onclick = () => {
     journal = journal.filter(j => j.id !== c.id);
     saveJournal();
@@ -4639,6 +4641,7 @@ $('modal-overlay').addEventListener('click', e => {
 function openAppInfo() { $('app-info-overlay').classList.remove('hidden'); }
 function closeAppInfo() { $('app-info-overlay').classList.add('hidden'); }
 $('btn-about').onclick = openAppInfo;
+if ($('btn-forum')) $('btn-forum').onclick = () => { if (window.UFOForum) UFOForum.openGeneral(); };
 $('btn-close-app-info').onclick = closeAppInfo;
 $('app-info-overlay').addEventListener('click', e => {
   if (e.target === $('app-info-overlay')) closeAppInfo();

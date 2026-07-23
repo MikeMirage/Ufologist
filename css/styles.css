@@ -534,6 +534,28 @@ body.sky-analyzing #globe, body.sky-analyzing #globe canvas { cursor: crosshair;
 #sky-card .sk-elev { font-family: var(--font-mono); font-size: 12px; color: var(--txt-dim); }
 #sky-card .sk-note { font-size: 10px; line-height: 1.45; color: var(--txt-dim); margin: 11px 0 0; padding-top: 9px; border-top: 1px solid var(--glass-border); }
 
+/* Community forum modal */
+.forum-modal {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  align-items: center; justify-content: center;
+  background: rgba(2,4,10,0.6); backdrop-filter: blur(3px); padding: 20px;
+}
+.forum-modal-card {
+  position: relative; max-width: 440px; width: 100%;
+  padding: 26px 28px; border-radius: 16px;
+}
+.forum-modal-card h2 { font-family: var(--font-display); font-size: 20px; margin: 0 0 12px; }
+.forum-modal-card p { font-size: 13.5px; line-height: 1.55; color: var(--txt); margin: 0 0 12px; }
+.forum-feats { margin: 0 0 14px; padding-left: 18px; }
+.forum-feats li { font-size: 13px; color: var(--txt-dim); line-height: 1.5; margin-bottom: 5px; }
+.forum-soon { color: var(--txt-dim); font-size: 12.5px; }
+.forum-config-hint { font-family: var(--font-mono); font-size: 10.5px; color: var(--txt-dim); opacity: .75; border-top: 1px solid var(--glass-border); padding-top: 10px; margin-top: 4px; }
+.forum-modal-close {
+  position: absolute; top: 12px; right: 14px; background: none; border: none;
+  color: var(--txt-dim); font-size: 22px; line-height: 1; cursor: pointer;
+}
+.forum-modal-close:hover { color: var(--txt); }
+
 /* Satellite launch timeline (bottom bar) */
 #sat-timeline {
   position: fixed; left: 282px; right: 16px; bottom: 16px; height: 104px;
