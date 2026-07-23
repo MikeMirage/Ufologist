@@ -1,0 +1,1 @@
+{"source":"thespacedevs LL2","note":"lanzamientos por año (count del endpoint launch). 1957-1969 obtenidos de LL2; el resto se completa con tools/fetch-launch-history.js (reanudable, rate-limit ~15/h)","byYear":{"1957":3,"1958":28,"1959":28,"1960":45,"1961":62,"1962":87,"1963":76,"1964":106,"1965":137,"1966":141,"1967":146,"1968":133,"1969":125}}

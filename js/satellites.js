@@ -270,6 +270,7 @@
       tlTitle: 'Satélites en órbita por año de lanzamiento',
       tlUpTo: (n, y) => `${n.toLocaleString('es')} lanzados hasta ${y}`,
       tlPlayTitle: 'Reproducir la evolución',
+      tlLaunchLine: 'lanzamientos/año',
       launches: n => `${n} lanzamiento${n !== 1 ? 's' : ''}`, more: n => `+${n} más`,
       overHorizon: n => `${n.toLocaleString('es')} satélites sobre el horizonte`,
     },
@@ -291,6 +292,7 @@
       tlTitle: 'Satellites in orbit by launch year',
       tlUpTo: (n, y) => `${n.toLocaleString('en')} launched through ${y}`,
       tlPlayTitle: 'Play the evolution',
+      tlLaunchLine: 'launches/yr',
       launches: n => `${n} launch${n !== 1 ? 'es' : ''}`, more: n => `+${n} more`,
       overHorizon: n => `${n.toLocaleString('en')} satellites above the horizon`,
     },
@@ -890,6 +892,10 @@
 
   // ---------- Línea de tiempo de satélites (por año de lanzamiento) ----------
   const MILESTONES = { 1957: 'Sputnik', 1998: 'ISS', 2019: 'Starlink' };
+  function axisRange() {
+    const h = VG.hist;
+    return { min: VG.lpy ? Math.min(h.minYear, VG.lpy.min) : h.minYear, max: VG.lpy ? Math.max(h.maxYear, VG.lpy.max) : h.maxYear };
+  }
   function cumUpTo(y) { let c = 0; const h = VG.hist; for (let k = h.minYear; k <= y; k++) if (h.byYear[k]) for (const gg in h.byYear[k]) c += h.byYear[k][gg]; return c; }
   function buildTimeline() {
     let el = document.getElementById('sat-timeline');
@@ -908,13 +914,20 @@
     }
     el.querySelector('.stl-title').textContent = L('tlTitle');
     el.style.display = '';
+    if (VG.lpy === undefined) {                     // lanzamientos/año (LL2), carga única
+      VG.lpy = null;
+      fetch('data/launches-per-year.json').then(r => r.json()).then(j => {
+        const ys = Object.keys(j.byYear || {}).map(Number).filter(isFinite);
+        if (ys.length) { VG.lpy = { byYear: j.byYear, min: Math.min(...ys), max: Math.max(...ys) }; if (VG.active) drawTimeline(); }
+      }).catch(() => {});
+    }
     drawTimeline();
   }
   function yearAtX(clientX) {
     const cv = document.getElementById('stl-canvas'); if (!cv || !VG.hist) return null;
-    const r = cv.getBoundingClientRect(); const h = VG.hist;
+    const r = cv.getBoundingClientRect(); const ax = axisRange();
     const f = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
-    return Math.round(h.minYear + f * (h.maxYear - h.minYear));
+    return Math.round(ax.min + f * (ax.max - ax.min));
   }
   function drawTimeline() {
     const cv = document.getElementById('stl-canvas'); if (!cv || !VG.hist) return;
@@ -924,8 +937,12 @@
     const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const W = rect.width, H = rect.height, padB = 16, padT = 14;
     ctx.clearRect(0, 0, W, H);
-    const h = VG.hist, span = Math.max(1, h.maxYear - h.minYear);
-    const xOf = y => ((y - h.minYear) / span) * (W - 2) + 1;
+    const h = VG.hist;
+    // el eje abarca desde el primer lanzamiento histórico (LL2, ~1957) hasta hoy
+    const axMin = VG.lpy ? Math.min(h.minYear, VG.lpy.min) : h.minYear;
+    const axMax = VG.lpy ? Math.max(h.maxYear, VG.lpy.max) : h.maxYear;
+    const span = Math.max(1, axMax - axMin);
+    const xOf = y => ((y - axMin) / span) * (W - 2) + 1;
     const light = document.documentElement.getAttribute('data-theme') === 'light';
     // total máximo anual (para normalizar la altura)
     let maxN = 1; for (let y = h.minYear; y <= h.maxYear; y++) { const g = h.byYear[y]; if (!g) continue; let t = 0; for (const k in g) t += g[k]; if (t > maxN) maxN = t; }
@@ -949,32 +966,45 @@
       }
     }
     ctx.globalAlpha = 1;
-    // curva acumulativa (crecimiento total) normalizada
-    const totalAll = cumUpTo(h.maxYear) || 1; let cum = 0;
-    ctx.beginPath();
-    for (let y = h.minYear; y <= h.maxYear; y++) { if (h.byYear[y]) for (const gg in h.byYear[y]) cum += h.byYear[y][gg]; const yy = H - padB - (cum / totalAll) * (H - padB - padT); if (y === h.minYear) ctx.moveTo(xOf(y), yy); else ctx.lineTo(xOf(y), yy); }
-    ctx.strokeStyle = light ? 'rgba(10,126,168,0.75)' : 'rgba(120,230,255,0.7)'; ctx.lineWidth = 1.5; ctx.stroke();
+    // línea de LANZAMIENTOS/AÑO (ritmo histórico de cohetes, LL2). Normalizada a su
+    // propio máximo; tramo hasta el cursor en ámbar vivo, el resto tenue.
+    if (VG.lpy) {
+      let lpMax = 1; for (const k in VG.lpy.byYear) if (VG.lpy.byYear[k] > lpMax) lpMax = VG.lpy.byYear[k];
+      const lyOf = v => H - padB - (v / lpMax) * (H - padB - padT);
+      ctx.beginPath(); let started = false;
+      for (let y = VG.lpy.min; y <= VG.lpy.max; y++) {
+        const v = VG.lpy.byYear[y]; if (v == null) { started = false; continue; }
+        const px = xOf(y), py = lyOf(v);
+        if (!started) { ctx.moveTo(px, py); started = true; } else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = light ? 'rgba(224,122,40,0.9)' : 'rgba(255,174,77,0.85)'; ctx.lineWidth = 1.6; ctx.stroke();
+      ctx.fillStyle = light ? 'rgba(224,122,40,0.95)' : 'rgba(255,174,77,0.95)'; ctx.font = '9px ui-monospace, monospace'; ctx.textAlign = 'left';
+      ctx.fillText('— ' + L('tlLaunchLine'), 4, padT + 6);
+    }
     // hitos
-    ctx.font = '9px ui-monospace, monospace'; ctx.textAlign = 'center';
-    for (const yr in MILESTONES) { const y = +yr; if (y < h.minYear || y > h.maxYear) continue; const x = xOf(y);
+    ctx.font = '9px ui-monospace, monospace';
+    for (const yr in MILESTONES) { const y = +yr; if (y < axMin || y > axMax) continue; const x = xOf(y);
       ctx.strokeStyle = light ? 'rgba(20,44,70,0.3)' : 'rgba(200,210,230,0.3)'; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
       ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, H - padB); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = light ? 'rgba(20,44,70,0.7)' : 'rgba(210,220,240,0.75)'; ctx.fillText(MILESTONES[yr], x, padT - 3);
+      ctx.fillStyle = light ? 'rgba(20,44,70,0.7)' : 'rgba(210,220,240,0.75)';
+      let tx = x, al = 'center'; if (x < 26) { al = 'left'; tx = x + 4; } else if (x > W - 26) { al = 'right'; tx = x - 4; }
+      ctx.textAlign = al; ctx.fillText(MILESTONES[yr], tx, padT - 3);
     }
     // cursor del año seleccionado
     const cx = xOf(VG.yearMax);
     ctx.strokeStyle = light ? '#0a7ea8' : '#18d7ff'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(cx, padT - 2); ctx.lineTo(cx, H - padB); ctx.stroke();
-    // eje de años (extremos + cursor)
+    // eje de años (extremos)
     ctx.fillStyle = light ? 'rgba(20,44,70,0.6)' : 'rgba(190,200,220,0.6)'; ctx.font = '9px ui-monospace, monospace';
-    ctx.textAlign = 'left'; ctx.fillText(h.minYear, 2, H - 4);
-    ctx.textAlign = 'right'; ctx.fillText(h.maxYear, W - 2, H - 4);
+    ctx.textAlign = 'left'; ctx.fillText(axMin, 2, H - 4);
+    ctx.textAlign = 'right'; ctx.fillText(axMax, W - 2, H - 4);
     // lectura
     const rd = document.getElementById('stl-read'); if (rd) rd.textContent = L('tlUpTo')(cumUpTo(VG.yearMax), VG.yearMax);
   }
   function applyYear(y) {
     if (!VG.hist) return;
-    VG.yearMax = Math.max(VG.hist.minYear, Math.min(VG.hist.maxYear, y));
+    const ax = axisRange();
+    VG.yearMax = Math.max(ax.min, Math.min(ax.max, y));
     drawTimeline();
     // reconstrucción del globo con debounce (setTimeout, robusto aunque la
     // pestaña no renderice) para no rehacer geometría en cada evento de arrastre
@@ -984,12 +1014,13 @@
   function playTimeline() {
     if (!VG.hist) return; stopPlay(); VG._playing = true;
     const btn = document.getElementById('stl-play'); if (btn) btn.textContent = '⏸';
-    if (VG.yearMax >= VG.hist.maxYear) VG.yearMax = VG.hist.minYear;   // reinicia si está al final
-    const perYear = 320;                                              // ms por año
+    const ax = axisRange();
+    if (VG.yearMax >= ax.max) VG.yearMax = ax.min;                    // reinicia si está al final
+    const perYear = 240;                                             // ms por año
     const step = () => {
       if (!VG._playing) return;
       applyYear(VG.yearMax + 1);
-      if (VG.yearMax >= VG.hist.maxYear) { stopPlay(); return; }
+      if (VG.yearMax >= ax.max) { stopPlay(); return; }
       VG._playTimer = setTimeout(step, perYear);
     };
     VG._playTimer = setTimeout(step, perYear);
