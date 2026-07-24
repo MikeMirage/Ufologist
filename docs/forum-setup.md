@@ -43,6 +43,12 @@ subida de archivos propia ni perfiles duplicados.
 - Usa respuestas oficiales para marcar `Corroborado`, `Explicado` o `Sin resolver`;
   esas etiquetas editoriales pueden convertirse después en campos del producto.
 
+Documentación editorial:
+
+- [Normas, do's y don'ts](forum-guidelines.md)
+- [Manual de moderación](forum-moderation.md)
+- [60 entradas iniciales](forum-launch-topics.md)
+
 ## Criterios de aceptación
 
 - “Comunidad” abre Discussions; si está desactivado muestra un estado útil.
