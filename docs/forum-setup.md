@@ -1,75 +1,59 @@
-# Foro de la comunidad — despliegue e integración
+# Foro UFOlogist — MVP con GitHub Discussions y Giscus
 
-UFOlogist es un sitio **estático** (GitHub Pages, sin backend). El foro es un
-**Discourse externo** que tú alojas; la app solo enlaza/embebe. Este documento
-explica cómo levantarlo, conectarlo y monetizarlo con anuncios.
+## Decisión
 
-## 1. Desplegar Discourse
+UFOlogist es una aplicación estática publicada en GitHub Pages. El MVP usa:
 
-Discourse necesita un servidor (no hay hosting gratis sostenible con **tus**
-anuncios). Opciones, de más barata a más cómoda:
+- **GitHub Discussions** como foro, cuentas, moderación, reacciones y alertas.
+- **Giscus** para mostrar un hilo dentro de cada ficha de caso.
+- Un identificador estable (`case:<id>`) como clave del hilo. El nombre traducido
+  del caso es solo presentación y no puede crear conversaciones duplicadas.
 
-| Opción | Coste | Notas |
-|---|---|---|
-| **Oracle Cloud "Always Free"** (VM Ampere, 4 vCPU / 24 GB) | 0 € | Suficiente para Discourse; requiere montarlo tú (Docker). La más barata. |
-| VPS (Hetzner CX22, DigitalOcean 2 GB) | ~5-7 €/mes | Instalación estándar de Discourse. |
-| Discourse hosting oficial | desde ~20 $/mes | Cero mantenimiento; los anuncios propios pueden estar limitados según plan. |
+Esto evita operar un backend, almacenar credenciales o construir anti-spam. Un
+foro propio o Discourse se reconsiderará solo si el volumen o la monetización
+justifican su coste operativo.
 
-Instalación estándar (self-host, Docker) — resumen oficial:
-```bash
-# en un servidor Ubuntu con dominio (p.ej. foro.ufologist.app) apuntando a su IP
-git clone https://github.com/discourse/discourse_docker.git /var/discourse
-cd /var/discourse && ./discourse-setup   # pide dominio, email admin y SMTP
-```
-Necesitas un **dominio** y un proveedor **SMTP** (correo). Tras el setup tendrás
-el foro en `https://foro.tudominio`.
+## Alcance del MVP
 
-Crea las categorías base: **Casos** (para los hilos por caso), **General**, y
-tablones **por región** (Norteamérica, Europa, LATAM…).
+Incluye un tablón general, un hilo por caso, participación con cuenta de GitHub,
+moderación nativa, interfaz ES/EN, tema claro/oscuro, enlace de respaldo y estados
+de carga/error. No incluye mensajes privados, chat, reputación propia, anuncios,
+subida de archivos propia ni perfiles duplicados.
 
-## 2. Conectar la app
+## Activación (administrador)
 
-Edita `js/forum.js` y pon la URL (sin barra final):
-```js
-var CONFIG = {
-  discourseUrl: 'https://foro.tudominio',
-  forumName: 'Comunidad UFOlogist',
-  caseCategory: 'casos',   // slug de la categoría de hilos por caso
-};
-```
-Sube el cambio (bump `forum.js?v=` en `index.html`). A partir de ahí:
-- El botón **☷ Comunidad** de la cabecera abre el foro.
-- El botón **💬 Discutir / investigar** de cada ficha abre el hilo del caso
-  (búsqueda por su nombre → lleva al hilo o a crearlo).
+1. En `Settings → General → Features`, activa **Discussions**.
+2. Crea una categoría **Casos** de tipo “Open-ended discussion”.
+3. Instala [Giscus](https://github.com/apps/giscus) únicamente en
+   `MikeMirage/Ufologist`.
+4. Abre [giscus.app](https://giscus.app/es), introduce el repositorio y selecciona:
+   categoría `Casos`, mapping `specific`, strict matching y entrada encima de los
+   comentarios.
+5. Copia `data-repo-id` y `data-category-id` en `CONFIG` dentro de `js/forum.js`.
+6. Incrementa la versión de `js/forum.js` en `index.html`, publica y verifica.
 
-## 3. (Opcional, recomendado) Hilos por caso automáticos — Discourse *embedding*
+`repoId` y `categoryId` son identificadores públicos, no secretos.
 
-Discourse puede **crear un tema por cada página** automáticamente y mostrarlo
-embebido en la ficha (como comentarios). Para activarlo:
+## Moderación mínima antes del lanzamiento
 
-1. En Discourse: **Admin → Customize → Embedding**. Añade el host embebible
-   `mikemirage.github.io` (o tu dominio) y elige la categoría **Casos**.
-2. En la app, sustituir el botón por el embed (pendiente en `forum.js`): inyectar
-   `DiscourseEmbed = { discourseUrl, discourseEmbedUrl }` usando la URL canónica
-   por caso `…/#case=<id>` y cargar `…/javascripts/embed.js` en un
-   `<div id="discourse-comments">` dentro de la ficha.
+- Fija un hilo “Normas y cómo aportar pruebas”.
+- Exige fuente, fecha aproximada, ubicación y contexto para afirmaciones.
+- Prohíbe datos personales de testigos sin consentimiento y contenido ofensivo.
+- Nombra al menos dos moderadores y activa notificaciones de la categoría Casos.
+- Usa respuestas oficiales para marcar `Corroborado`, `Explicado` o `Sin resolver`;
+  esas etiquetas editoriales pueden convertirse después en campos del producto.
 
-Así cada avistamiento tiene su hilo real de foro embebido, con moderación y
-reputación de Discourse detrás.
+## Criterios de aceptación
 
-## 4. Monetización con anuncios
+- “Comunidad” abre Discussions; si está desactivado muestra un estado útil.
+- “Discutir / investigar” abre siempre el mismo hilo para el mismo `case id`,
+  aunque cambie el idioma o el título.
+- El modal se cierra con botón, clic exterior y Escape; conserva el foco.
+- Si Giscus falla, el usuario puede continuar mediante el enlace a GitHub.
+- No hay HTML de datos de casos sin escapar ni errores de consola.
 
-- Plugin oficial **discourse-adplugin** (`discourse-adplugin`): soporta Google
-  AdSense, Google Ad Manager (DFP), Amazon y Carbon. Se instala como plugin y se
-  configura desde Admin (posiciones: encima del primer post, entre posts, barra
-  lateral, etc.). Es la vía recomendada.
-- Alternativa: un **theme component** propio que inserte tus slots de AdSense.
-- Los anuncios se muestran en el foro Discourse (donde tú controlas el
-  inventario y cobras), no en el widget embebido salvo que lo añadas al tema.
+## Evolución posterior
 
-## 5. Notas
-
-- Mientras `discourseUrl` esté vacío, la app muestra un modal
-  "próximamente" — no se rompe nada.
-- Para máxima accesibilidad puedes habilitar en Discourse el login con Google/
-  email además de usuario/contraseña (Admin → Settings → Login).
+Medir durante 4–6 semanas: participantes activos, casos con aportes, respuestas
+útiles, tiempo de moderación y retorno semanal. Solo después priorizar buscador de
+comunidad, badges/estado del caso, digest o migración a una plataforma propia.

@@ -555,6 +555,16 @@ body.sky-analyzing #globe, body.sky-analyzing #globe canvas { cursor: crosshair;
   color: var(--txt-dim); font-size: 22px; line-height: 1; cursor: pointer;
 }
 .forum-modal-close:hover { color: var(--txt); }
+.forum-thread { width: min(720px, calc(100vw - 32px)); max-height: min(820px, calc(100vh - 32px)); overflow: auto; }
+.forum-thread-name { font-family: var(--font-display); font-weight: 600; }
+.giscus-host { min-height: 112px; margin: 16px 0; border-top: 1px solid var(--glass-border); padding-top: 16px; }
+.forum-loading, .forum-empty { color: var(--txt-dim); font-size: 12.5px; text-align: center; padding: 20px 12px; }
+.forum-gh-link { display: inline-flex; min-height: 44px; align-items: center; padding: 0 16px; border: 1px solid var(--glass-border); border-radius: 999px; color: var(--accent); text-decoration: none; }
+.forum-gh-link:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+@media (max-width: 640px) {
+  .forum-modal { padding: 8px; align-items: flex-end; }
+  .forum-modal-card, .forum-thread { width: 100%; max-height: 90vh; border-radius: 18px 18px 10px 10px; }
+}
 
 /* Satellite launch timeline (bottom bar) */
 #sat-timeline {

@@ -1,120 +1,198 @@
-// ============================================================
-// forum.js — comunidad de UFOlogist sobre GitHub Discussions (Giscus)
-//
-// La app es el PUNTO DE ENTRADA: un tablón general (cabecera "Comunidad" → la
-// página de Discussions del repo) y un HILO POR CASO embebido en cada ficha vía
-// giscus (mapping=specific, un discussion por caso) para trackear / verificar /
-// investigar avistamientos. Los usuarios participan con su cuenta de GitHub.
-//
-// PARA ACTIVARLO (ver docs/forum-setup.md):
-//   1. En el repo: Settings → General → Features → activar "Discussions".
-//   2. Instalar la app giscus en el repo: https://github.com/apps/giscus
-//   3. En https://giscus.app configurar el repo y copiar repoId y categoryId.
-//   4. Pegarlos abajo en CONFIG. (El botón "Comunidad" ya funciona con solo el
-//      paso 1; los hilos embebidos por caso necesitan repoId + categoryId.)
-// ============================================================
+// UFOlogist community: GitHub Discussions + one Giscus thread per case.
 (function (root) {
   'use strict';
+
   var CONFIG = {
     repo: 'MikeMirage/Ufologist',
-    repoId: '',                    // de giscus.app (p.ej. 'R_kgD...')
-    category: 'Casos',             // categoría de Discussions para hilos por caso
-    categoryId: '',                // de giscus.app (p.ej. 'DIC_kwD...')
-    termPrefix: 'caso: ',          // título del discussion por caso
+    repoId: 'R_kgDOS-15DA',
+    category: 'Casos',
+    categoryId: 'DIC_kwDOS-15DM4DB3NS',
+    termPrefix: 'case:',
   };
   var DISCUSSIONS_URL = 'https://github.com/' + CONFIG.repo + '/discussions';
+  var REPO_API_URL = 'https://api.github.com/repos/' + CONFIG.repo;
+  var lastFocusedElement = null;
 
   function lang() { return root.__ufologistLang === 'en' ? 'en' : 'es'; }
   var T = {
     es: {
-      title: 'Comunidad UFOlogist', close: 'Cerrar', openGh: 'Ver en GitHub Discussions ↗',
-      caseTitle: 'Investigación del caso', caseHint: 'Aporta pruebas, testimonios o análisis. Corrobora o descarta el caso con la comunidad (se participa con cuenta de GitHub).',
-      soonTitle: 'Comunidad UFOlogist',
-      intro: 'La comunidad usa GitHub Discussions: un hilo por cada caso para trackear, verificar e investigar avistamientos, más tablones generales.',
-      soon: 'Aún no está activado. Cuando se habiliten las Discussions del repositorio, este botón abrirá la comunidad y cada ficha tendrá su hilo embebido.',
-      features: ['Un hilo por caso: pruebas, testimonios y análisis', 'Corrobora o descarta avistamientos entre todos', 'Tablones generales y por región'],
-      configHint: 'Admin: activa Discussions y pega repoId/categoryId en js/forum.js (ver docs/forum-setup.md).',
+      close: 'Cerrar',
+      openCommunity: 'Abrir la comunidad ↗',
+      openThread: 'Abrir hilo en GitHub ↗',
+      caseTitle: 'Investigación del caso',
+      caseHint: 'Comparte pruebas, testimonios o análisis. La participación requiere una cuenta gratuita de GitHub.',
+      loading: 'Cargando la conversación…',
+      unavailableTitle: 'Comunidad UFOlogist',
+      intro: 'Un espacio público para investigar casos, contrastar pruebas y organizar conversaciones por región.',
+      unavailable: 'La comunidad todavía no está activada en GitHub. La aplicación está preparada y se habilitará sin cambiar este enlace.',
+      features: ['Un hilo estable por caso', 'Pruebas, testimonios y análisis trazables', 'Moderación, reacciones y alertas'],
+      embedError: 'No se pudo cargar la conversación embebida.',
     },
     en: {
-      title: 'UFOlogist Community', close: 'Close', openGh: 'View on GitHub Discussions ↗',
-      caseTitle: 'Case investigation', caseHint: 'Add evidence, testimony or analysis. Corroborate or rule out the case with the community (sign in with GitHub).',
-      soonTitle: 'UFOlogist Community',
-      intro: 'The community runs on GitHub Discussions: a thread per case to track, verify and investigate sightings, plus general boards.',
-      soon: "Not enabled yet. Once the repository's Discussions are turned on, this button opens the community and every case gets its embedded thread.",
-      features: ['One thread per case: evidence, testimony and analysis', 'Corroborate or rule out sightings together', 'General and regional boards'],
-      configHint: 'Admin: enable Discussions and paste repoId/categoryId in js/forum.js (see docs/forum-setup.md).',
+      close: 'Close',
+      openCommunity: 'Open community ↗',
+      openThread: 'Open thread on GitHub ↗',
+      caseTitle: 'Case investigation',
+      caseHint: 'Share evidence, testimony or analysis. Participation requires a free GitHub account.',
+      loading: 'Loading conversation…',
+      unavailableTitle: 'UFOlogist Community',
+      intro: 'A public space to investigate cases, compare evidence and organize regional conversations.',
+      unavailable: 'The community is not enabled on GitHub yet. The application is ready and this same link will work once enabled.',
+      features: ['One stable thread per case', 'Traceable evidence, testimony and analysis', 'Moderation, reactions and notifications'],
+      embedError: 'The embedded conversation could not be loaded.',
     },
   };
-  function t(k) { return (T[lang()] || T.es)[k]; }
-  function giscusReady() { return !!(CONFIG.repoId && CONFIG.categoryId); }
+
+  function t(key) { return (T[lang()] || T.es)[key]; }
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function giscusReady() { return Boolean(CONFIG.repoId && CONFIG.categoryId); }
   function ghTheme() { return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+  function caseTerm(caseId) { return CONFIG.termPrefix + String(caseId || 'unknown').trim(); }
+  function threadUrl(term) {
+    return DISCUSSIONS_URL + '?discussions_q=' + encodeURIComponent('category:' + CONFIG.category + ' "' + term + '"');
+  }
 
-  // ---- overlay reutilizable ----
   function overlay() {
-    var m = document.getElementById('forum-modal');
-    if (!m) { m = document.createElement('div'); m.id = 'forum-modal'; m.className = 'forum-modal'; document.body.appendChild(m); }
-    return m;
-  }
-  function closeOverlay() { var m = document.getElementById('forum-modal'); if (m) m.style.display = 'none'; }
-
-  function showSoon() {
-    var m = overlay();
-    var feats = t('features').map(function (f) { return '<li>' + f + '</li>'; }).join('');
-    m.innerHTML =
-      '<div class="forum-modal-card glass" role="dialog" aria-modal="true">' +
-        '<button class="forum-modal-close" aria-label="' + t('close') + '">×</button>' +
-        '<h2>☷ ' + t('soonTitle') + '</h2><p>' + t('intro') + '</p>' +
-        '<ul class="forum-feats">' + feats + '</ul>' +
-        '<p class="forum-soon">' + t('soon') + '</p>' +
-        '<p class="forum-config-hint">' + t('configHint') + '</p>' +
-      '</div>';
-    m.style.display = 'flex';
-    m.querySelector('.forum-modal-close').onclick = closeOverlay;
-    m.onclick = function (e) { if (e.target === m) closeOverlay(); };
-  }
-
-  // hilo por caso embebido (giscus). Si aún no hay repoId/categoryId, enlaza a
-  // GitHub Discussions buscando el caso.
-  function openCaseThread(caseId, caseName) {
-    var term = CONFIG.termPrefix + (caseName || caseId);
-    var m = overlay();
-    m.innerHTML =
-      '<div class="forum-modal-card forum-thread glass" role="dialog" aria-modal="true">' +
-        '<button class="forum-modal-close" aria-label="' + t('close') + '">×</button>' +
-        '<h2>💬 ' + t('caseTitle') + '</h2>' +
-        '<p class="forum-thread-name">' + (caseName || caseId) + '</p>' +
-        '<p class="forum-soon">' + t('caseHint') + '</p>' +
-        '<div class="giscus-host" id="giscus-host"></div>' +
-        '<a class="forum-gh-link" target="_blank" rel="noopener" href="' + DISCUSSIONS_URL + '?discussions_q=' + encodeURIComponent(term) + '">' + t('openGh') + '</a>' +
-      '</div>';
-    m.style.display = 'flex';
-    m.querySelector('.forum-modal-close').onclick = closeOverlay;
-    m.onclick = function (e) { if (e.target === m) closeOverlay(); };
-
-    if (giscusReady()) {
-      var s = document.createElement('script');
-      s.src = 'https://giscus.app/client.js'; s.async = true; s.crossOrigin = 'anonymous';
-      s.setAttribute('data-repo', CONFIG.repo);
-      s.setAttribute('data-repo-id', CONFIG.repoId);
-      s.setAttribute('data-category', CONFIG.category);
-      s.setAttribute('data-category-id', CONFIG.categoryId);
-      s.setAttribute('data-mapping', 'specific');
-      s.setAttribute('data-term', term);       // un discussion por caso
-      s.setAttribute('data-strict', '1');
-      s.setAttribute('data-reactions-enabled', '1');
-      s.setAttribute('data-input-position', 'top');
-      s.setAttribute('data-theme', ghTheme());
-      s.setAttribute('data-lang', lang());
-      m.querySelector('#giscus-host').appendChild(s);
+    var modal = document.getElementById('forum-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'forum-modal';
+      modal.className = 'forum-modal';
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(modal);
     }
+    return modal;
+  }
+
+  function closeOverlay() {
+    var modal = document.getElementById('forum-modal');
+    if (!modal) return;
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    document.removeEventListener('keydown', onModalKeydown, true);
+    if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') lastFocusedElement.focus();
+  }
+
+  function onModalKeydown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      closeOverlay();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    var modal = document.getElementById('forum-modal');
+    var focusable = modal && modal.querySelectorAll('button, a[href], iframe');
+    if (!focusable || !focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+
+  function showModal(html) {
+    var modal = overlay();
+    lastFocusedElement = document.activeElement;
+    modal.innerHTML = html;
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
+    modal.querySelector('.forum-modal-close').onclick = closeOverlay;
+    modal.onclick = function (event) { if (event.target === modal) closeOverlay(); };
+    document.addEventListener('keydown', onModalKeydown, true);
+    modal.querySelector('.forum-modal-close').focus();
+    return modal;
+  }
+
+  function showUnavailable() {
+    var features = t('features').map(function (feature) { return '<li>' + escapeHtml(feature) + '</li>'; }).join('');
+    showModal(
+      '<div class="forum-modal-card glass" role="dialog" aria-modal="true" aria-labelledby="forum-title">' +
+        '<button class="forum-modal-close" aria-label="' + escapeHtml(t('close')) + '">×</button>' +
+        '<h2 id="forum-title">☷ ' + escapeHtml(t('unavailableTitle')) + '</h2>' +
+        '<p>' + escapeHtml(t('intro')) + '</p><ul class="forum-feats">' + features + '</ul>' +
+        '<p class="forum-soon">' + escapeHtml(t('unavailable')) + '</p>' +
+      '</div>'
+    );
+  }
+
+  function discussionsEnabled() {
+    if (typeof fetch !== 'function') return Promise.resolve(true);
+    return fetch(REPO_API_URL, { headers: { Accept: 'application/vnd.github+json' } })
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (repo) { return repo ? repo.has_discussions === true : true; })
+      .catch(function () { return true; });
+  }
+
+  function openGeneral() {
+    // Open synchronously to preserve the click gesture while the API check runs.
+    var pending = window.open('about:blank', '_blank');
+    if (pending) pending.opener = null;
+    discussionsEnabled().then(function (enabled) {
+      if (enabled) {
+        if (pending) pending.location.replace(DISCUSSIONS_URL);
+        else window.location.href = DISCUSSIONS_URL;
+      } else {
+        if (pending) pending.close();
+        showUnavailable();
+      }
+    });
+  }
+
+  function openCaseThread(caseId, caseName) {
+    var term = caseTerm(caseId);
+    var safeName = escapeHtml(caseName || caseId || '');
+    var modal = showModal(
+      '<div class="forum-modal-card forum-thread glass" role="dialog" aria-modal="true" aria-labelledby="forum-title">' +
+        '<button class="forum-modal-close" aria-label="' + escapeHtml(t('close')) + '">×</button>' +
+        '<h2 id="forum-title">💬 ' + escapeHtml(t('caseTitle')) + '</h2>' +
+        '<p class="forum-thread-name">' + safeName + '</p>' +
+        '<p class="forum-soon">' + escapeHtml(t('caseHint')) + '</p>' +
+        '<div class="giscus-host" id="giscus-host"><p class="forum-loading">' + escapeHtml(t('loading')) + '</p></div>' +
+        '<a class="forum-gh-link" target="_blank" rel="noopener noreferrer" href="' + escapeHtml(threadUrl(term)) + '">' + escapeHtml(t('openThread')) + '</a>' +
+      '</div>'
+    );
+
+    if (!giscusReady()) {
+      modal.querySelector('#giscus-host').innerHTML = '<p class="forum-empty">' + escapeHtml(t('unavailable')) + '</p>';
+      return;
+    }
+
+    var script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    script.setAttribute('data-repo', CONFIG.repo);
+    script.setAttribute('data-repo-id', CONFIG.repoId);
+    script.setAttribute('data-category', CONFIG.category);
+    script.setAttribute('data-category-id', CONFIG.categoryId);
+    script.setAttribute('data-mapping', 'specific');
+    script.setAttribute('data-term', term);
+    script.setAttribute('data-strict', '1');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'top');
+    script.setAttribute('data-theme', ghTheme());
+    script.setAttribute('data-lang', lang());
+    script.onerror = function () {
+      var host = modal.querySelector('#giscus-host');
+      if (host) host.innerHTML = '<p class="forum-empty">' + escapeHtml(t('embedError')) + '</p>';
+    };
+    modal.querySelector('#giscus-host').innerHTML = '';
+    modal.querySelector('#giscus-host').appendChild(script);
   }
 
   root.UFOForum = {
     config: CONFIG,
     isEnabled: giscusReady,
     discussionsUrl: DISCUSSIONS_URL,
-    openGeneral: function () { window.open(DISCUSSIONS_URL, '_blank', 'noopener'); },
-    openCase: function (caseId, caseName) { openCaseThread(caseId, caseName); },
-    _showInfo: showSoon,
+    openGeneral: openGeneral,
+    openCase: openCaseThread,
+    close: closeOverlay,
+    _caseTerm: caseTerm,
+    _threadUrl: threadUrl,
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
