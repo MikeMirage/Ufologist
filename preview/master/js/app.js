@@ -1536,15 +1536,26 @@ function streamingTileMaterial(tile) {
     transparent: true,
     opacity: 0.92,
     depthWrite: false,
+    visible: false,
   });
   streamingTileMaterialCache.set(key, material);
   streamingTileLoader.load(EARTH_TILE_URL(tile.x, tile.y, tile.z), texture => {
     texture.anisotropy = 4;
     if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
     material.map = texture;
+    material.visible = true;
+    material.needsUpdate = true;
+  }, undefined, () => {
+    material.visible = false;
     material.needsUpdate = true;
   });
   return material;
+}
+
+function disableTileTransitions() {
+  if (globe.tileTransitionDuration) globe.tileTransitionDuration(0);
+  if (globe.tilesTransitionDuration) globe.tilesTransitionDuration(0);
+  window.__ufologistTileTransitionsDisabled = !!(globe.tileTransitionDuration || globe.tilesTransitionDuration);
 }
 
 function updateStreamingMapTiles() {
@@ -1583,6 +1594,7 @@ function updateStreamingMapTiles() {
     return;
   }
   lastStreamingTileSignature = signature;
+  disableTileTransitions();
   globe
     .tilesData(selected)
     .tileLat('lat')
@@ -1593,6 +1605,7 @@ function updateStreamingMapTiles() {
   if (globe.tileAltitude) globe.tileAltitude(0.004);
   if (globe.tileUseGlobeProjection) globe.tileUseGlobeProjection(true);
   if (globe.tileCurvatureResolution) globe.tileCurvatureResolution(6);
+  disableTileTransitions();
   window.__ufologistTileState = { enabled: true, z, count: selected.length, altitude: pov.altitude };
 }
 window.updateStreamingMapTiles = updateStreamingMapTiles;
