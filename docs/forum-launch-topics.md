@@ -19,7 +19,7 @@ respuesta de la estrategia de engagement.
 **Categoría:** Casos históricos
 **Apertura:** Construyamos una cronología con documentos fechados, testimonios de
 primera mano y cambios posteriores del relato. ¿Qué fuentes son contemporáneas
-al evento y cuáles aparecieron décadas después?  
+al evento y cuáles aparecieron décadas después?<br>
 **Criterio:** enlazar originales, fecha de publicación y procedencia.
 
 ### 02. Kenneth Arnold y el origen de “platillo volante”
@@ -27,7 +27,7 @@ al evento y cuáles aparecieron décadas después?
 **Categoría:** Casos históricos
 **Apertura:** Compare las descripciones atribuidas a Arnold con entrevistas y
 prensa contemporánea. ¿Cómo cambió la forma popular del objeto al circular el
-término?  
+término?<br>
 **Criterio:** distinguir cita directa, paráfrasis y reconstrucción posterior.
 
 ### 03. La batalla de Los Ángeles de 1942
@@ -35,7 +35,7 @@ término?
 **Categoría:** Casos históricos
 **Apertura:** Revisemos fotografías, comunicados militares, condiciones de guerra
 y explicaciones propuestas. ¿Qué elementos están confirmados y cuáles proceden
-de interpretaciones modernas?  
+de interpretaciones modernas?<br>
 **Criterio:** ordenar todas las fuentes en una línea temporal.
 
 ### 04. Foo Fighters de la Segunda Guerra Mundial
@@ -43,35 +43,35 @@ de interpretaciones modernas?
 **Categoría:** Casos históricos
 **Apertura:** Reunamos reportes de distintas fuerzas aéreas sin mezclar incidentes
 independientes. ¿Qué patrones comparten y qué explicaciones se consideraron en su
-momento?  
+momento?<br>
 **Criterio:** identificar unidad, fecha, lugar y documento de cada reporte.
 
 ### 05. Cohetes fantasma escandinavos
 
 **Categoría:** Casos históricos
 **Apertura:** ¿Qué datos separan observaciones meteoríticas, rumores de tecnología
-militar y casos realmente no resueltos durante 1946?  
+militar y casos realmente no resueltos durante 1946?<br>
 **Criterio:** evitar tratar todos los reportes como un único objeto.
 
 ### 06. Washington D. C., 1952: radar, visuales y contexto
 
 **Categoría:** Casos históricos
 **Apertura:** Analicemos qué radares participaron, qué vieron los controladores y
-qué condiciones atmosféricas se documentaron.  
+qué condiciones atmosféricas se documentaron.<br>
 **Criterio:** separar cada noche, sensor y testigo.
 
 ### 07. Incidente de Teherán de 1976
 
 **Categoría:** Casos históricos
 **Apertura:** Construyamos la secuencia desde los documentos disponibles y
-evaluemos las afirmaciones sobre interferencias y maniobras aéreas.  
+evaluemos las afirmaciones sobre interferencias y maniobras aéreas.<br>
 **Criterio:** señalar qué información es contemporánea y cuál retrospectiva.
 
 ### 08. Bosque de Rendlesham: cronología de tres noches
 
 **Categoría:** Casos históricos
 **Apertura:** ¿Qué cambia cuando se analizan por separado las noches, los
-testigos, los memorandos y las declaraciones posteriores?  
+testigos, los memorandos y las declaraciones posteriores?<br>
 **Criterio:** no combinar recuerdos incompatibles como si fueran simultáneos.
 
 ### 09. Luces de Phoenix de 1997
@@ -79,7 +79,7 @@ testigos, los memorandos y las declaraciones posteriores?
 **Categoría:** Casos históricos
 **Apertura:** Diferenciemos grupos de observaciones por hora, dirección y
 trayectoria. ¿Qué parte puede relacionarse con aeronaves o bengalas y qué parte
-requiere más datos?  
+requiere más datos?<br>
 **Criterio:** usar mapas y horarios, no solo vídeos compilados.
 
 ### 10. Bélgica 1989–1990 y la fotografía triangular
@@ -93,14 +93,14 @@ de imágenes famosas. ¿Qué evidencia sigue siendo válida tras las rectificaci
 
 **Categoría:** Casos históricos
 **Apertura:** ¿Cómo se estudia un evento escolar con muchos testigos y pocos
-registros instrumentales?  
+registros instrumentales?<br>
 **Criterio:** separar testimonios recogidos entonces de entrevistas recientes.
 
 ### 12. Ariel School 1994: cómo evaluar testimonios infantiles
 
 **Categoría:** Casos históricos
 **Apertura:** Debatamos métodos de entrevista, contaminación entre relatos y
-consistencias independientes sin atacar a los testigos.  
+consistencias independientes sin atacar a los testigos.<br>
 **Criterio:** usar literatura metodológica y transcripciones completas.
 
 ## Casos contemporáneos y militares
@@ -123,14 +123,14 @@ públicas. ¿Qué mide realmente cada fuente y qué datos permanecen inaccesible
 
 **Categoría:** Imagen y vídeo
 **Apertura:** Usemos el caso para explicar paralaje, geometría y límites de una
-grabación infrarroja.  
+grabación infrarroja.<br>
 **Criterio:** mostrar cálculos reproducibles y rangos, no una cifra única.
 
 ### 16. UAP cerca de instalaciones nucleares
 
 **Categoría:** Aviación y defensa
 **Apertura:** Reunamos casos con documentación verificable y distingamos
-instalaciones, fechas y tipos de afirmación.  
+instalaciones, fechas y tipos de afirmación.<br>
 **Criterio:** no publicar detalles de seguridad ni ubicaciones sensibles.
 
 ### 17. Pilotos comerciales y canales de reporte
@@ -151,14 +151,14 @@ observación. ¿Qué señales permiten distinguirlos responsablemente?
 
 **Categoría:** Aviación y defensa
 **Apertura:** ¿Cómo equilibrar transparencia pública, investigación y protección
-de información operacional?  
+de información operacional?<br>
 **Criterio:** discutir políticas sin divulgar tácticas o datos sensibles.
 
 ### 20. ¿Qué puede y qué no puede concluir un informe oficial?
 
 **Categoría:** Archivos oficiales
 **Apertura:** Analicemos lenguaje, alcance, metodología y categorías de datos en
-informes públicos.  
+informes públicos.<br>
 **Criterio:** citar página y versión; no convertir “sin resolver” en “confirmado”.
 
 ## Ciencia, astronomía y atmósfera
@@ -167,56 +167,56 @@ informes públicos.
 
 **Categoría:** Astronomía y satélites
 **Apertura:** Compartamos ejemplos reproducibles donde posición, brillo y
-atmósfera expliquen una observación extraña.  
+atmósfera expliquen una observación extraña.<br>
 **Criterio:** indicar lugar, fecha, hora y herramienta astronómica utilizada.
 
 ### 22. Trenes Starlink y satélites recién lanzados
 
 **Categoría:** Astronomía y satélites
 **Apertura:** ¿Cómo reconocer un tren de satélites y comprobar un lanzamiento sin
-descartar demasiado rápido observaciones atípicas?  
+descartar demasiado rápido observaciones atípicas?<br>
 **Criterio:** contrastar elementos orbitales y hora local.
 
 ### 23. Reentradas atmosféricas y fragmentación
 
 **Categoría:** Astronomía y satélites
 **Apertura:** Construyamos una guía visual sobre duración, dirección, colores y
-fragmentación de una reentrada.  
+fragmentación de una reentrada.<br>
 **Criterio:** enlazar predicciones o catálogos cuando estén disponibles.
 
 ### 24. Meteoros, bólidos y meteoros persistentes
 
 **Categoría:** Astronomía y satélites
 **Apertura:** ¿Qué rasgos temporales y visuales ayudan a distinguir estos eventos
-de aeronaves u objetos estacionarios?  
+de aeronaves u objetos estacionarios?<br>
 **Criterio:** comparar con redes de detección y testimonios independientes.
 
 ### 25. Nubes lenticulares y fenómenos ópticos
 
 **Categoría:** Meteorología y atmósfera
 **Apertura:** Reunamos ejemplos de lenticulares, halos, pilares de luz y espejismos
-que suelen circular fuera de contexto.  
+que suelen circular fuera de contexto.<br>
 **Criterio:** incluir meteorología local y orientación solar.
 
 ### 26. Rayos globulares: evidencia y límites
 
 **Categoría:** Meteorología y atmósfera
 **Apertura:** ¿Qué observaciones y estudios existen, y cuándo se usa el término
-como explicación genérica sin respaldo?  
+como explicación genérica sin respaldo?<br>
 **Criterio:** separar hipótesis física de diagnóstico de un caso concreto.
 
 ### 27. Luces sísmicas y fenómenos geológicos
 
 **Categoría:** Meteorología y atmósfera
 **Apertura:** Revisemos evidencia publicada y criterios para no atribuir cualquier
-luz cercana a un terremoto.  
+luz cercana a un terremoto.<br>
 **Criterio:** exigir proximidad temporal, geográfica y una fuente verificable.
 
 ### 28. Vida extraterrestre: de biosignaturas a tecnofirmas
 
 **Categoría:** Astrobiología y SETI
 **Apertura:** ¿Qué tipos de evidencia buscaría la ciencia y cómo difieren de un
-avistamiento aéreo individual?  
+avistamiento aéreo individual?<br>
 **Criterio:** distinguir posibilidad, indicio y detección confirmada.
 
 ### 29. Paradoja de Fermi y gran filtro
@@ -230,7 +230,7 @@ supuestos sobre vida, inteligencia y comunicación contiene cada una?
 
 **Categoría:** Astrobiología y SETI
 **Apertura:** Construyamos escenarios conservador, medio y optimista con rangos
-transparentes.  
+transparentes.<br>
 **Criterio:** no presentar el resultado como un censo real.
 
 ## Fotografía, vídeo y análisis digital
@@ -239,28 +239,28 @@ transparentes.
 
 **Categoría:** Imagen y vídeo
 **Apertura:** Checklist para copiar, verificar, almacenar y compartir archivos sin
-perder metadatos ni introducir nuevas compresiones.  
+perder metadatos ni introducir nuevas compresiones.<br>
 **Criterio:** explicar cada transformación realizada.
 
 ### 32. Zoom digital y objetos desenfocados
 
 **Categoría:** Imagen y vídeo
 **Apertura:** Mostremos cómo una fuente puntual adopta formas geométricas según
-diafragma, enfoque y estabilización.  
+diafragma, enfoque y estabilización.<br>
 **Criterio:** usar pruebas controladas y conservar parámetros de cámara.
 
 ### 33. Reflejos internos y lens flare
 
 **Categoría:** Imagen y vídeo
 **Apertura:** ¿Cómo se relaciona un reflejo con una fuente brillante y el centro
-óptico de la imagen?  
+óptico de la imagen?<br>
 **Criterio:** analizar fotogramas completos, no recortes.
 
 ### 34. Infrarrojo: paletas, saturación y límites
 
 **Categoría:** Imagen y vídeo
 **Apertura:** Guía colectiva para interpretar vídeo térmico sin confundir color
-de pantalla con temperatura o composición.  
+de pantalla con temperatura o composición.<br>
 **Criterio:** identificar sensor, modo y parámetros conocidos.
 
 ### 35. Paralaje explicado con ejemplos
@@ -274,7 +274,7 @@ movimiento. ¿Qué datos permiten calcular una velocidad física?
 
 **Categoría:** Imagen y vídeo
 **Apertura:** Analicemos bloques, interpolación, ruido y pérdida de contraste en
-plataformas sociales.  
+plataformas sociales.<br>
 **Criterio:** comparar copia viral con archivo de mayor generación.
 
 ### 37. Estabilización: útil, pero no evidencia nueva
