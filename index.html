@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/styles.css?v=43" />
+<link rel="stylesheet" href="css/styles.css?v=44" />
 <link rel="icon" type="image/png" href="assets/ufologist-app-icon.png" />
 </head>
 <body>
@@ -48,8 +48,9 @@
   </div>
 
   <div class="search-wrap">
-    <input id="search" type="text" placeholder="Buscar caso o lugar…" autocomplete="off" />
-    <div id="search-results" class="hidden"></div>
+    <input id="search" type="text" placeholder="Buscar caso o lugar…" autocomplete="off"
+      role="combobox" aria-autocomplete="list" aria-controls="search-results" aria-expanded="false" />
+    <div id="search-results" class="hidden" role="listbox" aria-label="Resultados de búsqueda"></div>
   </div>
 
   <div class="lang-toggle" role="group" aria-label="Language">
@@ -213,24 +214,24 @@
 <button id="btn-expand-left" class="edge-tab glass hidden" title="Mostrar filtros">»</button>
 
 <!-- ======== RIGHT PANEL: CASE DETAIL ======== -->
-<aside id="panel-case" class="glass hidden">
-  <button id="btn-close-case" class="btn-mini close">✕</button>
+<aside id="panel-case" class="glass hidden" role="dialog" aria-modal="false" aria-label="Detalle del caso" tabindex="-1">
+  <button id="btn-close-case" class="btn-mini close" aria-label="Cerrar detalle del caso">✕</button>
   <div id="case-content"></div>
 </aside>
 
 <!-- ======== RIGHT PANEL: STATS ======== -->
-<aside id="panel-stats" class="glass hidden">
-  <button id="btn-close-stats" class="btn-mini close">✕</button>
-  <h2 class="stats-title">📊 Análisis de la selección</h2>
+<aside id="panel-stats" class="glass hidden" role="dialog" aria-modal="false" aria-labelledby="stats-title" tabindex="-1">
+  <button id="btn-close-stats" class="btn-mini close" aria-label="Cerrar análisis">✕</button>
+  <h2 id="stats-title" class="stats-title">📊 Análisis de la selección</h2>
   <div id="stats-content"></div>
 </aside>
 
 <!-- ======== TOUR CARD ======== -->
-<div id="tour-card" class="glass hidden">
+<div id="tour-card" class="glass hidden" role="dialog" aria-modal="false" aria-labelledby="tour-title" tabindex="-1">
   <div class="tour-head">
     <span id="tour-progress">1/14</span>
     <span id="tour-title">—</span>
-    <button id="tour-close" class="btn-mini">✕</button>
+    <button id="tour-close" class="btn-mini" aria-label="Cerrar expedición">✕</button>
   </div>
   <p id="tour-text"></p>
   <div class="tour-bar"><div id="tour-bar-fill"></div></div>
@@ -271,10 +272,10 @@
 </footer>
 
 <!-- ======== SIGHTING FORM ======== -->
-<div id="sight-overlay" class="hidden">
-  <div id="sight-form" class="glass">
-    <button id="sight-close" class="btn-mini close">✕</button>
-    <h3>➕ Registrar avistamiento</h3>
+<div id="sight-overlay" class="hidden" aria-hidden="true">
+  <div id="sight-form" class="glass" role="dialog" aria-modal="true" aria-labelledby="sight-title">
+    <button id="sight-close" class="btn-mini close" aria-label="Cerrar formulario">✕</button>
+    <h3 id="sight-title">➕ Registrar avistamiento</h3>
     <p class="hint">Se guarda solo en tu navegador (cuaderno de campo local).</p>
     <label>Título *<input type="text" id="sf-name" placeholder="Luz pulsante sobre la sierra" /></label>
     <div class="sf-row">
@@ -294,9 +295,9 @@
 </div>
 
 <!-- ======== KNOWLEDGE MODAL ======== -->
-<div id="modal-overlay" class="hidden">
-  <div id="modal" class="glass">
-    <button id="btn-close-modal" class="btn-mini close">✕</button>
+<div id="modal-overlay" class="hidden" aria-hidden="true">
+  <div id="modal" class="glass" role="dialog" aria-modal="true" aria-label="Centro de conocimiento">
+    <button id="btn-close-modal" class="btn-mini close" aria-label="Cerrar centro de conocimiento">✕</button>
     <nav id="modal-tabs">
       <button data-tab="hynek" class="active">Clasificación</button>
       <button data-tab="anatomy">Anatomía</button>
@@ -311,10 +312,10 @@
 </div>
 
 <!-- ======== APP INFO MODAL ======== -->
-<div id="app-info-overlay" class="hidden">
-  <div id="app-info-modal" class="glass">
-    <button id="btn-close-app-info" class="btn-mini close">✕</button>
-    <h2>Sobre UFOlogist</h2>
+<div id="app-info-overlay" class="hidden" aria-hidden="true">
+  <div id="app-info-modal" class="glass" role="dialog" aria-modal="true" aria-labelledby="app-info-title">
+    <button id="btn-close-app-info" class="btn-mini close" aria-label="Cerrar información">✕</button>
+    <h2 id="app-info-title">Sobre UFOlogist</h2>
     <p><b>UFOlogist</b> es un atlas interactivo independiente para explorar el fenómeno UAP con contexto, fuentes y una mirada crítica. La intención no es empujar una conclusión cerrada, sino ordenar el material, separar evidencia de ruido y hacer visible dónde están los patrones.</p>
     <h3>Mensaje del autor</h3>
     <p>He construido esta herramienta para curiosos exigentes: personas que quieren mirar los casos sin cinismo automático, pero también sin perder el criterio. Si algo te intriga, abre las fuentes, compara versiones y mantén la pregunta viva.</p>
@@ -325,11 +326,11 @@
 </div>
 
 <!-- ======== RESEARCH PASS MODAL ======== -->
-<div id="pass-overlay" class="hidden">
-  <div id="pass-modal" class="glass">
-    <button id="btn-close-pass" class="btn-mini close">✕</button>
+<div id="pass-overlay" class="hidden" aria-hidden="true">
+  <div id="pass-modal" class="glass" role="dialog" aria-modal="true" aria-labelledby="pass-title">
+    <button id="btn-close-pass" class="btn-mini close" aria-label="Cerrar Research Pass">✕</button>
     <p class="pass-eyebrow">UFOlogist Research Pass</p>
-    <h2>Financia herramientas de investigación, no un muro de pago.</h2>
+    <h2 id="pass-title">Financia herramientas de investigación, no un muro de pago.</h2>
     <p class="pass-intro">El atlas seguirá abierto. El pass está pensado para quienes quieran apoyar el proyecto y recibir utilidades avanzadas cuando estén listas.</p>
     <div class="pass-grid">
       <article>
@@ -400,10 +401,10 @@
 <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
 <script src="js/data.js?v=13"></script>
 <script src="js/astro.js?v=1"></script>
-<script src="js/app.js?v=67"></script>
+<script src="js/app.js?v=68"></script>
 <script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
 <script src="js/satellites.js?v=20"></script>
 <script src="js/community.js?v=2"></script>
-<script src="js/forum.js?v=7"></script>
+<script src="js/forum.js?v=8"></script>
 </body>
 </html>

@@ -125,7 +125,7 @@
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'forum-modal';
-      modal.className = 'forum-modal';
+      modal.className = 'forum-modal hidden';
       modal.setAttribute('aria-hidden', 'true');
       document.body.appendChild(modal);
     }
@@ -135,6 +135,10 @@
   function closeOverlay() {
     var modal = document.getElementById('forum-modal');
     if (!modal) return;
+    if (root.UFOUI) {
+      root.UFOUI.close('forum');
+      return;
+    }
     modal.style.display = 'none';
     modal.setAttribute('aria-hidden', 'true');
     document.removeEventListener('keydown', onModalKeydown, true);
@@ -163,11 +167,24 @@
     lastFocusedElement = document.activeElement;
     modal.innerHTML = html;
     modal.style.display = 'flex';
-    modal.setAttribute('aria-hidden', 'false');
     modal.querySelector('.forum-modal-close').onclick = closeOverlay;
     modal.onclick = function (event) { if (event.target === modal) closeOverlay(); };
-    document.addEventListener('keydown', onModalKeydown, true);
-    modal.querySelector('.forum-modal-close').focus();
+    if (root.UFOUI) {
+      root.UFOUI.register('forum', {
+        container: modal,
+        dialog: modal.querySelector('[role="dialog"]'),
+        modal: true,
+        priority: 120,
+        initialFocus: '.forum-modal-close',
+        requestClose: closeOverlay,
+      });
+      root.UFOUI.open('forum', { trigger: lastFocusedElement });
+    } else {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      document.addEventListener('keydown', onModalKeydown, true);
+      modal.querySelector('.forum-modal-close').focus();
+    }
     return modal;
   }
 

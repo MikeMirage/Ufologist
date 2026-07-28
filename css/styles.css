@@ -178,12 +178,20 @@ body::before {
   z-index: 60;
 }
 .sr-item {
+  width: 100%; text-align: left;
   display: flex; align-items: center; gap: 10px;
   padding: 10px 14px; cursor: pointer;
+  border: 0; color: var(--txt); background: transparent;
+  font: inherit;
   border-bottom: 1px solid rgba(255,255,255,0.04);
 }
-.sr-item:hover { background: rgba(75,225,195,0.08); }
+.sr-item:hover, .sr-item:focus-visible {
+  background: rgba(75,225,195,0.08);
+  outline: 2px solid rgba(24,215,255,0.65);
+  outline-offset: -2px;
+}
 .sr-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.sr-copy, .sr-name, .sr-meta { display: block; }
 .sr-name { font-weight: 600; font-size: 13px; }
 .sr-meta { font-size: 11px; color: var(--txt-dim); }
 

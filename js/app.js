@@ -963,6 +963,175 @@ function setButton(id, icon, labelKey, titleKey) {
   el.textContent = `${icon} ${t(labelKey)}`;
   if (titleKey) el.title = t(titleKey);
 }
+
+// ---------- UI layer manager ----------
+// One source of truth for desktop dialogs and floating panels. It owns stacking,
+// focus restoration, focus trapping and the body scroll lock.
+const uiLayerRegistry = new Map();
+const uiLayerStack = [];
+let bodyOverflowBeforeModal = '';
+
+function registerUILayer(id, options) {
+  const container = typeof options.container === 'string' ? $(options.container) : options.container;
+  if (!container) return;
+  uiLayerRegistry.set(id, {
+    id,
+    container,
+    dialog: options.dialog
+      ? (typeof options.dialog === 'string' ? $(options.dialog) : options.dialog)
+      : container,
+    modal: Boolean(options.modal),
+    priority: options.priority || 0,
+    initialFocus: options.initialFocus || null,
+    requestClose: options.requestClose || null,
+  });
+}
+
+function topUILayer() {
+  return uiLayerStack.length ? uiLayerStack[uiLayerStack.length - 1] : null;
+}
+
+function focusableElements(container) {
+  if (!container) return [];
+  return [...container.querySelectorAll(
+    'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), ' +
+    'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )].filter(el => !el.closest('.hidden') && el.getAttribute('aria-hidden') !== 'true');
+}
+
+function syncModalEnvironment() {
+  const topModal = [...uiLayerStack].reverse().find(entry => entry.definition.modal);
+  document.querySelectorAll('[data-ui-layer-inert="true"]').forEach(child => {
+    child.inert = false;
+    delete child.dataset.uiLayerInert;
+  });
+  if (topModal) {
+    if (!document.body.dataset.uiScrollLocked) {
+      bodyOverflowBeforeModal = document.body.style.overflow;
+      document.body.dataset.uiScrollLocked = 'true';
+    }
+    document.body.style.overflow = 'hidden';
+    [...document.body.children].forEach(child => {
+      if (child === topModal.definition.container || child.tagName === 'SCRIPT') return;
+      child.inert = true;
+      child.dataset.uiLayerInert = 'true';
+    });
+  } else {
+    if (document.body.dataset.uiScrollLocked) {
+      document.body.style.overflow = bodyOverflowBeforeModal;
+      delete document.body.dataset.uiScrollLocked;
+    }
+  }
+}
+
+function openUILayer(id, options = {}) {
+  const definition = uiLayerRegistry.get(id);
+  if (!definition) return;
+  const existingIndex = uiLayerStack.findIndex(entry => entry.id === id);
+  if (existingIndex >= 0) uiLayerStack.splice(existingIndex, 1);
+  const trigger = options.trigger || document.activeElement;
+  definition.container.classList.remove('hidden');
+  definition.container.setAttribute('aria-hidden', 'false');
+  const entry = { id, definition, trigger };
+  uiLayerStack.push(entry);
+  uiLayerStack.sort((a, b) => a.definition.priority - b.definition.priority);
+  syncModalEnvironment();
+  if (options.focus === false) return;
+  requestAnimationFrame(() => {
+    if (topUILayer() !== entry) return;
+    const configured = typeof definition.initialFocus === 'string'
+      ? definition.dialog.querySelector(definition.initialFocus)
+      : definition.initialFocus;
+    const target = configured || focusableElements(definition.dialog)[0] || definition.dialog;
+    if (!target.hasAttribute('tabindex') && target === definition.dialog) target.tabIndex = -1;
+    target.focus({ preventScroll: true });
+  });
+}
+
+function closeUILayer(id, options = {}) {
+  const definition = uiLayerRegistry.get(id);
+  if (!definition) return;
+  const index = uiLayerStack.findIndex(entry => entry.id === id);
+  const entry = index >= 0 ? uiLayerStack[index] : null;
+  const wasTop = entry && topUILayer() === entry;
+  if (index >= 0) uiLayerStack.splice(index, 1);
+  definition.container.classList.add('hidden');
+  definition.container.setAttribute('aria-hidden', 'true');
+  syncModalEnvironment();
+  if (options.restoreFocus === false || !wasTop) return;
+  const target = entry?.trigger;
+  if (target && target.isConnected && !target.closest('.hidden') && !target.closest('[inert]')) {
+    requestAnimationFrame(() => target.focus({ preventScroll: true }));
+  }
+}
+
+function requestCloseTopUILayer() {
+  const entry = topUILayer();
+  if (!entry) return false;
+  if (entry.definition.requestClose) entry.definition.requestClose();
+  else closeUILayer(entry.id);
+  return true;
+}
+
+function trapTopModalFocus(event) {
+  const entry = topUILayer();
+  if (!entry?.definition.modal || event.key !== 'Tab') return false;
+  const focusable = focusableElements(entry.definition.dialog);
+  if (!focusable.length) {
+    event.preventDefault();
+    entry.definition.dialog.focus();
+    return true;
+  }
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (!entry.definition.dialog.contains(document.activeElement)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  } else if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+  return true;
+}
+
+registerUILayer('case', {
+  container: 'panel-case', priority: 40, initialFocus: '#btn-close-case',
+  requestClose: () => closeCasePanel(),
+});
+registerUILayer('stats', {
+  container: 'panel-stats', priority: 40, initialFocus: '#btn-close-stats',
+  requestClose: () => closeStats(),
+});
+registerUILayer('tour', {
+  container: 'tour-card', priority: 60, initialFocus: '#tour-close',
+  requestClose: () => tourEnd(),
+});
+registerUILayer('sighting', {
+  container: 'sight-overlay', dialog: 'sight-form', modal: true, priority: 100,
+  initialFocus: '#sf-name', requestClose: () => closeSightingForm(),
+});
+registerUILayer('knowledge', {
+  container: 'modal-overlay', dialog: 'modal', modal: true, priority: 100,
+  initialFocus: '#btn-close-modal', requestClose: () => closeModal(),
+});
+registerUILayer('info', {
+  container: 'app-info-overlay', dialog: 'app-info-modal', modal: true, priority: 100,
+  initialFocus: '#btn-close-app-info', requestClose: () => closeAppInfo(),
+});
+registerUILayer('pass', {
+  container: 'pass-overlay', dialog: 'pass-modal', modal: true, priority: 100,
+  initialFocus: '#btn-close-pass', requestClose: () => closePassModal(),
+});
+window.UFOUI = {
+  register: registerUILayer,
+  open: openUILayer,
+  close: closeUILayer,
+  top: () => topUILayer()?.id || null,
+};
+
 function applyPassI18n() {
   const modal = $('pass-modal');
   if (!modal) return;
@@ -2147,7 +2316,7 @@ function openClusterBrowser(cluster) {
     ${hidden ? `<p class="hint">${currentLang === 'en'
       ? `${fmtNum(hidden)} more filtered records are in this group. Zoom or narrow the filters to inspect all of them.`
       : `${fmtNum(hidden)} registros filtrados más están en este grupo. Acércate o ajusta filtros para inspeccionarlos todos.`}</p>` : ''}`;
-  $('panel-case').classList.remove('hidden');
+  openUILayer('case');
   mobileOnCaseOpen();
   $('case-content').querySelectorAll('.cluster-case-row').forEach(btn => {
     btn.onclick = () => openReportFromMarker(rows[+btn.dataset.i], 'inspect');
@@ -3606,7 +3775,7 @@ function openCase(id, fly) {
       <button id="cc-prev">← ${t('prev')}</button>
       <button id="cc-next">${t('next')} →</button>
     </div>`;
-  $('panel-case').classList.remove('hidden');
+  openUILayer('case');
   mobileOnCaseOpen();
   if (!c.mine) hydrateMedia(c);
   const visible = filteredCases();
@@ -3619,7 +3788,7 @@ function openCase(id, fly) {
   };
   $('cc-sky').onclick = () => {
     const when = c.date ? (c.date + (c.time ? 'T' + c.time : 'T22:00')) : undefined;
-    $('panel-case').classList.add('hidden');
+    closeUILayer('case', { restoreFocus: false });
     state.selectedCase = null;
     setViewMode('satellites');
     if (window.UFOSat && UFOSat.analyzeSkyAt) UFOSat.analyzeSkyAt(c.lat, c.lng, when);
@@ -3632,7 +3801,7 @@ function openCase(id, fly) {
   if (c.mine) $('cc-delete').onclick = () => {
     journal = journal.filter(j => j.id !== c.id);
     saveJournal();
-    $('panel-case').classList.add('hidden');
+    closeUILayer('case');
     state.selectedCase = null;
     buildTypeFilters();
     refresh();
@@ -3680,7 +3849,7 @@ function openMassReport(d, fly = false) {
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent((d.loc || '') + ' ' + Math.floor(d.d / 10000) + ' UFO sighting')}">▶ ${t('searchVideos')}</a>
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent((d.loc || '') + ' ' + Math.floor(d.d / 10000) + ' UFO')}">🖼 ${t('searchImages')}</a>
     </div>`;
-  $('panel-case').classList.remove('hidden');
+  openUILayer('case');
   mobileOnCaseOpen();
   if (fly) {
     const inspect = fly === 'inspect';
@@ -3721,7 +3890,7 @@ function openGeipanReport(d, fly = false) {
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">▶ ${t('searchVideos')}</a>
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}">🖼 ${t('searchImages')}</a>
     </div>`;
-  $('panel-case').classList.remove('hidden');
+  openUILayer('case');
   mobileOnCaseOpen();
   if (fly) {
     const inspect = fly === 'inspect';
@@ -3770,26 +3939,78 @@ function openOfficialReport(d, fly) {
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">▶ ${t('searchVideos')}</a>
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}">🖼 ${t('searchImages')}</a>
     </div>`;
-  $('panel-case').classList.remove('hidden');
+  openUILayer('case');
   mobileOnCaseOpen();
   if (fly && coords) {
     const inspect = fly === 'inspect';
     focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, inspect ? 520 : 950, inspect ? 'inspect' : 'navigate');
   }
 }
-$('btn-close-case').onclick = () => {
-  $('panel-case').classList.add('hidden');
+function closeCasePanel(options = {}) {
+  if (tour.active && options.keepTour !== true) {
+    tourEnd();
+    return;
+  }
+  closeUILayer('case', options);
   state.selectedCase = null;
   clearInspectedMarker();
   renderCaseMarkersFromCurrent();
   scheduleHashUpdate();
-};
+}
+$('btn-close-case').onclick = () => closeCasePanel();
 
 // ---------- Search ----------
 const searchInput = $('search'), searchResults = $('search-results');
+function hideSearchResults({ restoreFocus = false } = {}) {
+  searchResults.classList.add('hidden');
+  searchInput.setAttribute('aria-expanded', 'false');
+  searchInput.removeAttribute('aria-activedescendant');
+  if (restoreFocus) searchInput.focus();
+}
+function activateSearchResult(el) {
+  if (!el?.dataset.id) return;
+  hideSearchResults();
+  searchInput.value = '';
+  if (el.dataset.kind === 'official') {
+    const o = (officialData || []).find(x => x.id === el.dataset.id);
+    if (!o) return;
+    if (o.year < state.yearFrom || o.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
+    if (!state.officialSources.has(o.sid)) { state.officialSources.add(o.sid); document.querySelector(`.shape-pill[data-official-source="${o.sid}"]`)?.classList.remove('off'); }
+    const oq = geoQuality(o);
+    if (!state.geoQuality.has(oq)) { state.geoQuality.add(oq); document.querySelector(`.shape-pill[data-geo-quality="${oq}"]`)?.classList.remove('off'); }
+    geoContextTags(o).forEach(tag => {
+      if (!state.geoContexts.has(tag)) {
+        state.geoContexts.add(tag);
+        document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
+      }
+    });
+    state.officialOn = true;
+    $('official-toggle').checked = true;
+    refresh();
+    searchInput.focus({ preventScroll: true });
+    openOfficialReport(o, true);
+    return;
+  }
+  const c = allCuratedPool().find(x => x.id === el.dataset.id);
+  if (!c) return;
+  if (c.year < state.yearFrom || c.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
+  if (!state.types.has(c.type)) { state.types.add(c.type); document.querySelector(`.type-chip[data-type="${c.type}"]`)?.classList.remove('off'); }
+  if (!c.mine && c.cred < state.credMin) { state.credMin = 1; $('cred-range').value = 1; $('cred-stars').textContent = '★☆☆☆☆'; }
+  const cq = geoQuality(c);
+  if (!state.geoQuality.has(cq)) { state.geoQuality.add(cq); document.querySelector(`.shape-pill[data-geo-quality="${cq}"]`)?.classList.remove('off'); }
+  geoContextTags(c).forEach(tag => {
+    if (!state.geoContexts.has(tag)) {
+      state.geoContexts.add(tag);
+      document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
+    }
+  });
+  refresh();
+  searchInput.focus({ preventScroll: true });
+  openCase(c.id, true);
+}
 searchInput.oninput = () => {
   const q = searchInput.value.trim().toLowerCase();
-  if (q.length < 2) { searchResults.classList.add('hidden'); return; }
+  if (q.length < 2) { hideSearchResults(); return; }
   const curatedHits = allCuratedPool().filter(c =>
     caseName(c).toLowerCase().includes(q) || (caseLoc(c) || '').toLowerCase().includes(q) ||
     (caseCountry(c) || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q) ||
@@ -3807,55 +4028,48 @@ searchInput.oninput = () => {
       const isOfficial = hit.kind === 'official';
       const color = isOfficial ? reportVisualColor(c) : TYPE_META[c.type].color;
       return `
-        <div class="sr-item" data-kind="${hit.kind}" data-id="${esc(c.id)}">
-          <span class="sr-dot" style="background:${color}"></span>
-          <div><div class="sr-name">${isOfficial ? esc(c.title) : caseName(c)}</div>
-          <div class="sr-meta">${c.year} · ${isOfficial ? esc(c.source) : `${caseLoc(c)}${caseCountry(c) ? ', ' + caseCountry(c) : ''}`}</div></div>
-        </div>`;
+        <button type="button" class="sr-item" role="option" id="search-result-${esc(c.id)}"
+          data-kind="${hit.kind}" data-id="${esc(c.id)}">
+          <span class="sr-dot" style="background:${color}" aria-hidden="true"></span>
+          <span class="sr-copy"><span class="sr-name">${isOfficial ? esc(c.title) : esc(caseName(c))}</span>
+          <span class="sr-meta">${c.year} · ${isOfficial ? esc(c.source) : `${caseLoc(c)}${caseCountry(c) ? ', ' + caseCountry(c) : ''}`}</span></span>
+        </button>`;
     }).join('')
-    : `<div class="sr-item"><div class="sr-meta">${t('noResults')}</div></div>`;
+    : `<div class="sr-item" role="option" aria-disabled="true"><div class="sr-meta">${t('noResults')}</div></div>`;
   searchResults.classList.remove('hidden');
+  searchInput.setAttribute('aria-expanded', 'true');
   searchResults.querySelectorAll('.sr-item[data-id]').forEach(el => {
-    el.onclick = () => {
-      searchResults.classList.add('hidden');
-      searchInput.value = '';
-      if (el.dataset.kind === 'official') {
-        const o = (officialData || []).find(x => x.id === el.dataset.id);
-        if (!o) return;
-        if (o.year < state.yearFrom || o.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
-        if (!state.officialSources.has(o.sid)) { state.officialSources.add(o.sid); document.querySelector(`.shape-pill[data-official-source="${o.sid}"]`)?.classList.remove('off'); }
-        const oq = geoQuality(o);
-        if (!state.geoQuality.has(oq)) { state.geoQuality.add(oq); document.querySelector(`.shape-pill[data-geo-quality="${oq}"]`)?.classList.remove('off'); }
-        geoContextTags(o).forEach(tag => {
-          if (!state.geoContexts.has(tag)) {
-            state.geoContexts.add(tag);
-            document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
-          }
-        });
-        state.officialOn = true; $('official-toggle').checked = true;
-        refresh();
-        openOfficialReport(o, true);
-        return;
+    el.onclick = () => activateSearchResult(el);
+    el.onkeydown = event => {
+      const options = [...searchResults.querySelectorAll('.sr-item[data-id]')];
+      const index = options.indexOf(el);
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        options[(index + 1) % options.length].focus();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        (index > 0 ? options[index - 1] : searchInput).focus();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        hideSearchResults({ restoreFocus: true });
       }
-      const c = allCuratedPool().find(x => x.id === el.dataset.id);
-      if (c.year < state.yearFrom || c.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
-      if (!state.types.has(c.type)) { state.types.add(c.type); document.querySelector(`.type-chip[data-type="${c.type}"]`)?.classList.remove('off'); }
-      if (!c.mine && c.cred < state.credMin) { state.credMin = 1; $('cred-range').value = 1; $('cred-stars').textContent = '★☆☆☆☆'; }
-      const cq = geoQuality(c);
-      if (!state.geoQuality.has(cq)) { state.geoQuality.add(cq); document.querySelector(`.shape-pill[data-geo-quality="${cq}"]`)?.classList.remove('off'); }
-      geoContextTags(c).forEach(tag => {
-        if (!state.geoContexts.has(tag)) {
-          state.geoContexts.add(tag);
-          document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
-        }
-      });
-      refresh();
-      openCase(c.id, true);
     };
   });
 };
+searchInput.addEventListener('keydown', event => {
+  if (event.key === 'ArrowDown' && !searchResults.classList.contains('hidden')) {
+    const first = searchResults.querySelector('.sr-item[data-id]');
+    if (first) {
+      event.preventDefault();
+      first.focus();
+      searchInput.setAttribute('aria-activedescendant', first.id);
+    }
+  } else if (event.key === 'Escape') {
+    hideSearchResults();
+  }
+});
 document.addEventListener('click', e => {
-  if (!e.target.closest('.search-wrap')) searchResults.classList.add('hidden');
+  if (!e.target.closest('.search-wrap')) hideSearchResults();
 });
 
 // ---------- Timeline: histogram ----------
@@ -4210,11 +4424,11 @@ function renderStats() {
     <p class="hint">⚠ ${t('statsBias')}</p>`;
 }
 function openStats() {
-  $('panel-case').classList.add('hidden');
-  $('panel-stats').classList.remove('hidden');
+  closeUILayer('case', { restoreFocus: false });
+  openUILayer('stats');
   renderStats();
 }
-function closeStats() { $('panel-stats').classList.add('hidden'); }
+function closeStats(options) { closeUILayer('stats', options); }
 $('btn-stats').onclick = () => $('panel-stats').classList.contains('hidden') ? openStats() : closeStats();
 $('btn-close-stats').onclick = closeStats;
 
@@ -4365,11 +4579,11 @@ function pickLocation(lat, lng) {
   const sel = $('sf-shape');
   sel.innerHTML = '';
   SHAPE_META.forEach((s, i) => sel.add(new Option(shapeLabel(i), i)));
-  $('sight-overlay').classList.remove('hidden');
-  $('sf-name').focus();
+  openUILayer('sighting', { trigger: $('btn-add') });
 }
-$('sight-close').onclick = () => $('sight-overlay').classList.add('hidden');
-$('sight-overlay').addEventListener('click', e => { if (e.target === $('sight-overlay')) $('sight-overlay').classList.add('hidden'); });
+function closeSightingForm(options) { closeUILayer('sighting', options); }
+$('sight-close').onclick = () => closeSightingForm();
+$('sight-overlay').addEventListener('click', e => { if (e.target === $('sight-overlay')) closeSightingForm(); });
 $('sf-save').onclick = () => {
   const name = $('sf-name').value.trim();
   const date = $('sf-date').value;
@@ -4388,7 +4602,7 @@ $('sf-save').onclick = () => {
   journal.push(entry);
   saveJournal();
   state.types.add('MINE');
-  $('sight-overlay').classList.add('hidden');
+  closeSightingForm({ restoreFocus: false });
   ['sf-name', 'sf-notes', 'sf-time'].forEach(i => $(i).value = '');
   buildTypeFilters();
   refresh();
@@ -4403,8 +4617,8 @@ let tour = { active: false, idx: 0, timer: null, paused: false, t0: 0, remaining
 function tourStart() {
   tour.active = true; tour.idx = 0; tour.paused = false;
   stopPlayback();
-  $('tour-card').classList.remove('hidden');
   tourGo(0);
+  openUILayer('tour', { trigger: $('btn-tour') });
 }
 function tourGo(i) {
   const ids = TOUR_IDS.filter(id => CASES.some(c => c.id === id));
@@ -4439,10 +4653,16 @@ function animateTourBar() {
   step();
 }
 function tourEnd() {
+  if (!tour.active && $('tour-card').classList.contains('hidden')) return;
   tour.active = false;
   clearTimeout(tour.timer);
   cancelAnimationFrame(tourBarRaf);
-  $('tour-card').classList.add('hidden');
+  closeUILayer('case', { restoreFocus: false });
+  state.selectedCase = null;
+  clearInspectedMarker();
+  renderCaseMarkersFromCurrent();
+  scheduleHashUpdate();
+  closeUILayer('tour');
 }
 $('btn-tour').onclick = () => tour.active ? tourEnd() : tourStart();
 $('tour-close').onclick = tourEnd;
@@ -4628,9 +4848,10 @@ const TABS = {
 };
 
 function openModal(tab) {
-  $('modal-overlay').classList.remove('hidden');
+  openUILayer('knowledge', { trigger: $('btn-knowledge') });
   switchTab(tab || 'hynek');
 }
+function closeModal(options) { closeUILayer('knowledge', options); }
 function switchTab(tab) {
   if (!TABS[tab]) tab = 'hynek';
   document.querySelectorAll('#modal-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -4642,17 +4863,17 @@ document.querySelectorAll('#modal-tabs button').forEach(b => { b.onclick = () =>
 $('modal-body').addEventListener('click', e => {
   const b = e.target.closest('.anatomy-go');
   if (!b) return;
-  $('modal-overlay').classList.add('hidden');
+  closeModal({ restoreFocus: false });
   openCase(b.dataset.go, true);
 });
 $('btn-knowledge').onclick = () => openModal('hynek');
-$('btn-close-modal').onclick = () => $('modal-overlay').classList.add('hidden');
+$('btn-close-modal').onclick = () => closeModal();
 $('modal-overlay').addEventListener('click', e => {
-  if (e.target === $('modal-overlay')) $('modal-overlay').classList.add('hidden');
+  if (e.target === $('modal-overlay')) closeModal();
 });
 
-function openAppInfo() { $('app-info-overlay').classList.remove('hidden'); }
-function closeAppInfo() { $('app-info-overlay').classList.add('hidden'); }
+function openAppInfo() { openUILayer('info', { trigger: $('btn-about') }); }
+function closeAppInfo(options) { closeUILayer('info', options); }
 $('btn-about').onclick = openAppInfo;
 if ($('btn-forum')) $('btn-forum').onclick = () => { if (window.UFOForum) UFOForum.openGeneral(); };
 $('btn-close-app-info').onclick = closeAppInfo;
@@ -4662,9 +4883,9 @@ $('app-info-overlay').addEventListener('click', e => {
 
 function openPassModal() {
   applyPassI18n();
-  $('pass-overlay').classList.remove('hidden');
+  openUILayer('pass', { trigger: $('btn-pass') });
 }
-function closePassModal() { $('pass-overlay').classList.add('hidden'); }
+function closePassModal(options) { closeUILayer('pass', options); }
 function selectedPassLabel() {
   const active = document.querySelector(`.pass-plans button[data-plan="${selectedPassPlan}"]`);
   return active ? active.textContent.trim() : selectedPassPlan;
@@ -4693,16 +4914,22 @@ if ($('pass-form')) $('pass-form').onsubmit = e => {
 };
 
 document.addEventListener('keydown', e => {
+  if (trapTopModalFocus(e)) return;
   if (e.key === 'Escape') {
-    $('modal-overlay').classList.add('hidden');
-    closeAppInfo();
-    closePassModal();
-    $('panel-case').classList.add('hidden');
-    $('sight-overlay').classList.add('hidden');
-    closeStats();
-    if (state.pickMode) { state.pickMode = false; $('pick-hint').classList.add('hidden'); }
+    if (requestCloseTopUILayer()) {
+      e.preventDefault();
+      return;
+    }
+    if (state.pickMode) {
+      state.pickMode = false;
+      $('pick-hint').classList.add('hidden');
+      e.preventDefault();
+    }
   }
-  if (e.key === ' ' && !e.target.closest('input,textarea,select')) { e.preventDefault(); $('btn-play').click(); }
+  if (e.key === ' ' && !e.target.closest('input,textarea,select,button,a,[role="button"]')) {
+    e.preventDefault();
+    $('btn-play').click();
+  }
 });
 
 // ---------- Mobile: bottom-sheet navigation ----------
@@ -4715,15 +4942,21 @@ function setNav(active) {
     b.classList.toggle('active', b.dataset.sheet === active));
 }
 function closeSheets() {
-  SHEET_IDS.forEach(id => $(id).classList.add('hidden'));
+  closeUILayer('stats', { restoreFocus: false });
+  closeUILayer('case', { restoreFocus: false });
+  ['panel-left', 'timeline', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
   state.selectedCase = null;
   $('sheet-backdrop').classList.remove('show');
   setNav('globe');
 }
 function openSheet(id) {
-  SHEET_IDS.forEach(s => { if (s !== id) $(s).classList.add('hidden'); });
+  if (id !== 'panel-stats') closeUILayer('stats', { restoreFocus: false });
+  if (id !== 'panel-case') closeUILayer('case', { restoreFocus: false });
+  ['panel-left', 'timeline', 'mobile-more'].forEach(s => { if (s !== id) $(s).classList.add('hidden'); });
   $('panel-left').classList.remove('collapsed');
-  $(id).classList.remove('hidden');
+  if (id === 'panel-stats') openUILayer('stats');
+  else if (id === 'panel-case') openUILayer('case');
+  else $(id).classList.remove('hidden');
   $('sheet-backdrop').classList.add('show');
   setNav(id);
   if (id === 'timeline') requestAnimationFrame(() => { positionHandles(); drawHistogram(); renderTimelineEvents(); });
@@ -4732,7 +4965,8 @@ function openSheet(id) {
 // openCase()/openMassReport() call this so the case sheet behaves like the rest
 function mobileOnCaseOpen() {
   if (!isMobile()) return;
-  ['panel-left', 'timeline', 'panel-stats', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
+  closeUILayer('stats', { restoreFocus: false });
+  ['panel-left', 'timeline', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
   $('sheet-backdrop').classList.add('show');
   setNav(null);
 }
@@ -4794,7 +5028,9 @@ function applyMobileLayout() {
     $('sheet-backdrop').classList.remove('show');
     $('panel-left').classList.remove('hidden', 'collapsed');
     $('timeline').classList.remove('hidden');
-    ['panel-stats', 'panel-case', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
+    closeUILayer('stats', { restoreFocus: false });
+    closeUILayer('case', { restoreFocus: false });
+    $('mobile-more').classList.add('hidden');
   }
   refresh();   // rebins the heatmap at the new resolution + re-applies marker rules
 }
