@@ -1,0 +1,46 @@
+title: "[Preguntas y orientación] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Preguntas y orientación
+        Ayuda para usar el atlas, interpretar una fuente o preparar una investigación reproducible.
+
+        Separa observación, evidencia, hipótesis e incertidumbre. Añade enlaces directos y explica qué falta por comprobar.
+
+        **Misión activa:** Ayuda a definir “no identificado” con un ejemplo y una fuente.
+  - type: textarea
+    id: context
+    attributes:
+      label: "Contexto / Context"
+      description: "Explica brevemente qué quieres compartir, preguntar o mejorar."
+    validations:
+      required: true
+  - type: textarea
+    id: contribution
+    attributes:
+      label: "Aportación propuesta / Proposed contribution"
+      description: "Sé concreto: qué cambia, para quién y cómo podría comprobarse."
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: "Referencias o ejemplos / References or examples"
+      description: "Añade enlaces directos cuando ayuden a entender la propuesta."
+    validations:
+      required: false
+  - type: textarea
+    id: next-step
+    attributes:
+      label: "Siguiente paso / Next step"
+      description: "¿Qué respuesta, decisión o colaboración buscas?"
+    validations:
+      required: true
+  - type: checkboxes
+    id: community-check
+    attributes:
+      label: "Comprobación antes de publicar / Pre-publish check"
+      options:
+        - label: "He leído las normas y mantendré la conversación respetuosa y verificable. / I read the guidelines and will keep the conversation respectful and verifiable."
+          required: true

@@ -1,0 +1,53 @@
+title: "[Astronomía y satélites] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Astronomía y satélites
+        Comprobación reproducible de planetas, estrellas, lanzamientos, órbitas, reentradas y meteoros.
+
+        Separa observación, evidencia, hipótesis e incertidumbre. Añade enlaces directos y explica qué falta por comprobar.
+
+        **Misión activa:** Documenta una identificación celeste que otra persona pueda repetir.
+  - type: textarea
+    id: claim
+    attributes:
+      label: "Afirmación o fenómeno a comprobar / Claim or phenomenon to test"
+      description: "Formula una pregunta concreta y, cuando sea posible, falsable."
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: "Datos y procedencia / Data and provenance"
+      description: "Enlaza archivos, metadatos, observaciones o fuentes originales."
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: "Método y supuestos / Method and assumptions"
+      description: "Describe pasos, herramientas, parámetros, errores y transformaciones."
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: "Resultado y límites / Result and limitations"
+      description: "Explica qué encaja, qué no y qué incertidumbre permanece."
+    validations:
+      required: true
+  - type: textarea
+    id: replication
+    attributes:
+      label: "Cómo replicarlo / How to replicate"
+      description: "Incluye instrucciones o cálculos suficientes para otra persona."
+    validations:
+      required: false
+  - type: checkboxes
+    id: community-check
+    attributes:
+      label: "Comprobación antes de publicar / Pre-publish check"
+      options:
+        - label: "Puedo distinguir los datos originales de mis transformaciones e interpretación. / I can distinguish original data from my transformations and interpretation."
+          required: true

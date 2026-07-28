@@ -1,0 +1,46 @@
+title: "[Metodología y replicación] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Metodología y replicación
+        Hipótesis explícitas, cálculos auditables, incertidumbre y resultados que otra persona pueda repetir.
+
+        Separa observación, evidencia, hipótesis e incertidumbre. Añade enlaces directos y explica qué falta por comprobar.
+
+        **Misión activa:** Propón el paquete mínimo para que un análisis pueda replicarse.
+  - type: input
+    id: reference
+    attributes:
+      label: "Referencia principal / Main reference"
+      description: "Título, organismo o autor, fecha, signatura y enlace directo cuando exista."
+    validations:
+      required: true
+  - type: textarea
+    id: provenance
+    attributes:
+      label: "Procedencia y cadena de publicación / Provenance and publication chain"
+      description: "Explica de dónde viene y si es original, copia, transcripción o traducción."
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "Contexto y aportación / Context and contribution"
+      description: "Resume qué demuestra la fuente y qué no permite concluir."
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: "Pregunta para la comunidad / Question for the community"
+      description: "Pide una verificación, documento relacionado, traducción o revisión concreta."
+    validations:
+      required: true
+  - type: checkboxes
+    id: community-check
+    attributes:
+      label: "Comprobación antes de publicar / Pre-publish check"
+      options:
+        - label: "He enlazado la fuente más directa disponible y declarado traducciones o ediciones. / I linked the most direct source available and declared translations or edits."
+          required: true

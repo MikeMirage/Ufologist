@@ -1,75 +1,87 @@
-# Foro de la comunidad — despliegue e integración
+# Foro UFOlogist — MVP con GitHub Discussions y Giscus
 
-UFOlogist es un sitio **estático** (GitHub Pages, sin backend). El foro es un
-**Discourse externo** que tú alojas; la app solo enlaza/embebe. Este documento
-explica cómo levantarlo, conectarlo y monetizarlo con anuncios.
+## Decisión
 
-## 1. Desplegar Discourse
+UFOlogist es una aplicación estática publicada en GitHub Pages. El MVP usa:
 
-Discourse necesita un servidor (no hay hosting gratis sostenible con **tus**
-anuncios). Opciones, de más barata a más cómoda:
+- **GitHub Discussions** como foro, cuentas, moderación, reacciones y alertas.
+- **Giscus** para mostrar un hilo dentro de cada ficha de caso.
+- Un identificador estable (`case:<id>`) como clave del hilo. El nombre traducido
+  del caso es solo presentación y no puede crear conversaciones duplicadas.
 
-| Opción | Coste | Notas |
-|---|---|---|
-| **Oracle Cloud "Always Free"** (VM Ampere, 4 vCPU / 24 GB) | 0 € | Suficiente para Discourse; requiere montarlo tú (Docker). La más barata. |
-| VPS (Hetzner CX22, DigitalOcean 2 GB) | ~5-7 €/mes | Instalación estándar de Discourse. |
-| Discourse hosting oficial | desde ~20 $/mes | Cero mantenimiento; los anuncios propios pueden estar limitados según plan. |
+Esto evita operar un backend, almacenar credenciales o construir anti-spam. Un
+foro propio o Discourse se reconsiderará solo si el volumen o la monetización
+justifican su coste operativo.
 
-Instalación estándar (self-host, Docker) — resumen oficial:
-```bash
-# en un servidor Ubuntu con dominio (p.ej. foro.ufologist.app) apuntando a su IP
-git clone https://github.com/discourse/discourse_docker.git /var/discourse
-cd /var/discourse && ./discourse-setup   # pide dominio, email admin y SMTP
-```
-Necesitas un **dominio** y un proveedor **SMTP** (correo). Tras el setup tendrás
-el foro en `https://foro.tudominio`.
+## Alcance del MVP
 
-Crea las categorías base: **Casos** (para los hilos por caso), **General**, y
-tablones **por región** (Norteamérica, Europa, LATAM…).
+Incluye un tablón general, un hilo por caso, participación con cuenta de GitHub,
+moderación nativa, interfaz ES/EN, tema claro/oscuro, enlace de respaldo y estados
+de carga/error. Los casos del cuaderno local requieren una revisión de privacidad
+antes de abrir su conversación pública. No incluye mensajes privados, chat, reputación propia, anuncios,
+subida de archivos propia ni perfiles duplicados.
 
-## 2. Conectar la app
+El botón “Comunidad” abre primero un hub integrado en UFOlogist con 20 subforos,
+contexto editorial, preguntas iniciales y referencias. GitHub Discussions sigue
+siendo la capa pública de cuentas, publicación, moderación y notificaciones.
 
-Edita `js/forum.js` y pon la URL (sin barra final):
-```js
-var CONFIG = {
-  discourseUrl: 'https://foro.tudominio',
-  forumName: 'Comunidad UFOlogist',
-  caseCategory: 'casos',   // slug de la categoría de hilos por caso
-};
-```
-Sube el cambio (bump `forum.js?v=` en `index.html`). A partir de ahí:
-- El botón **☷ Comunidad** de la cabecera abre el foro.
-- El botón **💬 Discutir / investigar** de cada ficha abre el hilo del caso
-  (búsqueda por su nombre → lleva al hilo o a crearlo).
+## Activación (administrador)
 
-## 3. (Opcional, recomendado) Hilos por caso automáticos — Discourse *embedding*
+1. En `Settings → General → Features`, activa **Discussions**.
+2. Crea una categoría **Casos** de tipo “Open-ended discussion”.
+3. Instala [Giscus](https://github.com/apps/giscus) únicamente en
+   `MikeMirage/Ufologist`.
+4. Abre [giscus.app](https://giscus.app/es), introduce el repositorio y selecciona:
+   categoría `Casos`, mapping `specific`, strict matching y entrada encima de los
+   comentarios.
+5. Copia `data-repo-id` y `data-category-id` en `CONFIG` dentro de `js/forum.js`.
+6. Aplica la [arquitectura de 20 subforos](forum-categories.md), conservando el
+   `categoryId` actual de `Casos`.
+7. Ejecuta `node tools/generate-discussion-forms.js` y fusiona los 20 formularios
+   de `.github/DISCUSSION_TEMPLATE/` en la rama por defecto.
+8. Incrementa las versiones de `community.js`, `forum.js` y CSS en `index.html`,
+   publica y verifica.
 
-Discourse puede **crear un tema por cada página** automáticamente y mostrarlo
-embebido en la ficha (como comentarios). Para activarlo:
+`repoId` y `categoryId` son identificadores públicos, no secretos.
 
-1. En Discourse: **Admin → Customize → Embedding**. Añade el host embebible
-   `mikemirage.github.io` (o tu dominio) y elige la categoría **Casos**.
-2. En la app, sustituir el botón por el embed (pendiente en `forum.js`): inyectar
-   `DiscourseEmbed = { discourseUrl, discourseEmbedUrl }` usando la URL canónica
-   por caso `…/#case=<id>` y cargar `…/javascripts/embed.js` en un
-   `<div id="discourse-comments">` dentro de la ficha.
+## Moderación mínima antes del lanzamiento
 
-Así cada avistamiento tiene su hilo real de foro embebido, con moderación y
-reputación de Discourse detrás.
+- Fija un hilo “Normas y cómo aportar pruebas”.
+- Exige fuente, fecha aproximada, ubicación y contexto para afirmaciones.
+- Prohíbe datos personales de testigos sin consentimiento y contenido ofensivo.
+- Nombra al menos dos moderadores y activa notificaciones de la categoría Casos.
+- Usa respuestas oficiales para marcar `Corroborado`, `Explicado` o `Sin resolver`;
+  esas etiquetas editoriales pueden convertirse después en campos del producto.
 
-## 4. Monetización con anuncios
+Documentación editorial:
 
-- Plugin oficial **discourse-adplugin** (`discourse-adplugin`): soporta Google
-  AdSense, Google Ad Manager (DFP), Amazon y Carbon. Se instala como plugin y se
-  configura desde Admin (posiciones: encima del primer post, entre posts, barra
-  lateral, etc.). Es la vía recomendada.
-- Alternativa: un **theme component** propio que inserte tus slots de AdSense.
-- Los anuncios se muestran en el foro Discourse (donde tú controlas el
-  inventario y cobras), no en el widget embebido salvo que lo añadas al tema.
+- [Normas, do's y don'ts](forum-guidelines.md)
+- [Manual de moderación](forum-moderation.md)
+- [60 entradas iniciales](forum-launch-topics.md)
+- [12 publicaciones semilla listas para publicar](forum-seed-content.md)
+- [Estrategia de comunicación y engagement](community-communication-strategy.md)
 
-## 5. Notas
+## Criterios de aceptación
 
-- Mientras `discourseUrl` esté vacío, la app muestra un modal
-  "próximamente" — no se rompe nada.
-- Para máxima accesibilidad puedes habilitar en Discourse el login con Google/
-  email además de usuario/contraseña (Admin → Settings → Login).
+- “Comunidad” abre Discussions; si está desactivado muestra un estado útil.
+- “Comunidad” abre el hub interno, permite buscar entre 20 espacios y conserva
+  un acceso directo al índice completo de GitHub Discussions.
+- “Discutir / investigar” abre siempre el mismo hilo para el mismo `case id`,
+  aunque cambie el idioma o el título.
+- “Comunidad” está disponible tanto en escritorio como en el menú móvil.
+- Los casos del cuaderno muestran un aviso de privacidad antes de abrir Giscus y
+  no transmiten automáticamente notas, coordenadas ni archivos.
+- El modal se cierra con botón, clic exterior y Escape; conserva el foco.
+- Si Giscus falla, el usuario puede continuar mediante el enlace a GitHub.
+- No hay HTML de datos de casos sin escapar ni errores de consola.
+- Cada subforo tiene propósito, preguntas iniciales, al menos dos referencias y
+  un formulario nativo con contexto y criterios de publicación.
+
+Antes de publicar en producción, completa también la
+[lista de lanzamiento](forum-release-checklist.md).
+
+## Evolución posterior
+
+Medir durante 4–6 semanas: participantes activos, casos con aportes, respuestas
+útiles, tiempo de moderación y retorno semanal. Solo después priorizar buscador de
+comunidad, badges/estado del caso, digest o migración a una plataforma propia.
