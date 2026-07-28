@@ -32,6 +32,7 @@ const I18N = {
     navKnowledge: 'Conocimiento',
     navStats: 'Análisis',
     navReport: 'Reportar',
+    navCommunity: 'Comunidad',
     navInfo: 'Info',
     navTour: 'Expedición',
     navPass: 'Pass',
@@ -40,6 +41,7 @@ const I18N = {
     titleKnowledge: 'Centro de conocimiento',
     titleStats: 'Panel de análisis y tendencias',
     titleReport: 'Reportar o registrar un avistamiento propio',
+    titleCommunity: 'Comunidad: foros e investigación de casos',
     titleInfo: 'Información sobre UFOlogist',
     titleTour: 'Tour guiado por los casos esenciales',
     titlePass: 'UFOlogist Research Pass',
@@ -281,6 +283,7 @@ const I18N = {
     navKnowledge: 'Knowledge',
     navStats: 'Analysis',
     navReport: 'Report',
+    navCommunity: 'Community',
     navInfo: 'Info',
     navTour: 'Expedition',
     navPass: 'Pass',
@@ -289,6 +292,7 @@ const I18N = {
     titleKnowledge: 'Knowledge center',
     titleStats: 'Analysis and trends panel',
     titleReport: 'Report or register your own sighting',
+    titleCommunity: 'Community: forums and case investigation',
     titleInfo: 'Information about UFOlogist',
     titleTour: 'Guided tour through essential cases',
     titlePass: 'UFOlogist Research Pass',
@@ -1003,6 +1007,7 @@ function applyStaticI18n() {
   setButton('btn-knowledge', '◎', 'navKnowledge', 'titleKnowledge');
   setButton('btn-stats', '⌁', 'navStats', 'titleStats');
   setButton('btn-add', '+', 'navReport', 'titleReport');
+  setButton('btn-forum', '☷', 'navCommunity', 'titleCommunity');
   setButton('btn-about', 'ⓘ', 'navInfo', 'titleInfo');
   setButton('btn-tour', '⌖', 'navTour', 'titleTour');
   setButton('btn-pass', '◇', 'navPass', 'titlePass');
@@ -1112,11 +1117,12 @@ function applyStaticI18n() {
   applyPassI18n();
 
   setText('#mobile-more .more-title', t('mobileMenu'));
-  const moreButtons = document.querySelectorAll('#mobile-more .more-grid:first-of-type button span');
-  ['navKnowledge', 'navStats', 'navReport', 'navInfo', 'navTour', 'navPass', 'ambientLabel'].forEach((key, i) => { if (moreButtons[i]) moreButtons[i].textContent = t(key); });
+  const moreGrids = document.querySelectorAll('#mobile-more .more-grid');
+  const moreButtons = moreGrids[0] ? moreGrids[0].querySelectorAll('button span') : [];
+  ['navKnowledge', 'navStats', 'navReport', 'navCommunity', 'navInfo', 'navTour', 'navPass', 'ambientLabel'].forEach((key, i) => { if (moreButtons[i]) moreButtons[i].textContent = t(key); });
   const mobileTitles = document.querySelectorAll('#mobile-more .more-title');
   if (mobileTitles[1]) mobileTitles[1].textContent = t('mobileExport');
-  const exportSpans = document.querySelectorAll('#mobile-more .more-grid:nth-of-type(2) button span');
+  const exportSpans = moreGrids[1] ? moreGrids[1].querySelectorAll('button span') : [];
   if (exportSpans[2]) exportSpans[2].textContent = t('permalink');
   setText('#mobile-more .hint', t('mobileHelp'));
   const navs = document.querySelectorAll('#mobile-nav button');
@@ -1278,6 +1284,7 @@ updateAudioButton();
   function apply(mode) {
     root.setAttribute('data-theme', mode);
     if (btn) { btn.textContent = mode === 'light' ? '☀' : '☾'; btn.setAttribute('aria-pressed', String(mode === 'light')); }
+    window.dispatchEvent(new CustomEvent('ufologist:themechange', { detail: { theme: mode } }));
   }
   apply(saved === 'light' ? 'light' : 'dark');
   if (btn) btn.addEventListener('click', () => {
@@ -3589,7 +3596,9 @@ function openCase(id, fly) {
       ${c.sources.map((s, i) => `<a class="cc-source-link" href="${s[1]}" target="_blank" rel="noopener">${caseSourceLabel(c, i)}</a>`).join('')}</div>` : ''}
     <div class="cc-actions">
       <button id="cc-sky" class="btn-ghost small">🔭 ${currentLang === 'en' ? 'Was it a satellite?' : '¿Fue un satélite?'}</button>
-      <button id="cc-forum" class="btn-ghost small">${currentLang === 'en' ? '💬 Discuss / investigate' : '💬 Discutir / investigar'}</button>
+      <button id="cc-forum" class="btn-ghost small">${c.mine
+        ? (currentLang === 'en' ? '🌐 Publish / discuss' : '🌐 Publicar / discutir')
+        : (currentLang === 'en' ? '💬 Discuss / investigate' : '💬 Discutir / investigar')}</button>
       <button id="cc-share" class="btn-ghost small">🔗 ${t('copyLink')}</button>
       ${c.mine ? `<button id="cc-delete" class="btn-ghost small" style="color:#ef476f;border-color:#ef476f55">🗑 ${t('delete')}</button>` : ''}
     </div>
@@ -3615,7 +3624,11 @@ function openCase(id, fly) {
     setViewMode('satellites');
     if (window.UFOSat && UFOSat.analyzeSkyAt) UFOSat.analyzeSkyAt(c.lat, c.lng, when);
   };
-  $('cc-forum').onclick = () => { if (window.UFOForum) UFOForum.openCase(c.id, caseName(c)); };
+  $('cc-forum').onclick = () => {
+    if (!window.UFOForum) return;
+    if (c.mine && UFOForum.reviewPrivateCase) UFOForum.reviewPrivateCase(c.id, caseName(c));
+    else UFOForum.openCase(c.id, caseName(c), { type: c.type, country: caseCountry(c) });
+  };
   if (c.mine) $('cc-delete').onclick = () => {
     journal = journal.filter(j => j.id !== c.id);
     saveJournal();
@@ -4741,7 +4754,7 @@ $('btn-close-more').onclick = closeSheets;
 
 // "Más" sheet reuses the existing (hidden on mobile) top-bar handlers
 document.querySelectorAll('#mobile-more .more-grid button').forEach(b => {
-  const map = { add: 'btn-add', tour: 'btn-tour', knowledge: 'btn-knowledge', about: 'btn-about',
+  const map = { add: 'btn-add', forum: 'btn-forum', tour: 'btn-tour', knowledge: 'btn-knowledge', about: 'btn-about',
     pass: 'btn-pass', audio: 'btn-audio', csv: 'btn-export-csv', json: 'btn-export-json', permalink: 'btn-permalink' };
   b.onclick = () => {
     const act = b.dataset.act;

@@ -4,6 +4,8 @@ Aplicación web interactiva para explorar avistamientos OVNI/UAP documentados (1
 
 🔭 **Demo en vivo:** **https://mikemirage.github.io/Ufologist/**
 
+💬 **Comunidad e investigación de casos:** **https://github.com/MikeMirage/Ufologist/discussions**
+
 ## Ejecutar en local
 
 Es una web 100% estática (sin build, sin backend). Cualquier servidor de archivos vale:
@@ -32,6 +34,10 @@ desde `data/nuforc.js` como respaldo cuando `fetch()` está bloqueado.
 - **🔗 Permalinks**: el estado completo (filtros + caso) vive en la URL; botón de copiar enlace.
 - **⬇ Export**: descarga CSV/JSON de la selección filtrada (curados + NUFORC + cuaderno).
 - **Ficha de caso**: resumen riguroso, evidencia 1–5★, enlace a vista satélite (Google Maps) y fuentes originales.
+- **Comunidad de investigación**: hub integrado con 20 subforos, referencias y
+  formatos recurrentes; GitHub Discussions como capa pública y Giscus embebido
+  en cada ficha mediante un identificador estable. Los casos del cuaderno local
+  pasan antes por una revisión de privacidad.
 - **🎬 Multimedia por caso**: vídeos oficiales de dominio público embebidos (metraje FLIR de la Navy y de las tandas PURSUE 2026), **imagen principal de Wikipedia cargada en tiempo real** (API REST, sin hardcodear), lightbox y botones de búsqueda dirigida (YouTube / Google Imágenes) para cobertura total sin enlaces rotos.
 - **Centro de conocimiento** (📚): clasificación Hynek, cronología del disclosure en EE.UU. (1947–2026, incluida la desclasificación **PURSUE**), glosario, metodología y dónde reportar.
 - **📱 Modo móvil (≤760px):** vista vertical simplificada con globo inmersivo a pantalla completa, **barra de pestañas inferior** (Globo · Filtros · Tiempo · Datos · Más) y los paneles convertidos en **bottom sheets** que se deslizan. Se activa solo y se adapta a rotación/resize.

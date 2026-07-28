@@ -17,8 +17,13 @@ justifican su coste operativo.
 
 Incluye un tablón general, un hilo por caso, participación con cuenta de GitHub,
 moderación nativa, interfaz ES/EN, tema claro/oscuro, enlace de respaldo y estados
-de carga/error. No incluye mensajes privados, chat, reputación propia, anuncios,
+de carga/error. Los casos del cuaderno local requieren una revisión de privacidad
+antes de abrir su conversación pública. No incluye mensajes privados, chat, reputación propia, anuncios,
 subida de archivos propia ni perfiles duplicados.
+
+El botón “Comunidad” abre primero un hub integrado en UFOlogist con 20 subforos,
+contexto editorial, preguntas iniciales y referencias. GitHub Discussions sigue
+siendo la capa pública de cuentas, publicación, moderación y notificaciones.
 
 ## Activación (administrador)
 
@@ -30,7 +35,12 @@ subida de archivos propia ni perfiles duplicados.
    categoría `Casos`, mapping `specific`, strict matching y entrada encima de los
    comentarios.
 5. Copia `data-repo-id` y `data-category-id` en `CONFIG` dentro de `js/forum.js`.
-6. Incrementa la versión de `js/forum.js` en `index.html`, publica y verifica.
+6. Aplica la [arquitectura de 20 subforos](forum-categories.md), conservando el
+   `categoryId` actual de `Casos`.
+7. Ejecuta `node tools/generate-discussion-forms.js` y fusiona los 20 formularios
+   de `.github/DISCUSSION_TEMPLATE/` en la rama por defecto.
+8. Incrementa las versiones de `community.js`, `forum.js` y CSS en `index.html`,
+   publica y verifica.
 
 `repoId` y `categoryId` son identificadores públicos, no secretos.
 
@@ -48,15 +58,27 @@ Documentación editorial:
 - [Normas, do's y don'ts](forum-guidelines.md)
 - [Manual de moderación](forum-moderation.md)
 - [60 entradas iniciales](forum-launch-topics.md)
+- [12 publicaciones semilla listas para publicar](forum-seed-content.md)
+- [Estrategia de comunicación y engagement](community-communication-strategy.md)
 
 ## Criterios de aceptación
 
 - “Comunidad” abre Discussions; si está desactivado muestra un estado útil.
+- “Comunidad” abre el hub interno, permite buscar entre 20 espacios y conserva
+  un acceso directo al índice completo de GitHub Discussions.
 - “Discutir / investigar” abre siempre el mismo hilo para el mismo `case id`,
   aunque cambie el idioma o el título.
+- “Comunidad” está disponible tanto en escritorio como en el menú móvil.
+- Los casos del cuaderno muestran un aviso de privacidad antes de abrir Giscus y
+  no transmiten automáticamente notas, coordenadas ni archivos.
 - El modal se cierra con botón, clic exterior y Escape; conserva el foco.
 - Si Giscus falla, el usuario puede continuar mediante el enlace a GitHub.
 - No hay HTML de datos de casos sin escapar ni errores de consola.
+- Cada subforo tiene propósito, preguntas iniciales, al menos dos referencias y
+  un formulario nativo con contexto y criterios de publicación.
+
+Antes de publicar en producción, completa también la
+[lista de lanzamiento](forum-release-checklist.md).
 
 ## Evolución posterior
 
