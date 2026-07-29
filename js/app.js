@@ -37,6 +37,11 @@ const I18N = {
     navInfo: 'Info',
     navTour: 'Expedición',
     navPass: 'Pass',
+    navPrimaryLabel: 'Navegación principal',
+    navExploreGroup: 'Explorar y comprender',
+    navContributeGroup: 'Contribuir',
+    navUtilityGroup: 'Orientación e información',
+    navSupportGroup: 'Apoyar UFOlogist',
     viewEarth: 'Tierra',
     viewOrbit: 'Satélites',
     titleKnowledge: 'Centro de conocimiento',
@@ -293,6 +298,11 @@ const I18N = {
     navInfo: 'Info',
     navTour: 'Expedition',
     navPass: 'Pass',
+    navPrimaryLabel: 'Main navigation',
+    navExploreGroup: 'Explore and understand',
+    navContributeGroup: 'Contribute',
+    navUtilityGroup: 'Guidance and information',
+    navSupportGroup: 'Support UFOlogist',
     viewEarth: 'Earth',
     viewOrbit: 'Satellites',
     titleKnowledge: 'Knowledge center',
@@ -1278,6 +1288,18 @@ function applyStaticI18n() {
   setButton('btn-about', 'ⓘ', 'navInfo', 'titleInfo');
   setButton('btn-tour', '⌖', 'navTour', 'titleTour');
   setButton('btn-pass', '◇', 'navPass', 'titlePass');
+  const primaryNav = document.querySelector('.topbar-actions');
+  if (primaryNav) primaryNav.setAttribute('aria-label', t('navPrimaryLabel'));
+  const navGroupLabels = {
+    explore: 'navExploreGroup',
+    contribute: 'navContributeGroup',
+    utility: 'navUtilityGroup',
+    support: 'navSupportGroup',
+  };
+  document.querySelectorAll('.topbar-action-group[data-nav-group]').forEach(group => {
+    const key = navGroupLabels[group.dataset.navGroup];
+    if (key) group.setAttribute('aria-label', t(key));
+  });
   setText('#btn-view-earth', t('viewEarth'));
   setText('#btn-view-orbit', t('viewOrbit'));
   setText('#density-legend .density-title', t('densityLegend'));
@@ -1406,8 +1428,23 @@ function applyStaticI18n() {
 
   setText('#mobile-more .more-title', t('mobileMenu'));
   const moreGrids = document.querySelectorAll('#mobile-more .more-grid');
-  const moreButtons = moreGrids[0] ? moreGrids[0].querySelectorAll('button span') : [];
-  ['navKnowledge', 'navStats', 'navReport', 'navCommunity', 'navInfo', 'navTour', 'navPass', 'ambientLabel'].forEach((key, i) => { if (moreButtons[i]) moreButtons[i].textContent = t(key); });
+  const moreActionLabels = {
+    stats: 'navStats',
+    knowledge: 'navKnowledge',
+    forum: 'navCommunity',
+    add: 'navReport',
+    tour: 'navTour',
+    about: 'navInfo',
+    pass: 'navPass',
+    audio: 'ambientLabel',
+  };
+  if (moreGrids[0]) {
+    moreGrids[0].querySelectorAll('button[data-act]').forEach(button => {
+      const key = moreActionLabels[button.dataset.act];
+      const label = button.querySelector('span');
+      if (key && label) label.textContent = t(key);
+    });
+  }
   const mobileTitles = document.querySelectorAll('#mobile-more .more-title');
   if (mobileTitles[1]) mobileTitles[1].textContent = t('mobileExport');
   const exportSpans = moreGrids[1] ? moreGrids[1].querySelectorAll('button span') : [];

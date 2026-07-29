@@ -3,7 +3,9 @@ const { test, expect } = require('@playwright/test');
 async function enterAtlas(page) {
   await page.goto('/');
   const enter = page.locator('#landing-skip');
-  if (await enter.isVisible()) await enter.click();
+  // The landing can finish automatically between the visibility check and
+  // the click. Force-dispatching keeps this helper atomic through that fade.
+  if (await enter.isVisible()) await enter.click({ force: true });
   await page.waitForFunction(() => document.querySelector('#loading')?.classList.contains('hidden'));
 }
 
@@ -18,9 +20,25 @@ async function expectNoRuntimeErrors(page, run) {
 }
 
 test('desktop layers, keyboard search and tour remain coherent', async ({ page }, testInfo) => {
+  test.setTimeout(75_000);
   test.skip(testInfo.project.name !== 'desktop-chromium');
   await expectNoRuntimeErrors(page, async () => {
     await enterAtlas(page);
+
+    const topbarOrder = await page.locator('.topbar-actions button').evaluateAll(buttons =>
+      buttons.map(button => button.id));
+    expect(topbarOrder).toEqual([
+      'btn-stats',
+      'btn-knowledge',
+      'btn-forum',
+      'btn-add',
+      'btn-tour',
+      'btn-about',
+      'btn-pass',
+    ]);
+    await expect(page.locator('nav.topbar-actions')).toHaveAttribute('aria-label', 'Navegación principal');
+    await expect(page.locator('.topbar-action-group')).toHaveCount(4);
+    await expect(page.locator('#btn-add')).toHaveClass(/btn-primary-action/);
 
     await page.locator('#btn-knowledge').click();
     await expect(page.locator('#modal-overlay')).toBeVisible();
@@ -101,6 +119,7 @@ test('community exposes 20 boards with canonical GitHub category links', async (
 });
 
 test('mobile sheets, history, report mode and dirty forms remain coherent', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
   test.skip(testInfo.project.name !== 'mobile-chromium');
   await expectNoRuntimeErrors(page, async () => {
     await enterAtlas(page);
@@ -116,6 +135,31 @@ test('mobile sheets, history, report mode and dirty forms remain coherent', asyn
     await expect(page.locator('#mobile-nav button[data-sheet="panel-left"]')).toBeFocused();
 
     await moreNav.click();
+    const moreOrder = await page.locator('#mobile-more .more-grid').first().locator('button').evaluateAll(buttons =>
+      buttons.map(button => button.dataset.act));
+    expect(moreOrder).toEqual([
+      'stats',
+      'knowledge',
+      'forum',
+      'add',
+      'tour',
+      'about',
+      'pass',
+      'audio',
+    ]);
+    const moreLabels = await page.locator('#mobile-more .more-grid').first().locator('button').evaluateAll(buttons =>
+      Object.fromEntries(buttons.map(button => [button.dataset.act, button.querySelector('span')?.textContent])));
+    expect(moreLabels).toEqual({
+      stats: 'Análisis',
+      knowledge: 'Conocimiento',
+      forum: 'Comunidad',
+      add: 'Reportar',
+      tour: 'Expedición',
+      about: 'Info',
+      pass: 'Pass',
+      audio: 'Ambiente',
+    });
+    await expect(page.locator('#mobile-more [data-act="add"]')).toHaveClass(/mobile-primary-action/);
     await page.goBack();
     await expect(page.locator('#mobile-more')).toBeHidden();
     await expect(page.locator('#sheet-backdrop')).not.toHaveClass(/show/);
