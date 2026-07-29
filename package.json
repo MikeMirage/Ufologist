@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "test:community": "node tools/validate-community-links.js",
     "test:ux": "playwright test tests/ux-regression.spec.js"
   },
   "dependencies": {

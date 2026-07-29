@@ -74,6 +74,32 @@ test('desktop layers, keyboard search and tour remain coherent', async ({ page }
   });
 });
 
+test('community exposes 20 boards with canonical GitHub category links', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium');
+  await expectNoRuntimeErrors(page, async () => {
+    await enterAtlas(page);
+    const catalog = await page.evaluate(() => window.UFOCommunityCatalog);
+    expect(catalog.boards).toHaveLength(20);
+    expect(new Set(catalog.boards.map(board => board.id)).size).toBe(20);
+
+    const categoryUrls = await page.evaluate(() =>
+      window.UFOCommunityCatalog.boards.map(board => window.UFOForum._categoryUrl(board)));
+    expect(categoryUrls).toHaveLength(20);
+    categoryUrls.forEach(url => {
+      const query = new URL(url).searchParams.get('discussions_q');
+      expect(query).toMatch(/^is:open category:".+"$/);
+      expect(query).not.toMatch(/category:[a-z0-9-]+$/);
+    });
+
+    await page.evaluate(() => window.UFOForum.openBoard('astronomia-y-satelites'));
+    const boardLink = page.locator('.forum-board-detail .forum-gh-link');
+    await expect(boardLink).toBeVisible();
+    const href = await boardLink.getAttribute('href');
+    expect(new URL(href).searchParams.get('discussions_q'))
+      .toBe('is:open category:"Astronomía y satélites"');
+  });
+});
+
 test('mobile sheets, history, report mode and dirty forms remain coherent', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile-chromium');
   await expectNoRuntimeErrors(page, async () => {

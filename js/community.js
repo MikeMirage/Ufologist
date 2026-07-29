@@ -21,6 +21,7 @@
   }
 
   var githubBase = 'https://github.com/MikeMirage/Ufologist';
+  var githubDocs = githubBase + '/blob/master/docs/';
   var nasaUap = 'https://science.nasa.gov/uap/';
   var naraUap = 'https://www.archives.gov/uap';
   var naraBulk = 'https://www.archives.gov/research/catalog/catalog-bulk-downloads/uap-bulk-download';
@@ -56,7 +57,7 @@
       ['How do I find a case’s original data?', 'What does “unresolved” actually mean?'],
       [
         ref('NASA UAP FAQ and study', nasaUap, 'Marco científico y preguntas de investigación.', 'Scientific framing and research questions.'),
-        ref('Normas UFOlogist', githubBase + '/blob/main/docs/forum-guidelines.md', 'Criterios para preguntar, citar y debatir.', 'Criteria for asking, citing, and discussing.'),
+        ref('Normas UFOlogist', githubDocs + 'forum-guidelines.md', 'Criterios para preguntar, citar y debatir.', 'Criteria for asking, citing, and discussing.'),
       ],
       'qa'
     ),
@@ -68,7 +69,7 @@
       ['Introduce yourself through a source that taught you something.', 'Share a tool, archive, or project without turning it into advertising.'],
       [
         ref('Contributing to open source', 'https://opensource.guide/how-to-contribute/', 'Buenas prácticas para colaborar de forma concreta.', 'Good practices for concrete collaboration.'),
-        ref('Manual de moderación', githubBase + '/blob/main/docs/forum-moderation.md', 'Cómo se cuida la calidad de las conversaciones.', 'How conversation quality is maintained.'),
+        ref('Manual de moderación', githubDocs + 'forum-moderation.md', 'Cómo se cuida la calidad de las conversaciones.', 'How conversation quality is maintained.'),
       ]
     ),
     board(
@@ -122,8 +123,8 @@
       ['Describe primero lo observado sin proponer una causa.', 'Indica hora, duración, dirección, meteorología y dispositivo.'],
       ['Describe what was observed before proposing a cause.', 'Include time, duration, direction, weather, and device.'],
       [
-        ref('NASA Aviation Safety Reporting System', 'https://asrs.arc.nasa.gov/', 'Ejemplo de recogida estructurada y confidencial de reportes.', 'Example of structured, confidential report collection.'),
-        ref('Normas de privacidad UFOlogist', githubBase + '/blob/main/docs/forum-guidelines.md#cómo-abrir-un-caso', 'Datos necesarios y datos que deben ocultarse.', 'Required data and data that must be hidden.'),
+        ref('NASA Aviation Safety Reporting System', 'https://asrs.arc.nasa.gov/overview/summary.html', 'Ejemplo de recogida estructurada y confidencial de reportes.', 'Example of structured, confidential report collection.'),
+        ref('Normas de privacidad UFOlogist', githubDocs + 'forum-guidelines.md#cómo-abrir-un-caso', 'Datos necesarios y datos que deben ocultarse.', 'Required data and data that must be hidden.'),
       ]
     ),
     board(
@@ -134,7 +135,7 @@
       ['What does each sensor or witness actually establish?', 'Which ordinary explanation should be checked first?'],
       [
         ref('FAA Aviation Data & Statistics', 'https://www.faa.gov/data_research', 'Datos oficiales de aviación civil estadounidense.', 'Official US civil aviation data.'),
-        ref('NASA ASRS', 'https://asrs.arc.nasa.gov/', 'Factores humanos y reportes de seguridad aérea.', 'Human factors and aviation safety reports.'),
+        ref('NASA ASRS', 'https://asrs.arc.nasa.gov/overview/summary.html', 'Factores humanos y reportes de seguridad aérea.', 'Human factors and aviation safety reports.'),
       ]
     ),
     board(
@@ -145,7 +146,7 @@
       ['Request the original file and document every transformation.', 'Separate object, camera, and stabilization movement.'],
       [
         ref('C2PA technical specifications', 'https://c2pa.org/specifications/specifications/2.2/index.html', 'Estándar de procedencia y autenticidad de contenido digital.', 'Standard for digital content provenance and authenticity.'),
-        ref('NIST Open Media Forensics Challenge', 'https://mfc.nist.gov/', 'Métodos y datasets de análisis forense multimedia.', 'Methods and datasets for multimedia forensics.'),
+        ref('NIST Open Media Forensics Challenge', 'https://www.nist.gov/itl/iad/mltg/open-media-forensics-challenge', 'Métodos y datasets de análisis forense multimedia.', 'Methods and datasets for multimedia forensics.'),
       ]
     ),
     board(
@@ -155,7 +156,7 @@
       ['Dibuja la cadena sensor → procesamiento → producto publicado.', 'Declara errores, resolución y sincronización temporal.'],
       ['Map the chain from sensor to processing to published product.', 'State error, resolution, and time synchronization.'],
       [
-        ref('NOAA Open Data Dissemination', 'https://www.noaa.gov/information-technology/open-data-dissemination', 'Acceso a observaciones ambientales y meteorológicas.', 'Access to environmental and meteorological observations.'),
+        ref('NOAA satellite data access', 'https://ospo.noaa.gov/resources/data-access/', 'Acceso oficial a observaciones ambientales, satélites y radar.', 'Official access to environmental, satellite, and radar observations.'),
         ref('NASA Earthdata', 'https://www.earthdata.nasa.gov/', 'Datos terrestres, herramientas y documentación de sensores.', 'Earth data, tools, and sensor documentation.'),
       ]
     ),
@@ -177,8 +178,8 @@
       ['Compara el relato con imágenes de satélite y estaciones cercanas.', 'Explica qué rasgos encajan y cuáles no.'],
       ['Compare the report with satellite imagery and nearby stations.', 'Explain which features fit and which do not.'],
       [
-        ref('NOAA National Centers for Environmental Information', 'https://www.ncei.noaa.gov/', 'Archivo oficial de clima y meteorología.', 'Official climate and weather archive.'),
-        ref('EUMETSAT data services', 'https://www.eumetsat.int/data', 'Imágenes y productos meteorológicos europeos.', 'European meteorological imagery and products.'),
+        ref('NOAA Climate Data Online', 'https://www.ncei.noaa.gov/cdo-web/', 'Archivo oficial de clima y meteorología.', 'Official climate and weather archive.'),
+        ref('EUMETSAT Data Store', 'https://user.eumetsat.int/data-access/data-store', 'Imágenes y productos meteorológicos europeos.', 'European meteorological imagery and products.'),
       ]
     ),
     board(
@@ -199,7 +200,7 @@
       ['Encuentra la publicación más antigua, no la más citada.', 'Señala cuándo varios artículos copian una única fuente.'],
       ['Find the earliest publication, not the most cited.', 'Identify when multiple articles copy a single source.'],
       [
-        ref('Library of Congress Chronicling America', 'https://www.loc.gov/collections/chronicling-america/', 'Prensa histórica digitalizada y metadatos bibliográficos.', 'Digitized historical newspapers and bibliographic metadata.'),
+        ref('Library of Congress Chronicling America', 'https://www.loc.gov/collections/chronicling-america/about-this-collection/', 'Prensa histórica digitalizada y metadatos bibliográficos.', 'Digitized historical newspapers and bibliographic metadata.'),
         ref('Europeana Collections', 'https://www.europeana.eu/', 'Patrimonio digital europeo de múltiples instituciones.', 'European digital heritage from multiple institutions.'),
       ]
     ),
@@ -255,7 +256,7 @@
       ['Separate possibility, evidence, and confirmed detection.', 'Tie every claim to an observation or publication.'],
       [
         ref('NASA Astrobiology', 'https://astrobiology.nasa.gov/', 'Programas, misiones y preguntas científicas sobre vida.', 'Programs, missions, and scientific questions about life.'),
-        ref('NASA Technosignatures', 'https://science.nasa.gov/universe/exoplanets/search-for-life/', 'Contexto científico para la búsqueda de vida y señales.', 'Scientific context for the search for life and signals.'),
+        ref('NASA Technosignatures', 'https://science.nasa.gov/universe/search-for-life/searching-for-signs-of-intelligent-life-technosignatures/', 'Contexto científico para la búsqueda de vida y señales.', 'Scientific context for the search for life and signals.'),
       ]
     ),
   ];

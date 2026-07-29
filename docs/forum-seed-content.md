@@ -53,7 +53,7 @@ transcribir un documento o señalar que un cálculo no puede reproducirse.
 > ¿Qué habilidad, fuente o perspectiva puedes aportar a una investigación?
 
 No hace falta contar una experiencia personal ni defender una explicación.
-Consulta las [normas de la comunidad](https://github.com/MikeMirage/Ufologist/blob/main/docs/forum-guidelines.md)
+Consulta las [normas de la comunidad](https://github.com/MikeMirage/Ufologist/blob/master/docs/forum-guidelines.md)
 antes de participar.
 
 ### Primera respuesta del equipo
