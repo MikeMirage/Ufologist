@@ -132,11 +132,11 @@
     return modal;
   }
 
-  function closeOverlay() {
+  function closeOverlay(options) {
     var modal = document.getElementById('forum-modal');
     if (!modal) return;
     if (root.UFOUI) {
-      root.UFOUI.close('forum');
+      root.UFOUI.close('forum', options || {});
       return;
     }
     modal.style.display = 'none';
@@ -167,8 +167,8 @@
     lastFocusedElement = document.activeElement;
     modal.innerHTML = html;
     modal.style.display = 'flex';
-    modal.querySelector('.forum-modal-close').onclick = closeOverlay;
-    modal.onclick = function (event) { if (event.target === modal) closeOverlay(); };
+    modal.querySelector('.forum-modal-close').onclick = function () { closeOverlay({ reason: 'button' }); };
+    modal.onclick = function (event) { if (event.target === modal) closeOverlay({ reason: 'backdrop' }); };
     if (root.UFOUI) {
       root.UFOUI.register('forum', {
         container: modal,
