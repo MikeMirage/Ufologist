@@ -117,7 +117,12 @@
     return root.UFOCommunityCatalog || { sections: [], boards: [], programs: [] };
   }
   function categoryUrl(board) {
-    return DISCUSSIONS_URL + '/categories/' + encodeURIComponent(board.slug);
+    // GitHub's search grammar expects the visible category name, not its URL
+    // slug. A missing category path is rewritten to `category:<slug>` and
+    // silently produces the empty result that originally broke these links.
+    var category = board && board.name && (board.name.es || board.name.en);
+    return DISCUSSIONS_URL + '?discussions_q=' +
+      encodeURIComponent('is:open category:"' + String(category || '') + '"');
   }
 
   function overlay() {
@@ -472,5 +477,6 @@
     close: closeOverlay,
     _caseTerm: caseTerm,
     _threadUrl: threadUrl,
+    _categoryUrl: categoryUrl,
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
