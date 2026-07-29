@@ -970,7 +970,16 @@ function setFirstText(el, text) { if (el && el.childNodes.length) el.childNodes[
 function setButton(id, icon, labelKey, titleKey) {
   const el = $(id);
   if (!el) return;
-  el.textContent = `${icon} ${t(labelKey)}`;
+  const label = t(labelKey);
+  const iconEl = document.createElement('span');
+  iconEl.className = 'action-icon';
+  iconEl.setAttribute('aria-hidden', 'true');
+  iconEl.textContent = icon;
+  const labelEl = document.createElement('span');
+  labelEl.className = 'action-label';
+  labelEl.textContent = label;
+  el.replaceChildren(iconEl, labelEl);
+  el.setAttribute('aria-label', label);
   if (titleKey) el.title = t(titleKey);
 }
 
@@ -1638,7 +1647,7 @@ let lastMassCount = 0;
 // the weather-density layer is disabled.
 function computeCapAltitudes() {
   if (typeof h3 === 'undefined' || !h3.latLngToCell) return;
-  const res = (window.matchMedia('(max-width: 760px)').matches) ? 2 : 3;
+  const res = (window.matchMedia('(max-width: 760px), (max-width: 900px) and (max-height: 500px)').matches) ? 2 : 3;
   const weight = new Map();
   const bump = (lat, lng) => { const c = h3.latLngToCell(lat, lng, res); weight.set(c, (weight.get(c) || 0) + 1); };
   if (massData) massData.forEach(r => bump(r.lat, r.lng));
@@ -5202,7 +5211,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ---------- Mobile: bottom-sheet navigation ----------
-const mq = window.matchMedia('(max-width: 760px)');
+const mq = window.matchMedia('(max-width: 760px), (max-width: 900px) and (max-height: 500px)');
 function isMobile() { return mq.matches; }
 const SHEET_IDS = ['panel-left', 'timeline', 'panel-stats', 'panel-case', 'mobile-more'];
 const MOBILE_SHEET_LAYERS = {

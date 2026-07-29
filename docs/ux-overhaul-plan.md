@@ -34,10 +34,13 @@ This document tracks the remediation derived from the desktop and mobile opening
    - Blocking modals visually cover and deactivate the mobile navigation.
 
 6. **Regression coverage — complete**
-   - Desktop and mobile Chromium projects.
+   - Desktop, tablet, portrait-mobile and landscape-mobile Chromium projects.
    - Layer focus/close/scroll contracts.
    - Keyboard search and filter interaction.
    - Mobile sheets, browser history, tour, report mode and dirty-form protection.
+   - Light-theme persistence and layered-UI legibility.
+   - Safe PC-to-mobile-to-PC breakpoint transitions without stranded focus or backdrops.
+   - Compact, accessible tablet actions and the mobile interaction model on short landscape screens.
 
 ## Acceptance command
 

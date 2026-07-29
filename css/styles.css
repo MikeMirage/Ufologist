@@ -251,6 +251,8 @@ body::before {
   cursor: pointer; transition: all .2s;
 }
 .btn-ghost:hover { border-color: rgba(0,240,255,.75); color: var(--accent); box-shadow: 0 0 18px rgba(0,240,255,.09); }
+.action-icon { display: inline-block; }
+.action-label { display: inline; }
 
 /* ==================== GLOBE ==================== */
 #globe-container { position: fixed; inset: 0; }
@@ -740,7 +742,7 @@ body.sky-analyzing #globe, body.sky-analyzing #globe canvas { cursor: crosshair;
 #sat-timeline #stl-canvas { flex: 1; width: 100%; height: 100%; cursor: crosshair; display: block; }
 
 /* Satellite view — mobile: panel and cards become bottom sheets */
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-width: 900px) and (max-height: 500px) {
   #sat-timeline { left: 0; right: 0; bottom: 0; height: 96px; border-radius: 14px 14px 0 0; z-index: 95; }
   #sat-panel {
     top: auto; bottom: 0; left: 0; right: 0; width: 100%; max-width: 100%;
@@ -1846,6 +1848,24 @@ input[type="range"]::-webkit-slider-thumb {
   #panel-case { width: calc(100vw - 32px); right: 16px; }
   #density-legend { left: 18px; bottom: 172px; width: 220px; }
   .search-wrap { display: none; }
+  #topbar { gap: 10px; padding-inline: 16px; }
+  .topbar-actions { gap: 5px; }
+  .topbar-actions .btn-ghost {
+    width: 38px;
+    padding: 0;
+    font-size: 14px;
+  }
+  .topbar-actions .action-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
   #timeline { height: 150px; flex-direction: column; gap: 8px; padding: 10px 14px; }
   #globe-zoom { bottom: calc(16px + 150px + 12px); }
   .tl-controls { flex-direction: row; width: auto; align-items: center; }
@@ -1857,7 +1877,7 @@ input[type="range"]::-webkit-slider-thumb {
 #mobile-nav { display: none; }
 #sheet-backdrop { display: none; }
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-width: 900px) and (max-height: 500px) {
   /* compact top bar: icon + search only; actions move to "Más" */
   #topbar { height: 54px; padding: 0 12px; gap: 10px;
     background: linear-gradient(180deg, rgba(5,7,10,0.96) 0%, rgba(5,7,10,0.76) 100%); }

@@ -133,3 +133,90 @@ test('mobile sheets, history, report mode and dirty forms remain coherent', asyn
     await expect(moreNav).toBeFocused();
   });
 });
+
+test('light theme persists and keeps layered UI legible', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium');
+  await expectNoRuntimeErrors(page, async () => {
+    await enterAtlas(page);
+    await page.locator('#btn-theme').click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('#btn-theme')).toHaveAttribute('aria-pressed', 'true');
+
+    await page.locator('#btn-knowledge').click();
+    await expect(page.locator('#modal-overlay')).toBeVisible();
+    const contrast = await page.locator('#modal').evaluate(element => {
+      const style = getComputedStyle(element);
+      const text = getComputedStyle(element.querySelector('h2') || element).color;
+      return { background: style.backgroundColor, text };
+    });
+    expect(contrast.background).not.toBe(contrast.text);
+    await page.keyboard.press('Escape');
+
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('#loading')?.classList.contains('hidden'));
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(page.locator('#btn-theme')).toHaveAttribute('aria-pressed', 'true');
+  });
+});
+
+test('tablet layout preserves access to primary controls and panels', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'tablet-chromium');
+  await expectNoRuntimeErrors(page, async () => {
+    await enterAtlas(page);
+    await expect(page.locator('body')).not.toHaveClass(/is-mobile/);
+    await expect(page.locator('#panel-left')).toBeVisible();
+    await expect(page.locator('#timeline')).toBeVisible();
+    await expect(page.locator('#mobile-nav')).toBeHidden();
+    await expect(page.locator('#btn-knowledge')).toBeVisible();
+
+    const overflow = await page.locator('#topbar').evaluate(element =>
+      element.scrollWidth > element.clientWidth);
+    expect(overflow).toBe(false);
+    await page.locator('#btn-knowledge').click();
+    await expect(page.locator('#modal-overlay')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#btn-knowledge')).toBeFocused();
+  });
+});
+
+test('landscape phone retains the mobile interaction model', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-landscape-chromium');
+  await expectNoRuntimeErrors(page, async () => {
+    await enterAtlas(page);
+    await expect(page.locator('body')).toHaveClass(/is-mobile/);
+    await expect(page.locator('#mobile-nav')).toBeVisible();
+    await expect(page.locator('#panel-left')).toBeHidden();
+    await page.locator('#mobile-nav button[data-sheet="panel-left"]').click();
+    await expect(page.locator('#panel-left')).toBeVisible();
+    await expect(page.locator('#btn-close-filters')).toBeFocused();
+    const sheetHeight = await page.locator('#panel-left').evaluate(element =>
+      element.getBoundingClientRect().height);
+    expect(sheetHeight).toBeLessThanOrEqual(390 * .75);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#panel-left')).toBeHidden();
+  });
+});
+
+test('breakpoint changes close transient layers without stranding focus', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium');
+  await expectNoRuntimeErrors(page, async () => {
+    await enterAtlas(page);
+    await page.locator('#btn-knowledge').click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator('body')).toHaveClass(/is-mobile/);
+    await expect(page.locator('#modal-overlay')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#modal-overlay')).toBeHidden();
+    await expect(page.locator('#mobile-nav')).toBeVisible();
+
+    await page.locator('#mobile-nav button[data-sheet="panel-left"]').click();
+    await expect(page.locator('#panel-left')).toBeVisible();
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(page.locator('body')).not.toHaveClass(/is-mobile/);
+    await expect(page.locator('#mobile-nav')).toBeHidden();
+    await expect(page.locator('#sheet-backdrop')).not.toHaveClass(/show/);
+    await expect(page.locator('#panel-left')).toBeVisible();
+    await expect(page.locator('#timeline')).toBeVisible();
+    expect(await page.locator('#topbar').evaluate(element => element.inert)).toBe(false);
+  });
+});

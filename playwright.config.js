@@ -26,5 +26,13 @@ module.exports = defineConfig({
       name: 'mobile-chromium',
       use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } },
     },
+    {
+      name: 'tablet-chromium',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 834, height: 1112 }, hasTouch: true },
+    },
+    {
+      name: 'mobile-landscape-chromium',
+      use: { ...devices['Pixel 7'], viewport: { width: 844, height: 390 } },
+    },
   ],
 });
