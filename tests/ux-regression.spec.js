@@ -160,12 +160,24 @@ test('satellite mode remaps every primary information action to the space domain
     await expect(page.locator('.forum-board-detail h2')).toHaveText('Astronomía y satélites');
     await page.locator('.forum-modal-close').click();
 
+    const catalogCount = await page.evaluate(() => window.UFOSat._vg().pointSats.length);
     await page.locator('#btn-tour').click();
     await expect(page.locator('#tour-card')).toBeVisible();
+    await expect(page.locator('body')).toHaveClass(/sat-expedition-active/);
     await expect(page.locator('#tour-title')).toContainText('Sputnik 1');
+    expect(await page.evaluate(() => window.UFOSat._vg().pointSats.length)).toBe(catalogCount);
+    expect(await page.evaluate(() => Boolean(window.UFOSat._vg().followMarkerObj))).toBe(true);
     await page.locator('#tour-next').click();
-    await expect(page.locator('#tour-title')).toContainText('Vostok 1');
+    await expect(page.locator('#tour-title')).toContainText('TIROS-1');
+    for (let i = 0; i < 4; i++) await page.locator('#tour-next').click();
+    await expect(page.locator('#tour-title')).toContainText('Hubble');
+    await expect(page.locator('#sat-detail')).toContainText('HST');
+    expect(await page.evaluate(() => {
+      const target = window.__ufologistGlobe.controls().target;
+      return Math.hypot(target.x, target.y, target.z) > 100;
+    })).toBe(true);
     await page.keyboard.press('Escape');
+    await expect(page.locator('body')).not.toHaveClass(/sat-expedition-active/);
 
     await page.locator('#btn-view-earth').click();
     await expect(page.locator('#btn-knowledge')).toHaveText('◎ Conocimiento');

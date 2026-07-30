@@ -5014,16 +5014,66 @@ $('sf-save').onclick = () => {
 // ---------- Expedition tour ----------
 const TOUR_DWELL = 14000; // ms per stop
 const SPACE_EXPEDITION = [
-  [1957, 'Sputnik 1', 'Sputnik 1', 'La primera señal artificial desde la órbita inaugura la era espacial.', 'The first artificial signal from orbit opens the space age.', 55, 35, 2.25, null],
-  [1961, 'Vostok 1', 'Vostok 1', 'Yuri Gagarin completa la primera órbita humana alrededor de la Tierra.', 'Yuri Gagarin completes the first human orbit of Earth.', 51, 46, 2.0, 'stations'],
-  [1969, 'Apollo 11', 'Apollo 11', 'La humanidad pisa otro mundo y demuestra una cadena completa de navegación, comunicaciones y retorno.', 'Humans walk on another world, proving a complete chain of navigation, communications, and return.', 28, -80, 2.2, 'science'],
-  [1971, 'Salyut 1', 'Salyut 1', 'La primera estación espacial convierte la órbita en un lugar de trabajo prolongado.', 'The first space station turns orbit into a place for sustained work.', 46, 63, 2.0, 'stations'],
-  [1978, 'GPS', 'GPS', 'Los primeros satélites Navstar abren el camino a una infraestructura global de posición y tiempo.', 'The first Navstar satellites begin a global positioning and timing infrastructure.', 30, -100, 2.8, 'gps-ops'],
-  [1990, 'Hubble', 'Hubble', 'Un observatorio orbital transforma nuestra visión del universo y demuestra el valor del mantenimiento en órbita.', 'An orbital observatory transforms our view of the universe and proves the value of in-orbit servicing.', 12, -45, 2.1, 'science'],
-  [1998, 'ISS', 'ISS', 'Comienza el ensamblaje del mayor laboratorio humano en órbita.', 'Assembly begins on the largest human laboratory in orbit.', 35, 10, 1.9, 'stations'],
-  [2013, 'CubeSats', 'CubeSats', 'La estandarización y miniaturización abren el espacio a universidades, países y nuevas empresas.', 'Standardization and miniaturization open space to universities, nations, and new companies.', 0, 75, 2.15, 'science'],
-  [2019, 'Starlink', 'Starlink', 'Las megaconstelaciones cambian la escala del despliegue, la conectividad y el debate sobre sostenibilidad orbital.', 'Megaconstellations change the scale of deployment, connectivity, and the orbital-sustainability debate.', 25, -25, 2.4, 'starlink'],
-  [2021, 'James Webb', 'James Webb', 'JWST parte hacia el entorno Sol–Tierra L2: la infraestructura humana ya se extiende mucho más allá de la órbita terrestre.', 'JWST departs for the Sun–Earth L2 region: human infrastructure now extends far beyond Earth orbit.', -10, -70, 3.0, 'science'],
+  {
+    year: 1957, esTitle: 'Sputnik 1', enTitle: 'Sputnik 1',
+    esText: 'La primera señal artificial desde la órbita inaugura la era espacial. La trayectoria mostrada es una reconstrucción educativa de su órbita inicial.',
+    enText: 'The first artificial signal from orbit opens the space age. The displayed path is an educational reconstruction of its initial orbit.',
+    target: { synthetic: true, label: 'Sputnik 1', group: 'science', color: '#f4a8ff', altKm: 577, incDeg: 65.1, raanDeg: 18, periodMin: 96.2, phaseDeg: 20 },
+  },
+  {
+    year: 1960, esTitle: 'TIROS-1', enTitle: 'TIROS-1',
+    esText: 'El primer satélite meteorológico operativo demuestra que la Tierra puede observarse como un sistema completo desde el espacio.',
+    enText: 'The first successful weather satellite proves that Earth can be observed as a complete system from space.',
+    target: { synthetic: true, label: 'TIROS-1', group: 'weather', color: '#9d7bff', altKm: 650, incDeg: 48.4, raanDeg: 112, periodMin: 99.2, phaseDeg: 75 },
+  },
+  {
+    year: 1962, esTitle: 'Telstar 1', enTitle: 'Telstar 1',
+    esText: 'Televisión, telefonía y datos cruzan el Atlántico mediante un repetidor orbital. Se reconstruye su característica órbita elíptica a una altitud media.',
+    enText: 'Television, telephony, and data cross the Atlantic through an orbital relay. Its characteristic elliptical orbit is represented at mean altitude.',
+    target: { synthetic: true, label: 'Telstar 1', group: 'geo', color: '#b388ff', altKm: 3290, incDeg: 44.8, raanDeg: 205, periodMin: 157.8, phaseDeg: 145, cameraOut: 22, cameraBack: 42 },
+  },
+  {
+    year: 1971, esTitle: 'Salyut 1', enTitle: 'Salyut 1',
+    esText: 'La primera estación espacial convierte la órbita en un lugar de trabajo prolongado. Esta órbita histórica se muestra como reconstrucción.',
+    enText: 'The first space station turns orbit into a place for sustained work. This historical orbit is shown as a reconstruction.',
+    target: { synthetic: true, label: 'Salyut 1', group: 'stations', color: '#ffd166', altKm: 220, incDeg: 51.6, raanDeg: 286, periodMin: 88.5, phaseDeg: 210 },
+  },
+  {
+    year: 1978, esTitle: 'La arquitectura GPS', enTitle: 'The GPS architecture',
+    esText: 'Navstar abre el camino a una infraestructura global de posición y tiempo. La cámara sigue un satélite GPS operativo representativo en MEO.',
+    enText: 'Navstar begins a global positioning and timing infrastructure. The camera follows a representative operational GPS satellite in MEO.',
+    target: { id: '26407', label: 'GPS BIIR-5', group: 'gps-ops', color: '#80ed99', cameraOut: 28, cameraBack: 48 },
+  },
+  {
+    year: 1990, esTitle: 'Hubble', enTitle: 'Hubble',
+    esText: 'El gran observatorio transforma nuestra visión del universo. Estás siguiendo su posición propagada desde el TLE activo.',
+    enText: 'The great observatory transforms our view of the universe. You are following its propagated position from the active TLE.',
+    target: { id: '20580', label: 'Hubble Space Telescope', group: 'science', color: '#f4a8ff' },
+  },
+  {
+    year: 1998, esTitle: 'Estación Espacial Internacional', enTitle: 'International Space Station',
+    esText: 'Comienza el ensamblaje del mayor laboratorio humano en órbita. La cámara acompaña a la ISS en tiempo simulado.',
+    enText: 'Assembly begins on the largest human laboratory in orbit. The camera accompanies the ISS in simulated time.',
+    target: { id: '25544', label: 'ISS', group: 'stations', color: '#ffd166' },
+  },
+  {
+    year: 2016, esTitle: 'Galileo', enTitle: 'Galileo',
+    esText: 'Europa completa el núcleo de su sistema civil de navegación. Seguimos una nave representativa de la constelación en órbita media.',
+    enText: 'Europe completes the core of its civil navigation system. We follow a representative spacecraft in the medium-orbit constellation.',
+    target: { names: ['GSAT', 'GALILEO'], label: 'Galileo', group: 'galileo', color: '#7fd0ff', cameraOut: 28, cameraBack: 48 },
+  },
+  {
+    year: 2019, esTitle: 'Starlink', enTitle: 'Starlink',
+    esText: 'Las megaconstelaciones cambian la escala del despliegue y el debate sobre sostenibilidad orbital. El resto del catálogo permanece visible para conservar la densidad real.',
+    enText: 'Megaconstellations change deployment scale and the orbital-sustainability debate. The rest of the catalog remains visible to preserve real density.',
+    target: { id: '44714', label: 'Starlink', group: 'starlink', color: '#18d7ff' },
+  },
+  {
+    year: 2021, esTitle: 'Tiangong', enTitle: 'Tiangong',
+    esText: 'El módulo Tianhe establece el núcleo de la estación espacial china. La vista sigue su órbita real dentro del catálogo activo.',
+    enText: 'The Tianhe module establishes the core of China’s space station. The view follows its real orbit in the active catalog.',
+    target: { id: '48274', label: 'Tianhe', group: 'stations', color: '#ffd166' },
+  },
 ];
 let tour = { active: false, idx: 0, timer: null, paused: false, t0: 0, remaining: 0, domain: 'uap', satPrevious: null };
 
@@ -5032,7 +5082,10 @@ function tourStart(trigger = $('btn-tour')) {
   tour.domain = isSatelliteMode() ? 'satellites' : 'uap';
   if (tour.domain === 'satellites') {
     const vg = window.UFOSat?._vg?.();
-    tour.satPrevious = vg ? { filter: vg.filter || null, yearMax: vg.yearMax } : null;
+    tour.satPrevious = vg ? { filter: vg.filter || null, yearMax: vg.yearMax, simSpeed: vg.simSpeed } : null;
+    if (vg) vg.yearMax = vg.hist?.maxYear || vg.yearMax;
+    window.UFOSat?.setFilter?.(null);
+    window.UFOSat?.setSpeed?.(18);
   }
   stopPlayback();
   tourGo(0);
@@ -5045,15 +5098,12 @@ function tourGo(i) {
     if (i >= SPACE_EXPEDITION.length) { tourEnd({ completed: true, reason: 'complete' }); return; }
     tour.idx = i;
     const stop = SPACE_EXPEDITION[i];
-    const [year, esTitle, enTitle, esText, enText, lat, lng, altitude, group] = stop;
+    $('tour-card').dataset.tourDomain = 'satellites';
     $('tour-progress').textContent = `${i + 1}/${SPACE_EXPEDITION.length}`;
-    $('tour-title').textContent = `${year} — ${currentLang === 'en' ? enTitle : esTitle}`;
-    $('tour-text').textContent = currentLang === 'en' ? enText : esText;
+    $('tour-title').textContent = `${stop.year} — ${currentLang === 'en' ? stop.enTitle : stop.esTitle}`;
+    $('tour-text').textContent = currentLang === 'en' ? stop.enText : stop.esText;
     closeUILayer('case', { restoreFocus: false });
-    const vg = window.UFOSat?._vg?.();
-    if (vg) vg.yearMax = year;
-    if (window.UFOSat?.setFilter) window.UFOSat.setFilter(group);
-    globe.pointOfView({ lat, lng, altitude }, 1600);
+    window.UFOSat?.focusMission?.(stop.target);
     clearTimeout(tour.timer);
     tour.t0 = performance.now();
     tour.remaining = TOUR_DWELL;
@@ -5065,6 +5115,7 @@ function tourGo(i) {
   if (i < 0) i = 0;
   if (i >= ids.length) { tourEnd({ completed: true, reason: 'complete' }); return; }
   tour.idx = i;
+  delete $('tour-card').dataset.tourDomain;
   const c = CASES.find(x => x.id === ids[i]);
   $('tour-progress').textContent = (i + 1) + '/' + ids.length;
   $('tour-title').textContent = c.year + ' — ' + caseName(c);
@@ -5108,11 +5159,16 @@ function tourEnd(options = {}) {
   state.selectedCase = null;
   clearInspectedMarker();
   renderCaseMarkersFromCurrent();
-  if (tour.domain === 'satellites' && tour.satPrevious && window.UFOSat?._vg?.()) {
-    window.UFOSat._vg().yearMax = tour.satPrevious.yearMax;
-    window.UFOSat.setFilter(tour.satPrevious.filter);
+  if (tour.domain === 'satellites') {
+    window.UFOSat?.stopMissionFocus?.();
+    if (tour.satPrevious && window.UFOSat?._vg?.()) {
+      window.UFOSat._vg().yearMax = tour.satPrevious.yearMax;
+      window.UFOSat.setFilter(tour.satPrevious.filter);
+      window.UFOSat.setSpeed(tour.satPrevious.simSpeed);
+    }
   }
   tour.satPrevious = null;
+  delete $('tour-card').dataset.tourDomain;
   scheduleHashUpdate();
   closeUILayer('tour', options);
   emitUXEvent(options.completed ? 'tour_complete' : 'tour_exit', { step: tour.idx + 1 });
