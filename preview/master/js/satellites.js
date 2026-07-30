@@ -195,6 +195,32 @@
   // ---------- Carga de datos (browser: vivo + respaldo) ----------
   const CELESTRAK = 'https://celestrak.org/NORAD/elements/gp.php?FORMAT=tle&GROUP=';
   const LIVE_GROUPS = Object.keys(CONSTELLATIONS);
+  const LIVE_CACHE_KEY = 'ufologist-tle-live-cache-v1';
+  const LIVE_CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+  function compactSnapshot(sats) {
+    const groups = {};
+    (sats || []).forEach(s => {
+      (groups[s.group] = groups[s.group] || []).push({ n: s.name, id: s.id, l1: s.l1, l2: s.l2 });
+    });
+    return { groups };
+  }
+  function readLiveCache() {
+    if (!root.localStorage) return [];
+    try {
+      const cached = JSON.parse(root.localStorage.getItem(LIVE_CACHE_KEY) || 'null');
+      if (!cached || Date.now() - cached.savedAt > LIVE_CACHE_MAX_AGE) return [];
+      return buildFromSnapshot(cached.snapshot || {});
+    } catch (e) { return []; }
+  }
+  function writeLiveCache(sats) {
+    if (!root.localStorage || !sats?.length) return;
+    try {
+      root.localStorage.setItem(LIVE_CACHE_KEY, JSON.stringify({
+        savedAt: Date.now(),
+        snapshot: compactSnapshot(sats),
+      }));
+    } catch (e) {}
+  }
   async function loadLive() {
     const groups = {};
     await Promise.all(LIVE_GROUPS.map(async g => {
@@ -218,7 +244,9 @@
       const live = await loadLive();
       const byId = new Map(base.map(s => [s.id, s]));
       for (const s of live.sats) byId.set(s.id, s);
-      return { sats: [...byId.values()], live: true };
+      const sats = [...byId.values()];
+      writeLiveCache(sats);
+      return { sats, live: true };
     } catch (e) {
       return { sats: base, live: base.length > 0 ? false : false };
     }
@@ -253,7 +281,7 @@
   // --- i18n del UI satelital (lee root.__ufologistLang que fija app.js) ---
   const I18N_SAT = {
     es: {
-      sats: 'Satélites', inOrbit: 'en órbita', live: 'CelesTrak (vivo)', backup: 'respaldo local',
+      sats: 'Satélites', inOrbit: 'en órbita', live: 'CelesTrak (vivo)', cache: 'último catálogo en vivo', backup: 'respaldo local',
       all: 'Todas', ringNote: 'Cada anillo = un plano orbital. Los puntos son satélites en tiempo simulado.',
       launchSites: 'Sitios de lanzamiento', analyzeSky: '🔭 Analizar cielo sobre un lugar',
       skyHint: 'Clic en el globo para ver qué satélites hay sobre ese punto. El tiempo se pausa.',
@@ -275,7 +303,7 @@
       overHorizon: n => `${n.toLocaleString('es')} satélites sobre el horizonte`,
     },
     en: {
-      sats: 'Satellites', inOrbit: 'in orbit', live: 'CelesTrak (live)', backup: 'local backup',
+      sats: 'Satellites', inOrbit: 'in orbit', live: 'CelesTrak (live)', cache: 'last live catalog', backup: 'local backup',
       all: 'All', ringNote: 'Each ring is one orbital plane. Dots are satellites in simulated time.',
       launchSites: 'Launch sites', analyzeSky: '🔭 Analyze the sky over a place',
       skyHint: 'Click the globe to see which satellites are above that point. Time is paused.',
@@ -426,6 +454,7 @@
         VG.simTime = new Date(VG.simTime.getTime() + acc * VG.simSpeed);  // simSpeed× tiempo real
         updatePoints(globe);
         updateSel(globe);
+        updateMissionFollow(globe, false);
         updateSkyLines(globe);
         updateOrbitSpin(globe);
         if ((VG._dcnt = (VG._dcnt || 0) + 1) % 8 === 0) refreshDetail();  // ficha ~2 Hz
@@ -500,6 +529,175 @@
     a[0] = v.x; a[1] = v.y; a[2] = v.z;
     VG.selObj.geometry.attributes.position.needsUpdate = true;
   }
+  function missionSatellite(spec) {
+    if (!VG?.sats?.length || !spec) return null;
+    if (spec.synthetic) return null;
+    if (spec.id) {
+      const exact = VG.sats.find(s => String(s.id) === String(spec.id));
+      if (exact) return exact;
+    }
+    const names = (spec.names || []).map(name => String(name).toUpperCase());
+    return VG.sats.find(s => (!spec.group || s.group === spec.group)
+      && names.some(name => String(s.name).toUpperCase().includes(name)))
+      || (spec.group ? VG.sats.find(s => s.group === spec.group) : null);
+  }
+  function heritagePosition(spec, date, fixedGmst) {
+    const inc = (spec.incDeg || 0) / DEG;
+    const raan = (spec.raanDeg || 0) / DEG;
+    const phase = (spec.phaseDeg || 0) / DEG;
+    const periodMs = (spec.periodMin || 96) * 60000;
+    const theta = phase + ((date.getTime() % periodMs) / periodMs) * Math.PI * 2;
+    const x = Math.cos(raan) * Math.cos(theta) - Math.sin(raan) * Math.sin(theta) * Math.cos(inc);
+    const y = Math.sin(raan) * Math.cos(theta) + Math.cos(raan) * Math.sin(theta) * Math.cos(inc);
+    const z = Math.sin(theta) * Math.sin(inc);
+    const gmst = fixedGmst == null ? (lib()?.gstime(date) || 0) : fixedGmst;
+    const lat = Math.asin(Math.max(-1, Math.min(1, z))) * DEG;
+    let lng = (Math.atan2(y, x) - gmst) * DEG;
+    lng = ((lng + 540) % 360) - 180;
+    const alt = spec.altKm || 550;
+    return { lat, lng, alt, altGlobe: alt / EARTH_R_KM };
+  }
+  function missionPosition(follow, date) {
+    return follow.sat ? propagate(follow.sat, date) : heritagePosition(follow.spec, date);
+  }
+  function clearMissionObjects() {
+    const sc = root.__ufologistGlobe?.scene?.();
+    ['followMarkerObj', 'followRouteObj'].forEach(key => {
+      const obj = VG?.[key];
+      if (sc && obj) sc.remove(obj);
+      if (obj?.geometry) obj.geometry.dispose();
+      if (obj?.material) obj.material.dispose();
+      if (VG) VG[key] = null;
+    });
+  }
+  function buildMissionRoute(globe, follow) {
+    const T = TH(), sc = globe.scene?.();
+    if (!T || !sc) return;
+    clearMissionObjects();
+    const samples = follow.sat
+      ? sampleOrbit(follow.sat, VG.simTime, 180)
+      : (() => {
+          const points = [];
+          const gmst = lib()?.gstime(VG.simTime) || 0;
+          const period = (follow.spec.periodMin || 96) * 60000;
+          for (let i = 0; i <= 180; i++) {
+            const p = heritagePosition(follow.spec, new Date(VG.simTime.getTime() + period * i / 180), gmst);
+            points.push([p.lat, p.lng, p.altGlobe]);
+          }
+          return points;
+        })();
+    const routePoints = samples.map(p => {
+      const v = coordSat(globe, p[0], p[1], p[2]);
+      return new T.Vector3(v.x, v.y, v.z);
+    });
+    const color = follow.spec.color || constMeta(follow.sat?.group || follow.spec.group).color;
+    VG.followRouteObj = new T.Line(
+      new T.BufferGeometry().setFromPoints(routePoints),
+      new T.LineBasicMaterial({ color, transparent: true, opacity: 0.95, depthTest: false })
+    );
+    VG.followRouteObj.renderOrder = 9;
+    VG.followRouteRefGmst = lib()?.gstime(VG.simTime) || 0;
+    sc.add(VG.followRouteObj);
+    if (!follow.sat) {
+      const geo = new T.BufferGeometry();
+      geo.setAttribute('position', new T.BufferAttribute(new Float32Array(3), 3));
+      VG.followMarkerObj = new T.Points(geo, new T.PointsMaterial({
+        size: 34, sizeAttenuation: false, map: ringTexture(), color,
+        transparent: true, depthTest: false,
+      }));
+      VG.followMarkerObj.renderOrder = 10;
+      sc.add(VG.followMarkerObj);
+    }
+  }
+  function showHeritageDetail(follow) {
+    let el = document.getElementById('sat-detail');
+    if (!el) { el = document.createElement('aside'); el.id = 'sat-detail'; el.className = 'glass'; document.body.appendChild(el); }
+    const s = follow.spec;
+    el.style.display = '';
+    el.innerHTML =
+      `<div class="sd-head"><span class="sd-dot" style="background:${s.color};color:${s.color}"></span><h3>${s.label}</h3></div>` +
+      `<p class="sd-sub">${lang() === 'en' ? 'Historical orbital reconstruction' : 'Reconstrucción orbital histórica'}</p>` +
+      '<dl class="sd-grid">' +
+        `<div><dt>${L('regime')}</dt><dd>${orbitBand(s.altKm)}</dd></div>` +
+        `<div><dt>${L('altitude')}</dt><dd>≈ ${Math.round(s.altKm).toLocaleString(loc())} km</dd></div>` +
+        `<div><dt>${L('period')}</dt><dd>≈ ${s.periodMin} min</dd></div>` +
+        `<div><dt>${L('inclination')}</dt><dd>${s.incDeg.toFixed(1)}°</dd></div>` +
+      '</dl>';
+  }
+  function updateMissionFollow(globe, immediate) {
+    const follow = VG?.follow;
+    const T = TH();
+    if (!follow || !T) return;
+    const p = missionPosition(follow, VG.simTime);
+    if (!p) return;
+    if (VG.followRouteObj && VG.followRouteRefGmst != null) {
+      VG.followRouteObj.rotation.y = -((lib()?.gstime(VG.simTime) || 0) - VG.followRouteRefGmst);
+    }
+    const raw = coordSat(globe, p.lat, p.lng, p.altGlobe);
+    const target = new T.Vector3(raw.x, raw.y, raw.z);
+    if (VG.followMarkerObj) {
+      const a = VG.followMarkerObj.geometry.attributes.position.array;
+      a[0] = target.x; a[1] = target.y; a[2] = target.z;
+      VG.followMarkerObj.geometry.attributes.position.needsUpdate = true;
+    }
+    const cam = globe.camera?.(), ctrl = globe.controls?.();
+    if (!cam || !ctrl) return;
+    const radial = target.clone().normalize();
+    let tangent = follow.lastTarget ? target.clone().sub(follow.lastTarget) : new T.Vector3(-radial.z, 0, radial.x);
+    if (tangent.lengthSq() < 0.0001) tangent.set(-radial.z, 0, radial.x);
+    tangent.normalize();
+    const side = new T.Vector3().crossVectors(radial, tangent).normalize();
+    const ideal = target.clone()
+      .add(radial.multiplyScalar(follow.spec.cameraOut || 80))
+      .add(tangent.multiplyScalar(-(follow.spec.cameraBack || 95)))
+      .add(side.multiplyScalar(follow.spec.cameraSide || 20));
+    if (immediate || !follow.lastTarget) {
+      cam.position.copy(ideal);
+      ctrl.target.copy(target);
+    } else {
+      cam.position.lerp(ideal, 0.09);
+      ctrl.target.lerp(target, 0.24);
+    }
+    cam.lookAt(ctrl.target);
+    ctrl.update?.();
+    follow.lastTarget = target;
+  }
+  model.focusMission = function focusMission(spec) {
+    if (!VG || !spec) return null;
+    model.stopMissionFocus();
+    const sat = missionSatellite(spec);
+    VG.follow = { spec, sat, lastTarget: null };
+    const ctrl = root.__ufologistGlobe?.controls?.();
+    if (ctrl) {
+      VG.follow.prevControls = { enablePan: ctrl.enablePan, autoRotate: ctrl.autoRotate };
+      ctrl.enablePan = false;
+      ctrl.autoRotate = false;
+    }
+    document.body.classList.add('sat-expedition-active');
+    buildMissionRoute(root.__ufologistGlobe, VG.follow);
+    if (sat) {
+      selectSat(sat);
+      if (VG.selObj?.material) {
+        VG.selObj.material.size = 34;
+        VG.selObj.material.color?.set(spec.color || constMeta(sat.group).color);
+      }
+    } else { selectSat(null); showHeritageDetail(VG.follow); }
+    updateMissionFollow(root.__ufologistGlobe, true);
+    return { found: !!sat, name: sat?.name || spec.label, id: sat?.id || null };
+  };
+  model.stopMissionFocus = function stopMissionFocus() {
+    if (!VG) return;
+    const ctrl = root.__ufologistGlobe?.controls?.();
+    const previous = VG.follow?.prevControls;
+    if (ctrl && previous) {
+      ctrl.enablePan = previous.enablePan;
+      ctrl.autoRotate = previous.autoRotate;
+    }
+    VG.follow = null;
+    clearMissionObjects();
+    selectSat(null);
+    document.body.classList.remove('sat-expedition-active');
+  };
   function refreshDetail() {
     const el = document.getElementById('sat-detail'); if (!el || !VG || !VG.selSat) return;
     const d = satDetail(VG.selSat, VG.simTime); if (!d) return;
@@ -786,9 +984,21 @@
     const globe = root.__ufologistGlobe;
     if (!globe || !TH() || !globe.scene) { console.warn('[UFOSat] globo/THREE no disponible'); return; }
     if (!VG) VG = { sats: [], filter: null, simTime: new Date(), simSpeed: 90, raf: 0, orbitObj: null, ptsObj: null };
-    // Fase 1 (rápida): respaldo local para mostrar algo al instante
+    // Fase 1 (rápida): combina el respaldo local con el último catálogo vivo
+    // guardado. CelesTrak limita descargas repetidas; conservar una respuesta
+    // exitosa evita que la densidad caiga a la muestra local entre sesiones.
     if (!VG.sats.length) {
-      try { const r = await fetch('data/tle-snapshot.json'); VG.sats = buildFromSnapshot(await r.json()); VG.live = false; console.log('[UFOSat]', VG.sats.length, 'satélites (respaldo)'); }
+      try {
+        const r = await fetch('data/tle-snapshot.json');
+        const base = buildFromSnapshot(await r.json());
+        const cached = readLiveCache();
+        const byId = new Map(base.map(s => [s.id, s]));
+        cached.forEach(s => byId.set(s.id, s));
+        VG.sats = [...byId.values()];
+        VG.live = false;
+        VG.catalogSource = cached.length ? 'cache' : 'backup';
+        console.log('[UFOSat]', VG.sats.length, `satélites (${VG.catalogSource})`);
+      }
       catch (e) { console.warn('[UFOSat] sin respaldo', e); VG.sats = []; }
     }
     if (!VG.pads) {
@@ -814,7 +1024,8 @@
     let live; try { live = await loadLive(); } catch (e) { return; }   // se queda con el respaldo
     const byId = new Map(VG.sats.map(s => [s.id, s]));
     for (const s of live.sats) byId.set(s.id, s);
-    VG.sats = [...byId.values()]; VG.live = true;
+    VG.sats = [...byId.values()]; VG.live = true; VG.catalogSource = 'live';
+    writeLiveCache(VG.sats);
     console.log('[UFOSat]', VG.sats.length, 'satélites (vivo)');
     const wasAll = VG.hist && VG.yearMax === VG.hist.maxYear;
     VG.hist = launchHistogram(VG.sats);
@@ -824,6 +1035,7 @@
   model.exit = function exit() {
     const globe = root.__ufologistGlobe; const sc = globe && globe.scene && globe.scene();
     if (VG) {
+      model.stopMissionFocus();
       VG.active = false; stopClock(); detachPick();
       if (sc && VG.orbitObj) sc.remove(VG.orbitObj);
       if (sc && VG.ptsObj) sc.remove(VG.ptsObj);
@@ -851,7 +1063,7 @@
       `<span class="sc-dot"></span>${label}<b>${(n || 0).toLocaleString(loc())}</b></button>`;
     el.innerHTML =
       `<div class="panel-head"><h2>${L('sats')}</h2></div>` +
-      `<p class="hint">${total.toLocaleString(loc())} ${L('inOrbit')} · ${VG.live ? L('live') : L('backup')}</p>` +
+      `<p class="hint">${total.toLocaleString(loc())} ${L('inOrbit')} · ${VG.live ? L('live') : L(VG.catalogSource === 'cache' ? 'cache' : 'backup')}</p>` +
       '<div class="sat-chips">' +
         chip('', L('all'), total, '#93a1c0') +
         present.map(g => chip(g, constLabel(g), counts[g], constMeta(g).color)).join('') +
@@ -1036,7 +1248,14 @@
     buildOrbits(globe); buildPoints(globe);
     if (VG.selSat && g && VG.selSat.group !== g) selectSat(null);  // el seleccionado ya no está en el filtro
   };
-  model.setSpeed = function (x) { if (VG) VG.simSpeed = x; };
+  model.setSpeed = function (x) {
+    if (!VG) return;
+    VG.simSpeed = x;
+    const input = document.getElementById('sat-speed');
+    const value = document.getElementById('sat-speed-val');
+    if (input) input.value = x;
+    if (value) value.textContent = x;
+  };
   model.togglePads = function (on) {
     if (!VG) return; VG.showPads = on;
     buildPads(root.__ufologistGlobe);
