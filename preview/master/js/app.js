@@ -583,6 +583,58 @@ function esc(value) {
 function hasCoords(d) { return Number.isFinite(d?.lat) && Number.isFinite(d?.lng); }
 function locale() { return currentLang === 'en' ? 'en-US' : 'es-ES'; }
 function fmtNum(n) { return n.toLocaleString(locale()); }
+function isSatelliteMode() { return document.body.dataset.viewMode === 'satellites'; }
+function satText(es, en) { return currentLang === 'en' ? en : es; }
+function satelliteKnowledgeTabs() {
+  return [
+    ['structures', satText('Estructuras', 'Structures')],
+    ['orbits', satText('Órbitas', 'Orbits')],
+    ['operators', satText('Organizaciones', 'Organizations')],
+    ['history', satText('Historia', 'History')],
+    ['glossary', satText('Glosario', 'Glossary')],
+    ['method', satText('Método', 'Method')],
+    ['sources', satText('Fuentes', 'Sources')],
+    ['report', satText('Reportar', 'Report')],
+  ];
+}
+function syncModeNavigation(mode = document.body.dataset.viewMode) {
+  const satelliteMode = mode === 'satellites';
+  const labels = satelliteMode ? {
+    stats: [satText('Análisis orbital', 'Orbital analysis'), satText('Estadísticas de satélites, órbitas y despliegues', 'Satellite, orbit, and deployment statistics')],
+    knowledge: [satText('Atlas espacial', 'Space atlas'), satText('Satélites, estaciones, operadores y exploración espacial', 'Satellites, stations, operators, and space exploration')],
+    forum: [satText('Comunidad espacial', 'Space community'), satText('Astronomía, seguimiento y observación de satélites', 'Astronomy, tracking, and satellite observation')],
+    add: [satText('Reportar dato', 'Report data'), satText('Reportar una observación o incidencia orbital', 'Report an orbital observation or data issue')],
+    tour: [satText('Expedición espacial', 'Space expedition'), satText('Recorrido por los hitos de la exploración espacial', 'Tour the milestones of space exploration')],
+  } : {
+    stats: [t('navStats'), t('titleStats')],
+    knowledge: [t('navKnowledge'), t('titleKnowledge')],
+    forum: [t('navCommunity'), t('titleCommunity')],
+    add: [t('navReport'), t('titleReport')],
+    tour: [t('navTour'), t('titleTour')],
+  };
+  const defs = [
+    ['btn-stats', '⌁', labels.stats],
+    ['btn-knowledge', '◎', labels.knowledge],
+    ['btn-forum', '☷', labels.forum],
+    ['btn-add', '+', labels.add],
+    ['btn-tour', '⌖', labels.tour],
+  ];
+  defs.forEach(([id, icon, value]) => {
+    const button = $(id);
+    if (!button) return;
+    button.textContent = `${icon} ${value[0]}`;
+    button.title = value[1];
+    button.setAttribute('aria-label', value[1]);
+  });
+  const mobileKeys = { stats: labels.stats[0], knowledge: labels.knowledge[0], forum: labels.forum[0], add: labels.add[0], tour: labels.tour[0] };
+  document.querySelectorAll('#mobile-more button[data-act]').forEach(button => {
+    const label = button.querySelector('span');
+    if (label && mobileKeys[button.dataset.act]) label.textContent = mobileKeys[button.dataset.act];
+  });
+  if ($('stats-title')) $('stats-title').textContent = satelliteMode
+    ? `🛰 ${satText('Análisis orbital', 'Orbital analysis')}`
+    : `📊 ${t('statsTitle')}`;
+}
 function typeLabel(code) { return currentLang === 'en' && TYPE_TEXT.en[code] ? TYPE_TEXT.en[code][0] : TYPE_META[code].label; }
 function typeDesc(code) { return currentLang === 'en' && TYPE_TEXT.en[code] ? TYPE_TEXT.en[code][1] : TYPE_META[code].desc; }
 function shapeLabel(i) { return currentLang === 'en' && SHAPE_TEXT.en[i] ? SHAPE_TEXT.en[i] : SHAPE_META[i].label; }
@@ -1465,6 +1517,7 @@ function applyStaticI18n() {
     const icon = b.querySelector('b')?.outerHTML || '';
     b.innerHTML = `${icon}${t(navLabels[i])}`;
   });
+  syncModeNavigation();
 }
 function setLanguage(lang) {
   if (!I18N[lang] || lang === currentLang) return;
@@ -1487,7 +1540,8 @@ function setLanguage(lang) {
   refresh();
   if (!$('panel-stats').classList.contains('hidden')) renderStats();
   if (!$('modal-overlay').classList.contains('hidden')) {
-    const active = document.querySelector('#modal-tabs button.active')?.dataset.tab || 'hynek';
+    const active = document.querySelector('#modal-tabs button.active')?.dataset.tab || (isSatelliteMode() ? 'structures' : 'hynek');
+    configureKnowledgeTabs(active);
     switchTab(active);
   }
   if (state.selectedCase && !$('panel-case').classList.contains('hidden')) {
@@ -3219,8 +3273,11 @@ function setGlobeSurfaceVisible(visible) {
 }
 function setViewMode(mode) {
   if (!['earth', 'orbit', 'satellites'].includes(mode)) return;
+  const nextDomain = mode === 'satellites' ? 'satellites' : 'uap';
+  if (typeof tour !== 'undefined' && tour.active && tour.domain !== nextDomain) tourEnd();
   state.viewMode = mode;
-  if (mode !== 'earth' && typeof tour !== 'undefined' && tour.active) tourEnd();  // el tour es de la vista Tierra
+  document.body.dataset.viewMode = mode;
+  syncModeNavigation(mode);
   document.querySelectorAll('#view-toggle button').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === mode);
   });
@@ -3256,6 +3313,11 @@ function setViewMode(mode) {
     globe.pointOfView({ lat: 30, lng: -40, altitude: 2.3 }, 900);
   }
   refresh();
+  if (!$('panel-stats').classList.contains('hidden')) renderStats();
+  if (!$('modal-overlay').classList.contains('hidden')) {
+    const active = document.querySelector('#modal-tabs button.active')?.dataset.tab;
+    configureKnowledgeTabs(active);
+  }
 }
 $('btn-view-earth').onclick = () => setViewMode('earth');
 $('btn-view-orbit').onclick = () => setViewMode('satellites');
@@ -4593,7 +4655,74 @@ function hbar(label, n, max, suffix) {
     <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(1, (n / Math.max(1, max)) * 100)}%"></div></div>
     <span class="hbar-n">${fmtNum(n)}${suffix || ''}</span></div>`;
 }
+function renderSatelliteStats() {
+  const vg = window.UFOSat?._vg?.();
+  const sats = vg?.sats || [];
+  if (!sats.length) {
+    $('stats-content').innerHTML = `<div class="sat-loading"><b>${satText('Sincronizando catálogo orbital…', 'Synchronizing orbital catalog…')}</b><p>${satText('El análisis aparecerá cuando termine de cargar el respaldo local o los TLE en vivo.', 'Analysis will appear when the local fallback or live TLE data finishes loading.')}</p></div>`;
+    setTimeout(() => {
+      if (isSatelliteMode() && !$('panel-stats').classList.contains('hidden')) renderStats();
+    }, 900);
+    return;
+  }
+  const filtered = sats.filter(s => (!vg.filter || s.group === vg.filter) && (!vg.yearMax || !s.launchYear || s.launchYear <= vg.yearMax));
+  const groupCounts = {};
+  const bandCounts = { LEO: 0, MEO: 0, GEO: 0, HEO: 0 };
+  const decadeCounts = {};
+  const yearCounts = {};
+  filtered.forEach(s => {
+    groupCounts[s.group] = (groupCounts[s.group] || 0) + 1;
+    if (s.launchYear) {
+      const decade = Math.floor(s.launchYear / 10) * 10;
+      decadeCounts[decade] = (decadeCounts[decade] || 0) + 1;
+      yearCounts[s.launchYear] = (yearCounts[s.launchYear] || 0) + 1;
+    }
+    const p = window.UFOSat.propagate(s, vg.simTime || new Date());
+    if (p) bandCounts[window.UFOSat.orbitBand(p.alt)]++;
+  });
+  const groups = Object.entries(groupCounts).sort((a, b) => b[1] - a[1]);
+  const groupMax = groups[0]?.[1] || 1;
+  const decades = Object.entries(decadeCounts).sort((a, b) => Number(a[0]) - Number(b[0]));
+  const decadeMax = Math.max(1, ...decades.map(([, n]) => n));
+  const bands = Object.entries(bandCounts).filter(([, n]) => n);
+  const bandMax = Math.max(1, ...bands.map(([, n]) => n));
+  const launchYears = Object.entries(yearCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const launchMax = launchYears[0]?.[1] || 1;
+  const crewed = groupCounts.stations || 0;
+  const science = groupCounts.science || 0;
+  const latestYear = Math.max(0, ...filtered.map(s => s.launchYear || 0));
+  $('stats-content').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi"><span class="n">${fmtNum(filtered.length)}</span><label>${satText('objetos', 'objects')}</label></div>
+      <div class="kpi"><span class="n">${fmtNum(bandCounts.LEO)}</span><label>LEO</label></div>
+      <div class="kpi"><span class="n">${fmtNum(crewed)}</span><label>${satText('tripulados', 'crewed')}</label></div>
+      <div class="kpi"><span class="n">${fmtNum(science)}</span><label>${satText('ciencia', 'science')}</label></div>
+      <div class="kpi"><span class="n">${latestYear || '—'}</span><label>${satText('último año', 'latest year')}</label></div>
+    </div>
+    <div class="stats-context">${satText(
+      `Vista del catálogo activo${vg.filter ? ` · ${window.UFOSat.constMeta(vg.filter).label}` : ''}, acumulado hasta ${vg.yearMax || latestYear}.`,
+      `Active catalog view${vg.filter ? ` · ${window.UFOSat.constMeta(vg.filter).en || window.UFOSat.constMeta(vg.filter).label}` : ''}, cumulative through ${vg.yearMax || latestYear}.`
+    )}</div>
+    <div class="chart-block"><h4>${satText('Por régimen orbital', 'By orbital regime')}</h4>
+      ${bands.map(([label, n]) => hbar(label, n, bandMax)).join('')}</div>
+    <div class="chart-block"><h4>${satText('Por sistema o misión', 'By system or mission')}</h4>
+      ${groups.map(([group, n]) => hbar(currentLang === 'en' ? (window.UFOSat.constMeta(group).en || group) : window.UFOSat.constMeta(group).label, n, groupMax)).join('')}</div>
+    <div class="chart-block"><h4>${satText('Despliegue por década', 'Deployment by decade')}</h4>
+      ${decades.map(([decade, n]) => hbar(`${decade}s`, n, decadeMax)).join('')}</div>
+    <div class="chart-block"><h4>${satText('Años con más objetos aún catalogados', 'Top launch years among cataloged objects')}</h4>
+      ${launchYears.map(([year, n]) => hbar(year, n, launchMax)).join('')}</div>
+    <p class="hint">ⓘ ${satText(
+      'Recuento del conjunto CelesTrak mostrado, basado en TLE. No representa todos los objetos lanzados ni todo el residuo orbital; el estado operativo y la cobertura cambian con cada actualización.',
+      'Counts describe the displayed CelesTrak TLE set. They do not represent every launched object or all orbital debris; operational status and coverage change with each update.'
+    )}</p>`;
+}
 function renderStats() {
+  if (isSatelliteMode()) {
+    $('stats-title').textContent = `🛰 ${satText('Análisis orbital', 'Orbital analysis')}`;
+    renderSatelliteStats();
+    return;
+  }
+  $('stats-title').textContent = `📊 ${t('statsTitle')}`;
   const curated = filteredCases();
   const mass = massFiltered();
   const geipan = geipanFiltered();
@@ -4816,7 +4945,11 @@ function startPickMode(trigger = $('btn-add')) {
   toast(t('registerMode'));
   emitUXEvent('report_mode_start');
 }
-$('btn-add').onclick = event => startPickMode(event.currentTarget);
+function openModeReport(trigger = $('btn-add')) {
+  if (isSatelliteMode()) openModal('report', trigger);
+  else startPickMode(trigger);
+}
+$('btn-add').onclick = event => openModeReport(event.currentTarget);
 function cancelPickMode(options) {
   state.pickMode = false;
   closeUILayer('pick', options);
@@ -4880,16 +5013,54 @@ $('sf-save').onclick = () => {
 
 // ---------- Expedition tour ----------
 const TOUR_DWELL = 14000; // ms per stop
-let tour = { active: false, idx: 0, timer: null, paused: false, t0: 0, remaining: 0 };
+const SPACE_EXPEDITION = [
+  [1957, 'Sputnik 1', 'Sputnik 1', 'La primera señal artificial desde la órbita inaugura la era espacial.', 'The first artificial signal from orbit opens the space age.', 55, 35, 2.25, null],
+  [1961, 'Vostok 1', 'Vostok 1', 'Yuri Gagarin completa la primera órbita humana alrededor de la Tierra.', 'Yuri Gagarin completes the first human orbit of Earth.', 51, 46, 2.0, 'stations'],
+  [1969, 'Apollo 11', 'Apollo 11', 'La humanidad pisa otro mundo y demuestra una cadena completa de navegación, comunicaciones y retorno.', 'Humans walk on another world, proving a complete chain of navigation, communications, and return.', 28, -80, 2.2, 'science'],
+  [1971, 'Salyut 1', 'Salyut 1', 'La primera estación espacial convierte la órbita en un lugar de trabajo prolongado.', 'The first space station turns orbit into a place for sustained work.', 46, 63, 2.0, 'stations'],
+  [1978, 'GPS', 'GPS', 'Los primeros satélites Navstar abren el camino a una infraestructura global de posición y tiempo.', 'The first Navstar satellites begin a global positioning and timing infrastructure.', 30, -100, 2.8, 'gps-ops'],
+  [1990, 'Hubble', 'Hubble', 'Un observatorio orbital transforma nuestra visión del universo y demuestra el valor del mantenimiento en órbita.', 'An orbital observatory transforms our view of the universe and proves the value of in-orbit servicing.', 12, -45, 2.1, 'science'],
+  [1998, 'ISS', 'ISS', 'Comienza el ensamblaje del mayor laboratorio humano en órbita.', 'Assembly begins on the largest human laboratory in orbit.', 35, 10, 1.9, 'stations'],
+  [2013, 'CubeSats', 'CubeSats', 'La estandarización y miniaturización abren el espacio a universidades, países y nuevas empresas.', 'Standardization and miniaturization open space to universities, nations, and new companies.', 0, 75, 2.15, 'science'],
+  [2019, 'Starlink', 'Starlink', 'Las megaconstelaciones cambian la escala del despliegue, la conectividad y el debate sobre sostenibilidad orbital.', 'Megaconstellations change the scale of deployment, connectivity, and the orbital-sustainability debate.', 25, -25, 2.4, 'starlink'],
+  [2021, 'James Webb', 'James Webb', 'JWST parte hacia el entorno Sol–Tierra L2: la infraestructura humana ya se extiende mucho más allá de la órbita terrestre.', 'JWST departs for the Sun–Earth L2 region: human infrastructure now extends far beyond Earth orbit.', -10, -70, 3.0, 'science'],
+];
+let tour = { active: false, idx: 0, timer: null, paused: false, t0: 0, remaining: 0, domain: 'uap', satPrevious: null };
 
 function tourStart(trigger = $('btn-tour')) {
   tour.active = true; tour.idx = 0; tour.paused = false;
+  tour.domain = isSatelliteMode() ? 'satellites' : 'uap';
+  if (tour.domain === 'satellites') {
+    const vg = window.UFOSat?._vg?.();
+    tour.satPrevious = vg ? { filter: vg.filter || null, yearMax: vg.yearMax } : null;
+  }
   stopPlayback();
   tourGo(0);
   openUILayer('tour', { trigger, priority: isMobile() ? 90 : 60 });
   emitUXEvent('tour_start');
 }
 function tourGo(i) {
+  if (tour.domain === 'satellites') {
+    if (i < 0) i = 0;
+    if (i >= SPACE_EXPEDITION.length) { tourEnd({ completed: true, reason: 'complete' }); return; }
+    tour.idx = i;
+    const stop = SPACE_EXPEDITION[i];
+    const [year, esTitle, enTitle, esText, enText, lat, lng, altitude, group] = stop;
+    $('tour-progress').textContent = `${i + 1}/${SPACE_EXPEDITION.length}`;
+    $('tour-title').textContent = `${year} — ${currentLang === 'en' ? enTitle : esTitle}`;
+    $('tour-text').textContent = currentLang === 'en' ? enText : esText;
+    closeUILayer('case', { restoreFocus: false });
+    const vg = window.UFOSat?._vg?.();
+    if (vg) vg.yearMax = year;
+    if (window.UFOSat?.setFilter) window.UFOSat.setFilter(group);
+    globe.pointOfView({ lat, lng, altitude }, 1600);
+    clearTimeout(tour.timer);
+    tour.t0 = performance.now();
+    tour.remaining = TOUR_DWELL;
+    if (!tour.paused) tour.timer = setTimeout(() => tourGo(i + 1), TOUR_DWELL);
+    animateTourBar();
+    return;
+  }
   const ids = TOUR_IDS.filter(id => CASES.some(c => c.id === id));
   if (i < 0) i = 0;
   if (i >= ids.length) { tourEnd({ completed: true, reason: 'complete' }); return; }
@@ -4937,6 +5108,11 @@ function tourEnd(options = {}) {
   state.selectedCase = null;
   clearInspectedMarker();
   renderCaseMarkersFromCurrent();
+  if (tour.domain === 'satellites' && tour.satPrevious && window.UFOSat?._vg?.()) {
+    window.UFOSat._vg().yearMax = tour.satPrevious.yearMax;
+    window.UFOSat.setFilter(tour.satPrevious.filter);
+  }
+  tour.satPrevious = null;
   scheduleHashUpdate();
   closeUILayer('tour', options);
   emitUXEvent(options.completed ? 'tour_complete' : 'tour_exit', { step: tour.idx + 1 });
@@ -5083,6 +5259,120 @@ function buildSourceAtlas() {
     </div>`;
 }
 
+function satelliteCards(items) {
+  return `<div class="sat-knowledge-grid">${items.map(item => `
+    <article class="sat-knowledge-card">
+      <span class="sat-knowledge-icon" aria-hidden="true">${item[0]}</span>
+      <div><b>${item[1]}</b><p>${item[2]}</p></div>
+    </article>`).join('')}</div>`;
+}
+function satelliteSourceLinks(items) {
+  return `<div class="source-atlas-grid">${items.map(([name, owner, description, url]) => `
+    <article class="source-card is-active">
+      <div class="source-card-head"><div><b>${name}</b><span>${owner}</span></div><em>${satText('OFICIAL', 'OFFICIAL')}</em></div>
+      <p>${description}</p>
+      <a class="cc-source-link" href="${url}" target="_blank" rel="noopener">${satText('Abrir recurso', 'Open resource')} ↗</a>
+    </article>`).join('')}</div>`;
+}
+const SATELLITE_TABS = {
+  structures: () => `
+    <p class="modal-eyebrow">${satText('ATLAS DE INFRAESTRUCTURA HUMANA', 'ATLAS OF HUMAN INFRASTRUCTURE')}</p>
+    <h3>${satText('Qué hemos construido en el espacio', 'What we have built in space')}</h3>
+    <p>${satText('Una guía por función: desde plataformas de comunicaciones hasta laboratorios habitados y observatorios fuera de la órbita terrestre.', 'A guide by function: from communications platforms to crewed laboratories and observatories beyond Earth orbit.')}</p>
+    ${satelliteCards([
+      ['◉', satText('Comunicaciones', 'Communications'), satText('Retransmiten internet, televisión, telefonía y datos. Operan en LEO, MEO o GEO según la latencia y cobertura necesarias.', 'Relay internet, television, telephony, and data. They operate in LEO, MEO, or GEO depending on latency and coverage needs.')],
+      ['⌖', satText('Navegación', 'Navigation'), satText('Constelaciones como GPS, Galileo, GLONASS y BeiDou proporcionan posición y tiempo de alta precisión.', 'Constellations such as GPS, Galileo, GLONASS, and BeiDou provide precise positioning and timing.')],
+      ['☁', satText('Observación de la Tierra', 'Earth observation'), satText('Miden tiempo atmosférico, clima, océanos, hielo, agricultura, incendios y cambios de la superficie.', 'Measure weather, climate, oceans, ice, agriculture, fires, and surface change.')],
+      ['✦', satText('Ciencia y astronomía', 'Science and astronomy'), satText('Telescopios y laboratorios observan el universo sin las limitaciones de la atmósfera y estudian el entorno espacial.', 'Telescopes and laboratories observe the universe without atmospheric limitations and study the space environment.')],
+      ['▣', satText('Estaciones espaciales', 'Space stations'), satText('La ISS y Tiangong son complejos modulares habitados para investigación, tecnología y cooperación en órbita baja.', 'The ISS and Tiangong are crewed modular complexes for research, technology, and cooperation in low Earth orbit.')],
+      ['◇', satText('Sondas, módulos y rovers', 'Probes, landers, and rovers'), satText('Vehículos robóticos exploran la Luna, Marte, asteroides, cometas y los planetas exteriores.', 'Robotic vehicles explore the Moon, Mars, asteroids, comets, and the outer planets.')],
+    ])}`,
+  orbits: () => `
+    <h3>${satText('La arquitectura de las órbitas', 'The architecture of orbits')}</h3>
+    <p>${satText('La altura no es solo una distancia: determina velocidad, periodo, cobertura, latencia, radiación y coste de acceso.', 'Altitude is not merely distance: it determines speed, period, coverage, latency, radiation, and access cost.')}</p>
+    ${satelliteCards([
+      ['LEO', satText('Órbita baja · 160–2.000 km', 'Low Earth orbit · 160–2,000 km'), satText('Vueltas rápidas, baja latencia y gran detalle terrestre. Aquí operan estaciones, observación y megaconstelaciones.', 'Fast revolutions, low latency, and detailed Earth views. Home to stations, imaging, and megaconstellations.')],
+      ['MEO', satText('Órbita media · 2.000–35.786 km', 'Medium Earth orbit · 2,000–35,786 km'), satText('Especialmente útil para navegación global: una constelación moderada cubre grandes áreas.', 'Especially useful for global navigation: a moderate constellation covers large areas.')],
+      ['GEO', satText('Geoestacionaria · 35.786 km', 'Geostationary · 35,786 km'), satText('Sobre el ecuador y con periodo sideral: el satélite parece fijo en el cielo. Clave para telecomunicaciones y meteorología.', 'Above the equator with a sidereal period: the satellite appears fixed in the sky. Key for telecoms and weather.')],
+      ['SSO', satText('Heliosíncrona', 'Sun-synchronous'), satText('Órbita polar que cruza cada lugar aproximadamente a la misma hora solar, ideal para comparar imágenes.', 'A polar orbit crossing each place at roughly the same solar time, ideal for comparable imaging.')],
+      ['HEO', satText('Muy elíptica', 'Highly elliptical'), satText('Permanece mucho tiempo sobre latitudes altas o permite misiones científicas con geometrías especiales.', 'Dwells over high latitudes or supports science missions requiring special geometry.')],
+      ['L₁–L₅', satText('Puntos de Lagrange', 'Lagrange points'), satText('Regiones de equilibrio gravitatorio. JWST orbita alrededor de Sol–Tierra L2, a unos 1,5 millones de km.', 'Gravitational balance regions. JWST orbits around Sun–Earth L2, about 1.5 million km away.')],
+    ])}`,
+  operators: () => `
+    <h3>${satText('Quién construye y opera el espacio', 'Who builds and operates in space')}</h3>
+    <p>${satText('El ecosistema combina agencias públicas, universidades, fabricantes, operadores de constelaciones y proveedores de lanzamiento.', 'The ecosystem combines public agencies, universities, manufacturers, constellation operators, and launch providers.')}</p>
+    ${satelliteCards([
+      ['NASA', 'NASA', satText('Exploración científica, vuelos tripulados, observación terrestre y grandes observatorios de Estados Unidos.', 'US science exploration, human spaceflight, Earth observation, and major observatories.')],
+      ['ESA', 'ESA', satText('Agencia intergubernamental europea: ciencia, navegación, observación, transporte y exploración.', 'European intergovernmental agency spanning science, navigation, observation, transport, and exploration.')],
+      ['中国', 'CNSA / CMSEO', satText('Exploración lunar y planetaria, observación y el programa tripulado que opera Tiangong.', 'Lunar and planetary exploration, observation, and the human program operating Tiangong.')],
+      ['JAXA', 'JAXA', satText('Agencia japonesa destacada en retorno de muestras, ciencia y observación de la Tierra.', 'Japan’s agency, known for sample return, science, and Earth observation.')],
+      ['ISRO', 'ISRO', satText('Programa indio de lanzadores, navegación, observación y exploración lunar y solar.', 'India’s launch, navigation, observation, lunar, and solar exploration program.')],
+      ['Sx', 'SpaceX', satText('Lanzamiento reutilizable, transporte tripulado y despliegue de la constelación Starlink.', 'Reusable launch, crew transport, and deployment of the Starlink constellation.')],
+      ['OB', 'Eutelsat OneWeb', satText('Operador de una constelación LEO de comunicaciones de cobertura global.', 'Operator of a global-coverage LEO communications constellation.')],
+      ['PL', satText('Planet, Maxar y observación comercial', 'Planet, Maxar, and commercial imaging'), satText('Empresas que convierten imágenes orbitales frecuentes y de alta resolución en servicios geoespaciales.', 'Companies turning frequent, high-resolution orbital imagery into geospatial services.')],
+    ])}`,
+  history: () => `
+    <h3>${satText('Hitos de la era espacial', 'Milestones of the space age')}</h3>
+    <p>${satText('De una señal de radio en 1957 a una infraestructura orbital global y exploradores robóticos en todo el Sistema Solar.', 'From a radio signal in 1957 to global orbital infrastructure and robotic explorers across the Solar System.')}</p>
+    ${[
+      ['1957', 'Sputnik 1', satText('Primer satélite artificial.', 'First artificial satellite.')],
+      ['1961', satText('Yuri Gagarin', 'Yuri Gagarin'), satText('Primer ser humano en órbita.', 'First human in orbit.')],
+      ['1969', 'Apollo 11', satText('Primer alunizaje tripulado.', 'First crewed Moon landing.')],
+      ['1971', 'Salyut 1', satText('Primera estación espacial.', 'First space station.')],
+      ['1990', 'Hubble', satText('El gran observatorio entra en órbita.', 'The great observatory reaches orbit.')],
+      ['1998', 'ISS', satText('Comienza el ensamblaje del laboratorio internacional.', 'Assembly of the international laboratory begins.')],
+      ['2012', 'Dragon', satText('Primera nave comercial en abastecer la ISS.', 'First commercial spacecraft to resupply the ISS.')],
+      ['2021', 'JWST', satText('Lanzamiento del observatorio hacia Sol–Tierra L2.', 'Observatory launches toward Sun–Earth L2.')],
+    ].map(([year, title, text]) => `<div class="dt-item"><div class="dt-year">${year}</div><div class="dt-body"><b>${title}</b><p>${text}</p></div></div>`).join('')}
+    <button class="btn-ghost sat-expedition-start" type="button">${satText('Iniciar expedición espacial', 'Start space expedition')} →</button>`,
+  glossary: () => `
+    <h3>${satText('Glosario orbital', 'Orbital glossary')}</h3>
+    ${[
+      ['TLE', satText('Conjunto de dos líneas que codifica una aproximación de la órbita para propagadores como SGP4.', 'A two-line data set encoding an orbit approximation for propagators such as SGP4.')],
+      ['NORAD ID', satText('Identificador numérico estable asignado a un objeto catalogado.', 'Stable numeric identifier assigned to a cataloged object.')],
+      ['Inclinación', satText('Ángulo entre el plano orbital y el ecuador terrestre.', 'Angle between the orbital plane and Earth’s equator.')],
+      ['Periodo', satText('Tiempo que tarda un objeto en completar una órbita.', 'Time an object takes to complete one orbit.')],
+      ['Perigeo / apogeo', satText('Puntos de mínima y máxima distancia a la Tierra.', 'Points of minimum and maximum distance from Earth.')],
+      ['Constelación', satText('Conjunto coordinado de satélites que presta un servicio común.', 'Coordinated set of satellites providing a common service.')],
+      ['CubeSat', satText('Estándar modular de pequeños satélites basado en unidades de 10 cm.', 'Modular small-satellite standard based on 10 cm units.')],
+      ['Kessler', satText('Escenario de colisiones en cascada que aumentan la población de residuos.', 'A cascade-collision scenario that increases the debris population.')],
+    ].map(([term, definition]) => `<div class="gl-item"><b>${term}</b><p>${definition}</p></div>`).join('')}`,
+  method: () => `
+    <h3>${satText('Cómo leer esta vista', 'How to read this view')}</h3>
+    <ol class="sat-method-list">
+      <li><b>${satText('Catálogo, no censo.', 'Catalog, not census.')}</b> ${satText('La selección agrupa fuentes públicas de CelesTrak; no incluye cada objeto rastreado ni garantiza estado operativo.', 'The selection groups public CelesTrak sources; it does not include every tracked object or guarantee operational status.')}</li>
+      <li><b>${satText('Órbitas que envejecen.', 'Orbits age.')}</b> ${satText('Un TLE pierde precisión con el tiempo. Comprueba siempre la época del elemento antes de una predicción.', 'A TLE loses accuracy over time. Always check its epoch before making a prediction.')}</li>
+      <li><b>${satText('Altitud visual comprimida.', 'Compressed visual altitude.')}</b> ${satText('La vista comprime la escala por defecto para que LEO, MEO y GEO sean legibles simultáneamente.', 'The view compresses scale by default so LEO, MEO, and GEO remain legible together.')}</li>
+      <li><b>${satText('Visibilidad ≠ estar encima.', 'Visibility ≠ being overhead.')}</b> ${satText('Hacen falta geometría, iluminación solar, oscuridad local, brillo y un horizonte despejado.', 'Geometry, sunlight, local darkness, brightness, and a clear horizon all matter.')}</li>
+      <li><b>${satText('Reproduce y contrasta.', 'Reproduce and cross-check.')}</b> ${satText('Guarda hora UTC, coordenadas, dirección, elevación y duración, y compara con más de una fuente.', 'Record UTC time, coordinates, direction, elevation, and duration, then compare more than one source.')}</li>
+    </ol>`,
+  sources: () => `
+    <h3>${satText('Fuentes para seguir explorando', 'Sources for further exploration')}</h3>
+    ${satelliteSourceLinks([
+      ['CelesTrak', satText('Seguimiento orbital', 'Orbital tracking'), satText('TLE, grupos de satélites y documentación de propagación.', 'TLE data, satellite groups, and propagation documentation.'), 'https://celestrak.org/'],
+      ['NASA NSSDCA', 'NASA', satText('Catálogo de naves y misiones científicas.', 'Catalog of spacecraft and science missions.'), 'https://nssdc.gsfc.nasa.gov/nmc/'],
+      ['ESA Space Debris Office', 'ESA', satText('Entorno de residuos y seguridad espacial.', 'Debris environment and space safety.'), 'https://www.esa.int/Space_Safety/Space_Debris'],
+      ['UNOOSA Register', 'United Nations', satText('Registro internacional de objetos lanzados al espacio ultraterrestre.', 'International register of objects launched into outer space.'), 'https://www.unoosa.org/oosa/en/spaceobjectregister/index.html'],
+      ['NASA Eyes', 'NASA', satText('Visualizaciones de misiones, Tierra y Sistema Solar.', 'Visualizations of missions, Earth, and the Solar System.'), 'https://eyes.nasa.gov/'],
+      ['ESA Science & Exploration', 'ESA', satText('Misiones científicas y de exploración europeas.', 'European science and exploration missions.'), 'https://www.esa.int/Science_Exploration'],
+    ])}`,
+  report: () => `
+    <p class="modal-eyebrow">${satText('CONTRIBUIR CON DATOS ÚTILES', 'CONTRIBUTE USEFUL DATA')}</p>
+    <h3>${satText('Reportar una observación o un problema orbital', 'Report an observation or orbital data issue')}</h3>
+    <p>${satText('No existe un único receptor para todo. El destino correcto depende de si observaste un paso, recibiste telemetría, detectaste una reentrada o encontraste un error de catálogo.', 'There is no single receiver for everything. The right destination depends on whether you observed a pass, received telemetry, detected a reentry, or found a catalog issue.')}</p>
+    ${satelliteCards([
+      ['👁', satText('Observación visual', 'Visual observation'), satText('Anota hora UTC, coordenadas, dirección, elevación, duración, patrón de brillo y condiciones del cielo. Evita inferir el objeto antes de comparar trayectorias.', 'Record UTC time, coordinates, direction, elevation, duration, brightness pattern, and sky conditions. Avoid identifying the object before comparing tracks.')],
+      ['⌁', satText('Radio y telemetría', 'Radio and telemetry'), satText('Contribuye observaciones reproducibles a la red abierta SatNOGS: frecuencia, estación, tiempo y datos recibidos.', 'Contribute reproducible observations to the open SatNOGS network: frequency, station, time, and received data.')],
+      ['☄', satText('Reentrada o bólido', 'Reentry or fireball'), satText('Conserva el vídeo original, hora exacta, orientación y ubicación. Compara con predicciones de reentrada y redes de meteoros.', 'Preserve the original video, exact time, orientation, and location. Compare with reentry predictions and meteor networks.')],
+      ['⚠', satText('Conjunción o peligro', 'Conjunction or hazard'), satText('Los avisos operativos pertenecen a operadores y autoridades de seguridad espacial; no uses un foro público para emergencias.', 'Operational alerts belong with operators and space-safety authorities; do not use a public forum for emergencies.')],
+    ])}
+    <div class="sat-report-links">
+      <a class="cc-source-link" href="https://network.satnogs.org/" target="_blank" rel="noopener">SatNOGS Network ↗</a>
+      <a class="cc-source-link" href="https://celestrak.org/contact.php" target="_blank" rel="noopener">${satText('Contacto de CelesTrak', 'CelesTrak contact')} ↗</a>
+      <a class="cc-source-link" href="https://fireball.amsmeteors.org/members/imo/report_intro" target="_blank" rel="noopener">${satText('Reporte de bólidos IMO/AMS', 'IMO/AMS fireball report')} ↗</a>
+    </div>`,
+};
+
 const TABS = {
   hynek: () => `
     <h3>${t('classificationTitle')}</h3>
@@ -5125,44 +5415,69 @@ const TABS = {
 };
 
 function openModal(tab, trigger = $('btn-knowledge')) {
+  configureKnowledgeTabs(tab);
   openUILayer('knowledge', { trigger });
-  switchTab(tab || 'hynek');
+  switchTab(tab || (isSatelliteMode() ? 'structures' : 'hynek'));
 }
 function closeModal(options) { closeUILayer('knowledge', options); }
+function configureKnowledgeTabs(preferredTab) {
+  const tabs = isSatelliteMode()
+    ? satelliteKnowledgeTabs()
+    : ['hynek', 'anatomy', 'disclosure', 'glossary', 'method', 'sources', 'report'].map((id, i) => [id, t('modalTabs')[i]]);
+  const valid = new Set(tabs.map(([id]) => id));
+  const active = valid.has(preferredTab) ? preferredTab : tabs[0][0];
+  $('modal-tabs').innerHTML = tabs.map(([id, label]) => `
+    <button id="knowledge-tab-${id}" role="tab" aria-controls="modal-body" data-tab="${id}" class="${id === active ? 'active' : ''}">${label}</button>`).join('');
+  bindKnowledgeTabEvents();
+  $('modal').setAttribute('aria-label', isSatelliteMode()
+    ? satText('Atlas de conocimiento espacial', 'Space knowledge atlas')
+    : t('titleKnowledge'));
+}
 function switchTab(tab) {
-  if (!TABS[tab]) tab = 'hynek';
+  const tabMap = isSatelliteMode() ? SATELLITE_TABS : TABS;
+  const fallback = isSatelliteMode() ? 'structures' : 'hynek';
+  if (!tabMap[tab]) tab = fallback;
   document.querySelectorAll('#modal-tabs button').forEach(b => {
     const active = b.dataset.tab === tab;
     b.classList.toggle('active', active);
     b.setAttribute('aria-selected', active ? 'true' : 'false');
     b.tabIndex = active ? 0 : -1;
   });
-  $('modal-body').innerHTML = TABS[tab]();
+  $('modal-body').innerHTML = tabMap[tab]();
   $('modal-body').setAttribute('aria-labelledby', `knowledge-tab-${tab}`);
   $('modal-body').scrollTop = 0;
 }
-document.querySelectorAll('#modal-tabs button').forEach(b => {
-  b.onclick = () => switchTab(b.dataset.tab);
-  b.onkeydown = event => {
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    const tabs = [...document.querySelectorAll('#modal-tabs button')];
-    const index = tabs.indexOf(b);
-    const next = event.key === 'Home' ? tabs[0]
-      : event.key === 'End' ? tabs[tabs.length - 1]
-        : tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
-    event.preventDefault();
-    switchTab(next.dataset.tab);
-    next.focus();
-  };
-});
+function bindKnowledgeTabEvents() {
+  document.querySelectorAll('#modal-tabs button').forEach(b => {
+    b.onclick = () => switchTab(b.dataset.tab);
+    b.onkeydown = event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      const tabs = [...document.querySelectorAll('#modal-tabs button')];
+      const index = tabs.indexOf(b);
+      const next = event.key === 'Home' ? tabs[0]
+        : event.key === 'End' ? tabs[tabs.length - 1]
+          : tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      event.preventDefault();
+      switchTab(next.dataset.tab);
+      next.focus();
+    };
+  });
+}
+bindKnowledgeTabEvents();
 // "ver caso real" in the Anatomy tab → close modal and fly to the example case
 $('modal-body').addEventListener('click', e => {
   const b = e.target.closest('.anatomy-go');
-  if (!b) return;
-  closeModal({ restoreFocus: false, preserveHistory: true });
-  openCase(b.dataset.go, true);
+  if (b) {
+    closeModal({ restoreFocus: false, preserveHistory: true });
+    openCase(b.dataset.go, true);
+    return;
+  }
+  if (e.target.closest('.sat-expedition-start')) {
+    closeModal({ restoreFocus: false, preserveHistory: true });
+    tourStart($('btn-tour'));
+  }
 });
-$('btn-knowledge').onclick = event => openModal('hynek', event.currentTarget);
+$('btn-knowledge').onclick = event => openModal(isSatelliteMode() ? 'structures' : 'hynek', event.currentTarget);
 $('btn-close-modal').onclick = () => closeModal({ reason: 'button' });
 $('modal-overlay').addEventListener('click', e => {
   if (e.target === $('modal-overlay')) closeModal({ reason: 'backdrop' });
@@ -5171,7 +5486,12 @@ $('modal-overlay').addEventListener('click', e => {
 function openAppInfo(trigger = $('btn-about')) { openUILayer('info', { trigger }); }
 function closeAppInfo(options) { closeUILayer('info', options); }
 $('btn-about').onclick = event => openAppInfo(event.currentTarget);
-if ($('btn-forum')) $('btn-forum').onclick = () => { if (window.UFOForum) UFOForum.openGeneral(); };
+function openModeCommunity() {
+  if (!window.UFOForum) return;
+  if (isSatelliteMode()) UFOForum.openBoard('astronomia-y-satelites');
+  else UFOForum.openGeneral();
+}
+if ($('btn-forum')) $('btn-forum').onclick = openModeCommunity;
 $('btn-close-app-info').onclick = () => closeAppInfo({ reason: 'button' });
 $('app-info-overlay').addEventListener('click', e => {
   if (e.target === $('app-info-overlay')) closeAppInfo({ reason: 'backdrop' });
@@ -5397,13 +5717,13 @@ document.querySelectorAll('#mobile-more .more-grid button').forEach(b => {
     const returnTarget = mobileSheetTrigger('mobile-more');
     returnTarget?.focus({ preventScroll: true });
     if (act === 'stats') { openSheet('panel-stats', { trigger: returnTarget }); return; }
-    if (act === 'knowledge') { openModal('hynek', returnTarget); return; }
+    if (act === 'knowledge') { openModal(isSatelliteMode() ? 'structures' : 'hynek', returnTarget); return; }
     if (act === 'about') { openAppInfo(returnTarget); return; }
     if (act === 'pass') { openPassModal(returnTarget); return; }
     if (act === 'tour') { tourStart(returnTarget); return; }
-    if (act === 'add') { startPickMode(returnTarget); return; }
+    if (act === 'add') { openModeReport(returnTarget); return; }
     if (act === 'forum') {
-      if (window.UFOForum) UFOForum.openGeneral();
+      openModeCommunity();
       return;
     }
     const id = map[act];
