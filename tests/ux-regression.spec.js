@@ -118,6 +118,62 @@ test('community exposes 20 boards with canonical GitHub category links', async (
   });
 });
 
+test('satellite mode remaps every primary information action to the space domain', async ({ page }, testInfo) => {
+  test.setTimeout(75_000);
+  test.skip(testInfo.project.name !== 'desktop-chromium');
+  await expectNoRuntimeErrors(page, async () => {
+    await page.route('https://celestrak.org/**', route => route.fulfill({ status: 200, body: '' }));
+    await enterAtlas(page);
+    await page.locator('#btn-view-orbit').click();
+    await expect(page.locator('body')).toHaveAttribute('data-view-mode', 'satellites');
+    await page.waitForFunction(() => window.UFOSat?._vg?.()?.sats?.length > 0);
+
+    const labels = await page.locator('.topbar-actions button').evaluateAll(buttons =>
+      Object.fromEntries(buttons.slice(0, 5).map(button => [button.id, button.textContent.trim()])));
+    expect(labels).toEqual({
+      'btn-stats': '⌁ Análisis orbital',
+      'btn-knowledge': '◎ Atlas espacial',
+      'btn-forum': '☷ Comunidad espacial',
+      'btn-add': '+ Reportar dato',
+      'btn-tour': '⌖ Expedición espacial',
+    });
+
+    await page.locator('#btn-stats').click();
+    await expect(page.locator('#stats-title')).toContainText('Análisis orbital');
+    await expect(page.locator('#stats-content')).toContainText('Por régimen orbital');
+    await page.locator('#btn-close-stats').click();
+
+    await page.locator('#btn-knowledge').click();
+    await expect(page.locator('#modal-tabs [data-tab="structures"]')).toHaveText('Estructuras');
+    await expect(page.locator('#modal-tabs [data-tab="operators"]')).toHaveText('Organizaciones');
+    await expect(page.locator('#modal-body')).toContainText('Qué hemos construido en el espacio');
+    await page.keyboard.press('Escape');
+
+    await page.locator('#btn-add').click();
+    await expect(page.locator('#modal-overlay')).toBeVisible();
+    await expect(page.locator('#modal-tabs [data-tab="report"]')).toHaveClass(/active/);
+    await expect(page.locator('#modal-body')).toContainText('Reportar una observación o un problema orbital');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#pick-hint')).toBeHidden();
+
+    await page.locator('#btn-forum').click();
+    await expect(page.locator('.forum-board-detail h2')).toHaveText('Astronomía y satélites');
+    await page.locator('.forum-modal-close').click();
+
+    await page.locator('#btn-tour').click();
+    await expect(page.locator('#tour-card')).toBeVisible();
+    await expect(page.locator('#tour-title')).toContainText('Sputnik 1');
+    await page.locator('#tour-next').click();
+    await expect(page.locator('#tour-title')).toContainText('Vostok 1');
+    await page.keyboard.press('Escape');
+
+    await page.locator('#btn-view-earth').click();
+    await expect(page.locator('#btn-knowledge')).toHaveText('◎ Conocimiento');
+    await page.locator('#btn-add').click();
+    await expect(page.locator('#pick-hint')).toBeVisible();
+  });
+});
+
 test('mobile sheets, history, report mode and dirty forms remain coherent', async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   test.skip(testInfo.project.name !== 'mobile-chromium');
