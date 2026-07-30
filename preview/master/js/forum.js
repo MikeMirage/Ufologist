@@ -117,7 +117,12 @@
     return root.UFOCommunityCatalog || { sections: [], boards: [], programs: [] };
   }
   function categoryUrl(board) {
-    return DISCUSSIONS_URL + '/categories/' + encodeURIComponent(board.slug);
+    // GitHub's search grammar expects the visible category name, not its URL
+    // slug. A missing category path is rewritten to `category:<slug>` and
+    // silently produces the empty result that originally broke these links.
+    var category = board && board.name && (board.name.es || board.name.en);
+    return DISCUSSIONS_URL + '?discussions_q=' +
+      encodeURIComponent('is:open category:"' + String(category || '') + '"');
   }
 
   function overlay() {
@@ -125,16 +130,20 @@
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'forum-modal';
-      modal.className = 'forum-modal';
+      modal.className = 'forum-modal hidden';
       modal.setAttribute('aria-hidden', 'true');
       document.body.appendChild(modal);
     }
     return modal;
   }
 
-  function closeOverlay() {
+  function closeOverlay(options) {
     var modal = document.getElementById('forum-modal');
     if (!modal) return;
+    if (root.UFOUI) {
+      root.UFOUI.close('forum', options || {});
+      return;
+    }
     modal.style.display = 'none';
     modal.setAttribute('aria-hidden', 'true');
     document.removeEventListener('keydown', onModalKeydown, true);
@@ -163,11 +172,24 @@
     lastFocusedElement = document.activeElement;
     modal.innerHTML = html;
     modal.style.display = 'flex';
-    modal.setAttribute('aria-hidden', 'false');
-    modal.querySelector('.forum-modal-close').onclick = closeOverlay;
-    modal.onclick = function (event) { if (event.target === modal) closeOverlay(); };
-    document.addEventListener('keydown', onModalKeydown, true);
-    modal.querySelector('.forum-modal-close').focus();
+    modal.querySelector('.forum-modal-close').onclick = function () { closeOverlay({ reason: 'button' }); };
+    modal.onclick = function (event) { if (event.target === modal) closeOverlay({ reason: 'backdrop' }); };
+    if (root.UFOUI) {
+      root.UFOUI.register('forum', {
+        container: modal,
+        dialog: modal.querySelector('[role="dialog"]'),
+        modal: true,
+        priority: 120,
+        initialFocus: '.forum-modal-close',
+        requestClose: closeOverlay,
+      });
+      root.UFOUI.open('forum', { trigger: lastFocusedElement });
+    } else {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      document.addEventListener('keydown', onModalKeydown, true);
+      modal.querySelector('.forum-modal-close').focus();
+    }
     return modal;
   }
 
@@ -455,5 +477,6 @@
     close: closeOverlay,
     _caseTerm: caseTerm,
     _threadUrl: threadUrl,
+    _categoryUrl: categoryUrl,
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
