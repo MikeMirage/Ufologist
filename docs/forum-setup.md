@@ -38,7 +38,7 @@ siendo la capa pública de cuentas, publicación, moderación y notificaciones.
 6. Aplica la [arquitectura de 20 subforos](forum-categories.md), conservando el
    `categoryId` actual de `Casos`.
 7. Ejecuta `node tools/generate-discussion-forms.js` y fusiona los 20 formularios
-   de `.github/DISCUSSION_TEMPLATE/` en la rama por defecto.
+   de `.github/DISCUSSION_TEMPLATE/` en la rama por defecto (`master`).
 8. Incrementa las versiones de `community.js`, `forum.js` y CSS en `index.html`,
    publica y verifica.
 

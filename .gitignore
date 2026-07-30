@@ -11,3 +11,5 @@
 # Logs / temporales
 *.log
 node_modules/
+test-results/
+playwright-report/

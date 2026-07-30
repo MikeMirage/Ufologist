@@ -23,6 +23,7 @@ const I18N = {
     metaDescription: 'Atlas interactivo de avistamientos OVNI/UAP documentados: globo 3D, 80.000+ reportes, mapa de calor, línea de tiempo y fuentes originales.',
     brandTag: 'Observing the Unknown.',
     searchPlaceholder: 'Buscar caso o lugar...',
+    searchResults: 'Resultados de búsqueda',
     loading: 'Inicializando atlas orbital...',
     landingTag: 'Observing the Unknown.',
     landingSteps: ['Cargando encuentros...', 'Investigando datos desclasificados...', 'Enlazando con fuentes online...', 'Calibrando el atlas orbital...'],
@@ -36,6 +37,11 @@ const I18N = {
     navInfo: 'Info',
     navTour: 'Expedición',
     navPass: 'Pass',
+    navPrimaryLabel: 'Navegación principal',
+    navExploreGroup: 'Explorar y comprender',
+    navContributeGroup: 'Contribuir',
+    navUtilityGroup: 'Orientación e información',
+    navSupportGroup: 'Apoyar UFOlogist',
     viewEarth: 'Tierra',
     viewOrbit: 'Satélites',
     titleKnowledge: 'Centro de conocimiento',
@@ -143,8 +149,12 @@ const I18N = {
     saveJournal: 'Guardar en mi cuaderno',
     sightingNamePlaceholder: 'Luz pulsante sobre la sierra',
     notesPlaceholder: 'Duración, dirección, color, testigos, condiciones...',
+    discardSighting: 'Hay cambios sin guardar. ¿Descartar este avistamiento?',
+    discardPass: 'Has escrito un email. ¿Cerrar sin conservarlo?',
     pickHint: 'Haz clic en el globo en el lugar exacto del avistamiento',
     cancel: 'cancelar',
+    cancelReport: 'Cancelar registro',
+    close: 'Cerrar',
     modalTabs: ['Clasificación', 'Anatomía', 'Disclosure USA', 'Glosario', 'Metodología', 'Fuentes', 'Reportar'],
     appInfoTitle: 'Sobre UFOlogist',
     appInfoIntro: '<b>UFOlogist</b> es un atlas interactivo independiente para explorar el fenómeno UAP con contexto, fuentes y una mirada crítica. La intención no es empujar una conclusión cerrada, sino ordenar el material, separar evidencia de ruido y hacer visible dónde están los patrones.',
@@ -274,6 +284,7 @@ const I18N = {
     metaDescription: 'Interactive atlas of documented UFO/UAP sightings: 3D globe, 80,000+ reports, heatmap, timeline, and original sources.',
     brandTag: 'Observing the Unknown.',
     searchPlaceholder: 'Search case or place...',
+    searchResults: 'Search results',
     loading: 'Initializing orbital atlas...',
     landingTag: 'Observing the Unknown.',
     landingSteps: ['Loading encounters...', 'Checking declassified data...', 'Linking online sources...', 'Calibrating the orbital atlas...'],
@@ -287,6 +298,11 @@ const I18N = {
     navInfo: 'Info',
     navTour: 'Expedition',
     navPass: 'Pass',
+    navPrimaryLabel: 'Main navigation',
+    navExploreGroup: 'Explore and understand',
+    navContributeGroup: 'Contribute',
+    navUtilityGroup: 'Guidance and information',
+    navSupportGroup: 'Support UFOlogist',
     viewEarth: 'Earth',
     viewOrbit: 'Satellites',
     titleKnowledge: 'Knowledge center',
@@ -394,8 +410,12 @@ const I18N = {
     saveJournal: 'Save to my notebook',
     sightingNamePlaceholder: 'Pulsing light above the ridge',
     notesPlaceholder: 'Duration, direction, color, witnesses, conditions...',
+    discardSighting: 'You have unsaved changes. Discard this sighting?',
+    discardPass: 'You entered an email. Close without keeping it?',
     pickHint: 'Click the globe at the exact sighting location',
     cancel: 'cancel',
+    cancelReport: 'Cancel report',
+    close: 'Close',
     modalTabs: ['Classification', 'Anatomy', 'Disclosure USA', 'Glossary', 'Methodology', 'Sources', 'Report'],
     appInfoTitle: 'About UFOlogist',
     appInfoIntro: '<b>UFOlogist</b> is an independent interactive atlas for exploring the UAP phenomenon with context, sources, and a critical eye. The goal is not to force a conclusion, but to organize the material, separate evidence from noise, and reveal where patterns appear.',
@@ -563,6 +583,58 @@ function esc(value) {
 function hasCoords(d) { return Number.isFinite(d?.lat) && Number.isFinite(d?.lng); }
 function locale() { return currentLang === 'en' ? 'en-US' : 'es-ES'; }
 function fmtNum(n) { return n.toLocaleString(locale()); }
+function isSatelliteMode() { return document.body.dataset.viewMode === 'satellites'; }
+function satText(es, en) { return currentLang === 'en' ? en : es; }
+function satelliteKnowledgeTabs() {
+  return [
+    ['structures', satText('Estructuras', 'Structures')],
+    ['orbits', satText('Órbitas', 'Orbits')],
+    ['operators', satText('Organizaciones', 'Organizations')],
+    ['history', satText('Historia', 'History')],
+    ['glossary', satText('Glosario', 'Glossary')],
+    ['method', satText('Método', 'Method')],
+    ['sources', satText('Fuentes', 'Sources')],
+    ['report', satText('Reportar', 'Report')],
+  ];
+}
+function syncModeNavigation(mode = document.body.dataset.viewMode) {
+  const satelliteMode = mode === 'satellites';
+  const labels = satelliteMode ? {
+    stats: [satText('Análisis orbital', 'Orbital analysis'), satText('Estadísticas de satélites, órbitas y despliegues', 'Satellite, orbit, and deployment statistics')],
+    knowledge: [satText('Atlas espacial', 'Space atlas'), satText('Satélites, estaciones, operadores y exploración espacial', 'Satellites, stations, operators, and space exploration')],
+    forum: [satText('Comunidad espacial', 'Space community'), satText('Astronomía, seguimiento y observación de satélites', 'Astronomy, tracking, and satellite observation')],
+    add: [satText('Reportar dato', 'Report data'), satText('Reportar una observación o incidencia orbital', 'Report an orbital observation or data issue')],
+    tour: [satText('Expedición espacial', 'Space expedition'), satText('Recorrido por los hitos de la exploración espacial', 'Tour the milestones of space exploration')],
+  } : {
+    stats: [t('navStats'), t('titleStats')],
+    knowledge: [t('navKnowledge'), t('titleKnowledge')],
+    forum: [t('navCommunity'), t('titleCommunity')],
+    add: [t('navReport'), t('titleReport')],
+    tour: [t('navTour'), t('titleTour')],
+  };
+  const defs = [
+    ['btn-stats', '⌁', labels.stats],
+    ['btn-knowledge', '◎', labels.knowledge],
+    ['btn-forum', '☷', labels.forum],
+    ['btn-add', '+', labels.add],
+    ['btn-tour', '⌖', labels.tour],
+  ];
+  defs.forEach(([id, icon, value]) => {
+    const button = $(id);
+    if (!button) return;
+    button.textContent = `${icon} ${value[0]}`;
+    button.title = value[1];
+    button.setAttribute('aria-label', value[1]);
+  });
+  const mobileKeys = { stats: labels.stats[0], knowledge: labels.knowledge[0], forum: labels.forum[0], add: labels.add[0], tour: labels.tour[0] };
+  document.querySelectorAll('#mobile-more button[data-act]').forEach(button => {
+    const label = button.querySelector('span');
+    if (label && mobileKeys[button.dataset.act]) label.textContent = mobileKeys[button.dataset.act];
+  });
+  if ($('stats-title')) $('stats-title').textContent = satelliteMode
+    ? `🛰 ${satText('Análisis orbital', 'Orbital analysis')}`
+    : `📊 ${t('statsTitle')}`;
+}
 function typeLabel(code) { return currentLang === 'en' && TYPE_TEXT.en[code] ? TYPE_TEXT.en[code][0] : TYPE_META[code].label; }
 function typeDesc(code) { return currentLang === 'en' && TYPE_TEXT.en[code] ? TYPE_TEXT.en[code][1] : TYPE_META[code].desc; }
 function shapeLabel(i) { return currentLang === 'en' && SHAPE_TEXT.en[i] ? SHAPE_TEXT.en[i] : SHAPE_META[i].label; }
@@ -960,9 +1032,265 @@ function setFirstText(el, text) { if (el && el.childNodes.length) el.childNodes[
 function setButton(id, icon, labelKey, titleKey) {
   const el = $(id);
   if (!el) return;
-  el.textContent = `${icon} ${t(labelKey)}`;
+  const label = t(labelKey);
+  const iconEl = document.createElement('span');
+  iconEl.className = 'action-icon';
+  iconEl.setAttribute('aria-hidden', 'true');
+  iconEl.textContent = icon;
+  const labelEl = document.createElement('span');
+  labelEl.className = 'action-label';
+  labelEl.textContent = label;
+  el.replaceChildren(iconEl, labelEl);
+  el.setAttribute('aria-label', label);
   if (titleKey) el.title = t(titleKey);
 }
+
+// ---------- UI layer manager ----------
+// One source of truth for desktop dialogs and floating panels. It owns stacking,
+// focus restoration, focus trapping and the body scroll lock.
+const uiLayerRegistry = new Map();
+const uiLayerStack = [];
+let bodyOverflowBeforeModal = '';
+let uiHistoryArmed = Boolean(history.state?.ufologistUiLayer);
+let uiHistoryClosing = false;
+let handlingUIHistoryPop = false;
+let uiHistoryAfterClose = null;
+
+function emitUXEvent(name, detail = {}) {
+  const payload = { name, ...detail, viewport: isMobile() ? 'mobile' : 'desktop', at: Date.now() };
+  window.dispatchEvent(new CustomEvent('ufologist:ux', { detail: payload }));
+  if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event: `ux_${name}`, ...payload });
+}
+
+function registerUILayer(id, options) {
+  const container = typeof options.container === 'string' ? $(options.container) : options.container;
+  if (!container) return;
+  uiLayerRegistry.set(id, {
+    id,
+    container,
+    dialog: options.dialog
+      ? (typeof options.dialog === 'string' ? $(options.dialog) : options.dialog)
+      : container,
+    modal: Boolean(options.modal),
+    priority: options.priority || 0,
+    initialFocus: options.initialFocus || null,
+    requestClose: options.requestClose || null,
+  });
+}
+
+function topUILayer() {
+  return uiLayerStack.length ? uiLayerStack[uiLayerStack.length - 1] : null;
+}
+
+function focusableElements(container) {
+  if (!container) return [];
+  return [...container.querySelectorAll(
+    'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), ' +
+    'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )].filter(el => !el.closest('.hidden') && el.getAttribute('aria-hidden') !== 'true');
+}
+
+function syncModalEnvironment() {
+  const topModal = [...uiLayerStack].reverse().find(entry => entry.modal);
+  document.querySelectorAll('[data-ui-layer-inert="true"]').forEach(child => {
+    child.inert = false;
+    delete child.dataset.uiLayerInert;
+  });
+  if (topModal) {
+    if (!document.body.dataset.uiScrollLocked) {
+      bodyOverflowBeforeModal = document.body.style.overflow;
+      document.body.dataset.uiScrollLocked = 'true';
+    }
+    document.body.style.overflow = 'hidden';
+    [...document.body.children].forEach(child => {
+      if (child === topModal.definition.container || child.tagName === 'SCRIPT' || topModal.inertExempt.includes(child)) return;
+      child.inert = true;
+      child.dataset.uiLayerInert = 'true';
+    });
+  } else {
+    if (document.body.dataset.uiScrollLocked) {
+      document.body.style.overflow = bodyOverflowBeforeModal;
+      delete document.body.dataset.uiScrollLocked;
+    }
+  }
+}
+
+function openUILayer(id, options = {}) {
+  const definition = uiLayerRegistry.get(id);
+  if (!definition) return;
+  const existingIndex = uiLayerStack.findIndex(entry => entry.id === id);
+  if (existingIndex >= 0) uiLayerStack.splice(existingIndex, 1);
+  const trigger = options.trigger || document.activeElement;
+  definition.container.classList.remove('hidden');
+  definition.container.setAttribute('aria-hidden', 'false');
+  const entry = {
+    id,
+    definition,
+    trigger,
+    modal: options.modal ?? definition.modal,
+    priority: options.priority ?? definition.priority,
+    inertExempt: (options.inertExempt || []).map(item => typeof item === 'string' ? $(item) : item).filter(Boolean),
+    historyManaged: options.history !== false,
+  };
+  if (trigger?.matches?.('button, [role="button"]')) {
+    trigger.setAttribute('aria-expanded', 'true');
+    trigger.setAttribute('aria-controls', definition.container.id);
+  }
+  if (definition.dialog?.getAttribute('role') === 'dialog') {
+    definition.dialog.setAttribute('aria-modal', entry.modal ? 'true' : 'false');
+  }
+  uiLayerStack.push(entry);
+  uiLayerStack.sort((a, b) => a.priority - b.priority);
+  if (entry.historyManaged && !uiHistoryArmed) {
+    history.pushState({ ...(history.state || {}), ufologistUiLayer: true }, '', location.href);
+    uiHistoryArmed = true;
+  }
+  syncModalEnvironment();
+  emitUXEvent('layer_open', { layer: id });
+  if (options.focus === false) return;
+  requestAnimationFrame(() => {
+    if (topUILayer() !== entry) return;
+    const configured = typeof definition.initialFocus === 'string'
+      ? definition.dialog.querySelector(definition.initialFocus)
+      : definition.initialFocus;
+    const target = configured || focusableElements(definition.dialog)[0] || definition.dialog;
+    if (!target.hasAttribute('tabindex') && target === definition.dialog) target.tabIndex = -1;
+    target.focus({ preventScroll: true });
+  });
+}
+
+function closeUILayer(id, options = {}) {
+  const definition = uiLayerRegistry.get(id);
+  if (!definition) return;
+  const index = uiLayerStack.findIndex(entry => entry.id === id);
+  const entry = index >= 0 ? uiLayerStack[index] : null;
+  const wasTop = entry && topUILayer() === entry;
+  if (index >= 0) uiLayerStack.splice(index, 1);
+  definition.container.classList.add('hidden');
+  definition.container.setAttribute('aria-hidden', 'true');
+  if (entry?.trigger?.matches?.('button, [role="button"]')) {
+    entry.trigger.setAttribute('aria-expanded', 'false');
+  }
+  syncModalEnvironment();
+  if (entry) emitUXEvent('layer_close', { layer: id, method: options.reason || 'programmatic' });
+  const hasManagedLayer = uiLayerStack.some(item => item.historyManaged);
+  if (entry?.historyManaged && !handlingUIHistoryPop && !options.preserveHistory
+      && !hasManagedLayer && uiHistoryArmed && history.state?.ufologistUiLayer) {
+    uiHistoryClosing = true;
+    uiHistoryArmed = false;
+    history.back();
+  }
+  if (options.restoreFocus === false || !wasTop) return;
+  const target = entry?.trigger;
+  if (target && target.isConnected && !target.closest('.hidden') && !target.closest('[inert]')) {
+    requestAnimationFrame(() => target.focus({ preventScroll: true }));
+  }
+}
+
+function requestCloseTopUILayer(reason = 'programmatic') {
+  const entry = topUILayer();
+  if (!entry) return false;
+  if (entry.definition.requestClose) entry.definition.requestClose({ reason });
+  else closeUILayer(entry.id, { reason });
+  return true;
+}
+
+window.addEventListener('popstate', event => {
+  if (uiHistoryClosing) {
+    uiHistoryClosing = false;
+    if (uiHistoryAfterClose) {
+      const afterClose = uiHistoryAfterClose;
+      uiHistoryAfterClose = null;
+      afterClose();
+    }
+    return;
+  }
+  if (!uiHistoryArmed || event.state?.ufologistUiLayer) return;
+  handlingUIHistoryPop = true;
+  requestCloseTopUILayer('history');
+  handlingUIHistoryPop = false;
+  const hasManagedLayer = uiLayerStack.some(entry => entry.historyManaged);
+  uiHistoryArmed = hasManagedLayer;
+  if (hasManagedLayer) {
+    history.pushState({ ...(history.state || {}), ufologistUiLayer: true }, '', location.href);
+  }
+});
+
+function trapTopModalFocus(event) {
+  const entry = topUILayer();
+  if (!entry?.modal || event.key !== 'Tab') return false;
+  const focusable = focusableElements(entry.definition.dialog);
+  if (!focusable.length) {
+    event.preventDefault();
+    entry.definition.dialog.focus();
+    return true;
+  }
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (!entry.definition.dialog.contains(document.activeElement)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  } else if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+  return true;
+}
+
+registerUILayer('case', {
+  container: 'panel-case', priority: 40, initialFocus: '#btn-close-case',
+  requestClose: options => closeCasePanel(options),
+});
+registerUILayer('stats', {
+  container: 'panel-stats', priority: 40, initialFocus: '#btn-close-stats',
+  requestClose: options => closeStats(options),
+});
+registerUILayer('tour', {
+  container: 'tour-card', priority: 60, initialFocus: '#tour-close',
+  requestClose: options => tourEnd(options),
+});
+registerUILayer('sighting', {
+  container: 'sight-overlay', dialog: 'sight-form', modal: true, priority: 100,
+  initialFocus: '#sf-name', requestClose: options => closeSightingForm(options),
+});
+registerUILayer('knowledge', {
+  container: 'modal-overlay', dialog: 'modal', modal: true, priority: 100,
+  initialFocus: '#btn-close-modal', requestClose: options => closeModal(options),
+});
+registerUILayer('info', {
+  container: 'app-info-overlay', dialog: 'app-info-modal', modal: true, priority: 100,
+  initialFocus: '#btn-close-app-info', requestClose: options => closeAppInfo(options),
+});
+registerUILayer('pass', {
+  container: 'pass-overlay', dialog: 'pass-modal', modal: true, priority: 100,
+  initialFocus: '#btn-close-pass', requestClose: options => closePassModal(options),
+});
+registerUILayer('filters', {
+  container: 'panel-left', priority: 80, initialFocus: '#btn-close-filters',
+  requestClose: options => closeMobileSheet('panel-left', options),
+});
+registerUILayer('timeline', {
+  container: 'timeline', priority: 80, initialFocus: '#btn-close-timeline',
+  requestClose: options => closeMobileSheet('timeline', options),
+});
+registerUILayer('more', {
+  container: 'mobile-more', priority: 80, initialFocus: '#btn-close-more',
+  requestClose: options => closeMobileSheet('mobile-more', options),
+});
+registerUILayer('pick', {
+  container: 'pick-hint', priority: 30, initialFocus: '#pick-cancel',
+  requestClose: options => cancelPickMode(options),
+});
+window.UFOUI = {
+  register: registerUILayer,
+  open: openUILayer,
+  close: closeUILayer,
+  top: () => topUILayer()?.id || null,
+};
+
 function applyPassI18n() {
   const modal = $('pass-modal');
   if (!modal) return;
@@ -996,6 +1324,7 @@ function applyStaticI18n() {
   if (meta) meta.content = t('metaDescription');
   setText('.brand-text p', t('brandTag'));
   if ($('search')) $('search').placeholder = t('searchPlaceholder');
+  if ($('search-results')) $('search-results').setAttribute('aria-label', t('searchResults'));
   setText('#loading p', t('loading'));
   setText('.landing-tag', t('landingTag'));
   setText('#landing-log', t('loading'));
@@ -1011,6 +1340,18 @@ function applyStaticI18n() {
   setButton('btn-about', 'ⓘ', 'navInfo', 'titleInfo');
   setButton('btn-tour', '⌖', 'navTour', 'titleTour');
   setButton('btn-pass', '◇', 'navPass', 'titlePass');
+  const primaryNav = document.querySelector('.topbar-actions');
+  if (primaryNav) primaryNav.setAttribute('aria-label', t('navPrimaryLabel'));
+  const navGroupLabels = {
+    explore: 'navExploreGroup',
+    contribute: 'navContributeGroup',
+    utility: 'navUtilityGroup',
+    support: 'navSupportGroup',
+  };
+  document.querySelectorAll('.topbar-action-group[data-nav-group]').forEach(group => {
+    const key = navGroupLabels[group.dataset.navGroup];
+    if (key) group.setAttribute('aria-label', t(key));
+  });
   setText('#btn-view-earth', t('viewEarth'));
   setText('#btn-view-orbit', t('viewOrbit'));
   setText('#density-legend .density-title', t('densityLegend'));
@@ -1022,8 +1363,14 @@ function applyStaticI18n() {
   document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
 
   setText('#panel-left .panel-head h2', t('filters'));
-  if ($('btn-collapse-left')) $('btn-collapse-left').title = t('collapse');
-  if ($('btn-expand-left')) $('btn-expand-left').title = t('expand');
+  if ($('btn-collapse-left')) {
+    $('btn-collapse-left').title = t('collapse');
+    $('btn-collapse-left').setAttribute('aria-label', t('collapse'));
+  }
+  if ($('btn-expand-left')) {
+    $('btn-expand-left').title = t('expand');
+    $('btn-expand-left').setAttribute('aria-label', t('expand'));
+  }
   const blocks = document.querySelectorAll('#panel-left .filter-block');
   if (blocks[0]) {
     setText(blocks[0].querySelector('h3'), t('layers'));
@@ -1097,9 +1444,24 @@ function applyStaticI18n() {
     [...$('sf-shape').options].forEach(opt => { opt.textContent = shapeLabel(+opt.value); });
   }
   if ($('pick-hint') && $('pick-cancel')) {
+    $('pick-hint').setAttribute('aria-label', t('navReport'));
     $('pick-hint').childNodes[0].nodeValue = `🎯 ${t('pickHint')} `;
-    $('pick-cancel').textContent = t('cancel');
+    $('pick-cancel').textContent = t('cancelReport');
   }
+  const closeLabels = {
+    'btn-close-case': `${t('close')} ${t('cases')}`,
+    'btn-close-stats': `${t('close')} ${t('statsTitle')}`,
+    'tour-close': `${t('close')} ${t('navTour')}`,
+    'sight-close': `${t('close')} ${t('sightingTitle')}`,
+    'btn-close-modal': `${t('close')} ${t('navKnowledge')}`,
+    'btn-close-app-info': `${t('close')} ${t('navInfo')}`,
+    'btn-close-pass': `${t('close')} ${t('navPass')}`,
+  };
+  Object.entries(closeLabels).forEach(([id, label]) => {
+    if (!$(id)) return;
+    $(id).setAttribute('aria-label', label);
+    $(id).title = label;
+  });
 
   document.querySelectorAll('#modal-tabs button').forEach((b, i) => { b.textContent = t('modalTabs')[i] || b.textContent; });
   setText('#app-info-modal h2', t('appInfoTitle'));
@@ -1118,19 +1480,44 @@ function applyStaticI18n() {
 
   setText('#mobile-more .more-title', t('mobileMenu'));
   const moreGrids = document.querySelectorAll('#mobile-more .more-grid');
-  const moreButtons = moreGrids[0] ? moreGrids[0].querySelectorAll('button span') : [];
-  ['navKnowledge', 'navStats', 'navReport', 'navCommunity', 'navInfo', 'navTour', 'navPass', 'ambientLabel'].forEach((key, i) => { if (moreButtons[i]) moreButtons[i].textContent = t(key); });
+  const moreActionLabels = {
+    stats: 'navStats',
+    knowledge: 'navKnowledge',
+    forum: 'navCommunity',
+    add: 'navReport',
+    tour: 'navTour',
+    about: 'navInfo',
+    pass: 'navPass',
+    audio: 'ambientLabel',
+  };
+  if (moreGrids[0]) {
+    moreGrids[0].querySelectorAll('button[data-act]').forEach(button => {
+      const key = moreActionLabels[button.dataset.act];
+      const label = button.querySelector('span');
+      if (key && label) label.textContent = t(key);
+    });
+  }
   const mobileTitles = document.querySelectorAll('#mobile-more .more-title');
   if (mobileTitles[1]) mobileTitles[1].textContent = t('mobileExport');
   const exportSpans = moreGrids[1] ? moreGrids[1].querySelectorAll('button span') : [];
   if (exportSpans[2]) exportSpans[2].textContent = t('permalink');
   setText('#mobile-more .hint', t('mobileHelp'));
+  ['btn-close-filters', 'btn-close-timeline', 'btn-close-more'].forEach(id => {
+    if ($(id)) {
+      const label = `${t('close')} ${id === 'btn-close-filters'
+        ? t('mobileFilters')
+        : id === 'btn-close-timeline' ? t('mobileTime') : t('mobileMore')}`;
+      $(id).setAttribute('aria-label', label);
+      $(id).title = label;
+    }
+  });
   const navs = document.querySelectorAll('#mobile-nav button');
   const navLabels = ['mobileGlobe', 'mobileFilters', 'mobileTime', 'mobileData', 'mobileMore'];
   navs.forEach((b, i) => {
     const icon = b.querySelector('b')?.outerHTML || '';
     b.innerHTML = `${icon}${t(navLabels[i])}`;
   });
+  syncModeNavigation();
 }
 function setLanguage(lang) {
   if (!I18N[lang] || lang === currentLang) return;
@@ -1153,10 +1540,13 @@ function setLanguage(lang) {
   refresh();
   if (!$('panel-stats').classList.contains('hidden')) renderStats();
   if (!$('modal-overlay').classList.contains('hidden')) {
-    const active = document.querySelector('#modal-tabs button.active')?.dataset.tab || 'hynek';
+    const active = document.querySelector('#modal-tabs button.active')?.dataset.tab || (isSatelliteMode() ? 'structures' : 'hynek');
+    configureKnowledgeTabs(active);
     switchTab(active);
   }
-  if (state.selectedCase) openCase(state.selectedCase, false);
+  if (state.selectedCase && !$('panel-case').classList.contains('hidden')) {
+    openCase(state.selectedCase, false, { history: false });
+  }
 }
 applyStaticI18n();
 document.querySelectorAll('.lang-toggle button').forEach(b => {
@@ -1348,7 +1738,7 @@ let lastMassCount = 0;
 // the weather-density layer is disabled.
 function computeCapAltitudes() {
   if (typeof h3 === 'undefined' || !h3.latLngToCell) return;
-  const res = (window.matchMedia('(max-width: 760px)').matches) ? 2 : 3;
+  const res = (window.matchMedia('(max-width: 760px), (max-width: 900px) and (max-height: 500px)').matches) ? 2 : 3;
   const weight = new Map();
   const bump = (lat, lng) => { const c = h3.latLngToCell(lat, lng, res); weight.set(c, (weight.get(c) || 0) + 1); };
   if (massData) massData.forEach(r => bump(r.lat, r.lng));
@@ -2147,7 +2537,7 @@ function openClusterBrowser(cluster) {
     ${hidden ? `<p class="hint">${currentLang === 'en'
       ? `${fmtNum(hidden)} more filtered records are in this group. Zoom or narrow the filters to inspect all of them.`
       : `${fmtNum(hidden)} registros filtrados más están en este grupo. Acércate o ajusta filtros para inspeccionarlos todos.`}</p>` : ''}`;
-  $('panel-case').classList.remove('hidden');
+  openCaseLayer();
   mobileOnCaseOpen();
   $('case-content').querySelectorAll('.cluster-case-row').forEach(btn => {
     btn.onclick = () => openReportFromMarker(rows[+btn.dataset.i], 'inspect');
@@ -2883,8 +3273,11 @@ function setGlobeSurfaceVisible(visible) {
 }
 function setViewMode(mode) {
   if (!['earth', 'orbit', 'satellites'].includes(mode)) return;
+  const nextDomain = mode === 'satellites' ? 'satellites' : 'uap';
+  if (typeof tour !== 'undefined' && tour.active && tour.domain !== nextDomain) tourEnd();
   state.viewMode = mode;
-  if (mode !== 'earth' && typeof tour !== 'undefined' && tour.active) tourEnd();  // el tour es de la vista Tierra
+  document.body.dataset.viewMode = mode;
+  syncModeNavigation(mode);
   document.querySelectorAll('#view-toggle button').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === mode);
   });
@@ -2920,6 +3313,11 @@ function setViewMode(mode) {
     globe.pointOfView({ lat: 30, lng: -40, altitude: 2.3 }, 900);
   }
   refresh();
+  if (!$('panel-stats').classList.contains('hidden')) renderStats();
+  if (!$('modal-overlay').classList.contains('hidden')) {
+    const active = document.querySelector('#modal-tabs button.active')?.dataset.tab;
+    configureKnowledgeTabs(active);
+  }
 }
 $('btn-view-earth').onclick = () => setViewMode('earth');
 $('btn-view-orbit').onclick = () => setViewMode('satellites');
@@ -3565,7 +3963,7 @@ function renderAstroBlock(ctx) {
   </div>`;
 }
 
-function openCase(id, fly) {
+function openCase(id, fly, options = {}) {
   const pool = allCuratedPool();
   const c = pool.find(x => x.id === id);
   if (!c) return;
@@ -3606,7 +4004,7 @@ function openCase(id, fly) {
       <button id="cc-prev">← ${t('prev')}</button>
       <button id="cc-next">${t('next')} →</button>
     </div>`;
-  $('panel-case').classList.remove('hidden');
+  openCaseLayer({ history: options.history !== false });
   mobileOnCaseOpen();
   if (!c.mine) hydrateMedia(c);
   const visible = filteredCases();
@@ -3619,7 +4017,7 @@ function openCase(id, fly) {
   };
   $('cc-sky').onclick = () => {
     const when = c.date ? (c.date + (c.time ? 'T' + c.time : 'T22:00')) : undefined;
-    $('panel-case').classList.add('hidden');
+    closeUILayer('case', { restoreFocus: false });
     state.selectedCase = null;
     setViewMode('satellites');
     if (window.UFOSat && UFOSat.analyzeSkyAt) UFOSat.analyzeSkyAt(c.lat, c.lng, when);
@@ -3632,7 +4030,7 @@ function openCase(id, fly) {
   if (c.mine) $('cc-delete').onclick = () => {
     journal = journal.filter(j => j.id !== c.id);
     saveJournal();
-    $('panel-case').classList.add('hidden');
+    closeUILayer('case');
     state.selectedCase = null;
     buildTypeFilters();
     refresh();
@@ -3680,7 +4078,7 @@ function openMassReport(d, fly = false) {
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent((d.loc || '') + ' ' + Math.floor(d.d / 10000) + ' UFO sighting')}">▶ ${t('searchVideos')}</a>
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent((d.loc || '') + ' ' + Math.floor(d.d / 10000) + ' UFO')}">🖼 ${t('searchImages')}</a>
     </div>`;
-  $('panel-case').classList.remove('hidden');
+  openCaseLayer();
   mobileOnCaseOpen();
   if (fly) {
     const inspect = fly === 'inspect';
@@ -3721,7 +4119,7 @@ function openGeipanReport(d, fly = false) {
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">▶ ${t('searchVideos')}</a>
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}">🖼 ${t('searchImages')}</a>
     </div>`;
-  $('panel-case').classList.remove('hidden');
+  openCaseLayer();
   mobileOnCaseOpen();
   if (fly) {
     const inspect = fly === 'inspect';
@@ -3770,26 +4168,89 @@ function openOfficialReport(d, fly) {
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}">▶ ${t('searchVideos')}</a>
       <a class="btn-ghost small" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}">🖼 ${t('searchImages')}</a>
     </div>`;
-  $('panel-case').classList.remove('hidden');
+  openCaseLayer();
   mobileOnCaseOpen();
   if (fly && coords) {
     const inspect = fly === 'inspect';
     focusCameraOnReport(d, isMobile() ? 1.28 : 1.06, inspect ? 520 : 950, inspect ? 'inspect' : 'navigate');
   }
 }
-$('btn-close-case').onclick = () => {
-  $('panel-case').classList.add('hidden');
+function openCaseLayer(options = {}) {
+  openUILayer('case', {
+    ...options,
+    modal: isMobile(),
+    priority: isMobile() ? 80 : 40,
+    inertExempt: isMobile() ? ['sheet-backdrop'] : [],
+  });
+}
+function closeCasePanel(options = {}) {
+  if (tour.active && options.keepTour !== true) {
+    tourEnd();
+    return;
+  }
+  closeUILayer('case', options);
+  setMobileSheetSemantics('panel-case', false);
   state.selectedCase = null;
   clearInspectedMarker();
   renderCaseMarkersFromCurrent();
   scheduleHashUpdate();
-};
+  mobileOnSheetClose();
+}
+$('btn-close-case').onclick = () => closeCasePanel({ reason: 'button' });
 
 // ---------- Search ----------
 const searchInput = $('search'), searchResults = $('search-results');
+function hideSearchResults({ restoreFocus = false } = {}) {
+  searchResults.classList.add('hidden');
+  searchInput.setAttribute('aria-expanded', 'false');
+  searchInput.removeAttribute('aria-activedescendant');
+  if (restoreFocus) searchInput.focus();
+}
+function activateSearchResult(el) {
+  if (!el?.dataset.id) return;
+  emitUXEvent('search_result_open', { kind: el.dataset.kind, result: el.dataset.id });
+  hideSearchResults();
+  searchInput.value = '';
+  if (el.dataset.kind === 'official') {
+    const o = (officialData || []).find(x => x.id === el.dataset.id);
+    if (!o) return;
+    if (o.year < state.yearFrom || o.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
+    if (!state.officialSources.has(o.sid)) { state.officialSources.add(o.sid); document.querySelector(`.shape-pill[data-official-source="${o.sid}"]`)?.classList.remove('off'); }
+    const oq = geoQuality(o);
+    if (!state.geoQuality.has(oq)) { state.geoQuality.add(oq); document.querySelector(`.shape-pill[data-geo-quality="${oq}"]`)?.classList.remove('off'); }
+    geoContextTags(o).forEach(tag => {
+      if (!state.geoContexts.has(tag)) {
+        state.geoContexts.add(tag);
+        document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
+      }
+    });
+    state.officialOn = true;
+    $('official-toggle').checked = true;
+    refresh();
+    searchInput.focus({ preventScroll: true });
+    openOfficialReport(o, true);
+    return;
+  }
+  const c = allCuratedPool().find(x => x.id === el.dataset.id);
+  if (!c) return;
+  if (c.year < state.yearFrom || c.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
+  if (!state.types.has(c.type)) { state.types.add(c.type); document.querySelector(`.type-chip[data-type="${c.type}"]`)?.classList.remove('off'); }
+  if (!c.mine && c.cred < state.credMin) { state.credMin = 1; $('cred-range').value = 1; $('cred-stars').textContent = '★☆☆☆☆'; }
+  const cq = geoQuality(c);
+  if (!state.geoQuality.has(cq)) { state.geoQuality.add(cq); document.querySelector(`.shape-pill[data-geo-quality="${cq}"]`)?.classList.remove('off'); }
+  geoContextTags(c).forEach(tag => {
+    if (!state.geoContexts.has(tag)) {
+      state.geoContexts.add(tag);
+      document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
+    }
+  });
+  refresh();
+  searchInput.focus({ preventScroll: true });
+  openCase(c.id, true);
+}
 searchInput.oninput = () => {
   const q = searchInput.value.trim().toLowerCase();
-  if (q.length < 2) { searchResults.classList.add('hidden'); return; }
+  if (q.length < 2) { hideSearchResults(); return; }
   const curatedHits = allCuratedPool().filter(c =>
     caseName(c).toLowerCase().includes(q) || (caseLoc(c) || '').toLowerCase().includes(q) ||
     (caseCountry(c) || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q) ||
@@ -3807,55 +4268,48 @@ searchInput.oninput = () => {
       const isOfficial = hit.kind === 'official';
       const color = isOfficial ? reportVisualColor(c) : TYPE_META[c.type].color;
       return `
-        <div class="sr-item" data-kind="${hit.kind}" data-id="${esc(c.id)}">
-          <span class="sr-dot" style="background:${color}"></span>
-          <div><div class="sr-name">${isOfficial ? esc(c.title) : caseName(c)}</div>
-          <div class="sr-meta">${c.year} · ${isOfficial ? esc(c.source) : `${caseLoc(c)}${caseCountry(c) ? ', ' + caseCountry(c) : ''}`}</div></div>
-        </div>`;
+        <button type="button" class="sr-item" role="option" id="search-result-${esc(c.id)}"
+          data-kind="${hit.kind}" data-id="${esc(c.id)}">
+          <span class="sr-dot" style="background:${color}" aria-hidden="true"></span>
+          <span class="sr-copy"><span class="sr-name">${isOfficial ? esc(c.title) : esc(caseName(c))}</span>
+          <span class="sr-meta">${c.year} · ${isOfficial ? esc(c.source) : `${caseLoc(c)}${caseCountry(c) ? ', ' + caseCountry(c) : ''}`}</span></span>
+        </button>`;
     }).join('')
-    : `<div class="sr-item"><div class="sr-meta">${t('noResults')}</div></div>`;
+    : `<div class="sr-item" role="option" aria-disabled="true"><div class="sr-meta">${t('noResults')}</div></div>`;
   searchResults.classList.remove('hidden');
+  searchInput.setAttribute('aria-expanded', 'true');
   searchResults.querySelectorAll('.sr-item[data-id]').forEach(el => {
-    el.onclick = () => {
-      searchResults.classList.add('hidden');
-      searchInput.value = '';
-      if (el.dataset.kind === 'official') {
-        const o = (officialData || []).find(x => x.id === el.dataset.id);
-        if (!o) return;
-        if (o.year < state.yearFrom || o.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
-        if (!state.officialSources.has(o.sid)) { state.officialSources.add(o.sid); document.querySelector(`.shape-pill[data-official-source="${o.sid}"]`)?.classList.remove('off'); }
-        const oq = geoQuality(o);
-        if (!state.geoQuality.has(oq)) { state.geoQuality.add(oq); document.querySelector(`.shape-pill[data-geo-quality="${oq}"]`)?.classList.remove('off'); }
-        geoContextTags(o).forEach(tag => {
-          if (!state.geoContexts.has(tag)) {
-            state.geoContexts.add(tag);
-            document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
-          }
-        });
-        state.officialOn = true; $('official-toggle').checked = true;
-        refresh();
-        openOfficialReport(o, true);
-        return;
+    el.onclick = () => activateSearchResult(el);
+    el.onkeydown = event => {
+      const options = [...searchResults.querySelectorAll('.sr-item[data-id]')];
+      const index = options.indexOf(el);
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        options[(index + 1) % options.length].focus();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        (index > 0 ? options[index - 1] : searchInput).focus();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        hideSearchResults({ restoreFocus: true });
       }
-      const c = allCuratedPool().find(x => x.id === el.dataset.id);
-      if (c.year < state.yearFrom || c.year > state.yearTo) { state.yearFrom = YEAR_MIN; state.yearTo = YEAR_MAX; positionHandles(); }
-      if (!state.types.has(c.type)) { state.types.add(c.type); document.querySelector(`.type-chip[data-type="${c.type}"]`)?.classList.remove('off'); }
-      if (!c.mine && c.cred < state.credMin) { state.credMin = 1; $('cred-range').value = 1; $('cred-stars').textContent = '★☆☆☆☆'; }
-      const cq = geoQuality(c);
-      if (!state.geoQuality.has(cq)) { state.geoQuality.add(cq); document.querySelector(`.shape-pill[data-geo-quality="${cq}"]`)?.classList.remove('off'); }
-      geoContextTags(c).forEach(tag => {
-        if (!state.geoContexts.has(tag)) {
-          state.geoContexts.add(tag);
-          document.querySelector(`.shape-pill[data-geo-context="${tag}"]`)?.classList.remove('off');
-        }
-      });
-      refresh();
-      openCase(c.id, true);
     };
   });
 };
+searchInput.addEventListener('keydown', event => {
+  if (event.key === 'ArrowDown' && !searchResults.classList.contains('hidden')) {
+    const first = searchResults.querySelector('.sr-item[data-id]');
+    if (first) {
+      event.preventDefault();
+      first.focus();
+      searchInput.setAttribute('aria-activedescendant', first.id);
+    }
+  } else if (event.key === 'Escape') {
+    hideSearchResults();
+  }
+});
 document.addEventListener('click', e => {
-  if (!e.target.closest('.search-wrap')) searchResults.classList.add('hidden');
+  if (!e.target.closest('.search-wrap')) hideSearchResults();
 });
 
 // ---------- Timeline: histogram ----------
@@ -3920,11 +4374,13 @@ function renderTimelineEvents() {
   const wrap = $('tl-events');
   wrap.innerHTML = '';
   TL_EVENTS.forEach((ev, i) => {
-    const el = document.createElement('div');
+    const el = document.createElement('button');
+    el.type = 'button';
     el.className = 'tl-event';
     el.style.left = yearToX(ev.year) + 'px';
     el.title = `${ev.year} — ${tlEventLabel(i, ev)}`;
-    el.onclick = () => { openModal('disclosure'); };
+    el.setAttribute('aria-label', el.title);
+    el.onclick = event => { openModal('disclosure', event.currentTarget); };
     wrap.appendChild(el);
   });
 }
@@ -3943,6 +4399,10 @@ function positionHandles() {
   hMax.style.left = yearToX(state.yearTo) + 'px';
   fill.style.left = yearToX(state.yearFrom) + 'px';
   fill.style.width = (yearToX(state.yearTo) - yearToX(state.yearFrom)) + 'px';
+  hMin.setAttribute('aria-valuenow', String(state.yearFrom));
+  hMin.setAttribute('aria-valuemax', String(state.yearTo));
+  hMax.setAttribute('aria-valuenow', String(state.yearTo));
+  hMax.setAttribute('aria-valuemin', String(state.yearFrom));
 }
 function attachDrag(handle, isMin) {
   handle.addEventListener('pointerdown', e => {
@@ -4081,10 +4541,16 @@ $('btn-play').onclick = () => state.playing ? stopPlayback() : startPlayback();
 $('btn-collapse-left').onclick = () => {
   $('panel-left').classList.add('collapsed');
   $('btn-expand-left').classList.remove('hidden');
+  $('btn-collapse-left').setAttribute('aria-expanded', 'false');
+  $('btn-expand-left').setAttribute('aria-expanded', 'false');
+  requestAnimationFrame(() => $('btn-expand-left').focus({ preventScroll: true }));
 };
 $('btn-expand-left').onclick = () => {
   $('panel-left').classList.remove('collapsed');
   $('btn-expand-left').classList.add('hidden');
+  $('btn-collapse-left').setAttribute('aria-expanded', 'true');
+  $('btn-expand-left').setAttribute('aria-expanded', 'true');
+  requestAnimationFrame(() => $('btn-collapse-left').focus({ preventScroll: true }));
 };
 
 // ---------- Collapsible filter sections (tame the crowded panel) ----------
@@ -4096,16 +4562,61 @@ $('btn-expand-left').onclick = () => {
     const saved = JSON.parse(localStorage.getItem('ufologist-collapsed') || '[]');
     blocks().forEach((b, i) => { if (saved.includes(i)) b.classList.add('collapsed'); });
   } catch (e) {}
+  const persist = () => {
+    const idxs = blocks().map((b, i) => b.classList.contains('collapsed') ? i : -1).filter(i => i >= 0);
+    try { localStorage.setItem('ufologist-collapsed', JSON.stringify(idxs)); } catch (e) {}
+  };
+  const toggle = block => {
+    block.classList.toggle('collapsed');
+    block.querySelector(':scope > h3')?.setAttribute('aria-expanded', block.classList.contains('collapsed') ? 'false' : 'true');
+    persist();
+  };
+  blocks().forEach(block => {
+    const heading = block.querySelector(':scope > h3');
+    if (!heading) return;
+    heading.tabIndex = 0;
+    heading.setAttribute('role', 'button');
+    heading.setAttribute('aria-expanded', block.classList.contains('collapsed') ? 'false' : 'true');
+    heading.addEventListener('keydown', event => {
+      if (!['Enter', ' '].includes(event.key) || event.target.closest('button, a, input, select')) return;
+      event.preventDefault();
+      toggle(block);
+    });
+  });
   panel.addEventListener('click', e => {
     if (e.target.closest('button, a, input, select, label')) return; // let inner controls work
     const h3 = e.target.closest('h3');
     if (!h3) return;
     const block = h3.parentElement;
     if (!block || !block.classList.contains('filter-block')) return;
-    block.classList.toggle('collapsed');
-    const idxs = blocks().map((b, i) => b.classList.contains('collapsed') ? i : -1).filter(i => i >= 0);
-    try { localStorage.setItem('ufologist-collapsed', JSON.stringify(idxs)); } catch (e) {}
+    toggle(block);
   });
+})();
+
+// Filter chips are rendered dynamically; keep their keyboard and screen-reader
+// state synchronized with the visual `.off` state.
+(function filterPillAccessibility() {
+  const panel = $('panel-left');
+  if (!panel) return;
+  const sync = root => {
+    const pills = root.matches?.('.shape-pill') ? [root] : [...root.querySelectorAll?.('.shape-pill') || []];
+    pills.forEach(pill => {
+      pill.tabIndex = 0;
+      pill.setAttribute('role', 'checkbox');
+      pill.setAttribute('aria-checked', pill.classList.contains('off') ? 'false' : 'true');
+    });
+  };
+  sync(panel);
+  panel.addEventListener('keydown', event => {
+    const pill = event.target.closest('.shape-pill');
+    if (!pill || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    pill.click();
+  });
+  new MutationObserver(records => records.forEach(record => {
+    if (record.type === 'attributes') sync(record.target);
+    record.addedNodes.forEach(node => { if (node.nodeType === 1) sync(node); });
+  })).observe(panel, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
 })();
 
 // ---------- Empty-state (no results) — self-contained, watches the count ----------
@@ -4144,7 +4655,74 @@ function hbar(label, n, max, suffix) {
     <div class="hbar-track"><div class="hbar-fill" style="width:${Math.max(1, (n / Math.max(1, max)) * 100)}%"></div></div>
     <span class="hbar-n">${fmtNum(n)}${suffix || ''}</span></div>`;
 }
+function renderSatelliteStats() {
+  const vg = window.UFOSat?._vg?.();
+  const sats = vg?.sats || [];
+  if (!sats.length) {
+    $('stats-content').innerHTML = `<div class="sat-loading"><b>${satText('Sincronizando catálogo orbital…', 'Synchronizing orbital catalog…')}</b><p>${satText('El análisis aparecerá cuando termine de cargar el respaldo local o los TLE en vivo.', 'Analysis will appear when the local fallback or live TLE data finishes loading.')}</p></div>`;
+    setTimeout(() => {
+      if (isSatelliteMode() && !$('panel-stats').classList.contains('hidden')) renderStats();
+    }, 900);
+    return;
+  }
+  const filtered = sats.filter(s => (!vg.filter || s.group === vg.filter) && (!vg.yearMax || !s.launchYear || s.launchYear <= vg.yearMax));
+  const groupCounts = {};
+  const bandCounts = { LEO: 0, MEO: 0, GEO: 0, HEO: 0 };
+  const decadeCounts = {};
+  const yearCounts = {};
+  filtered.forEach(s => {
+    groupCounts[s.group] = (groupCounts[s.group] || 0) + 1;
+    if (s.launchYear) {
+      const decade = Math.floor(s.launchYear / 10) * 10;
+      decadeCounts[decade] = (decadeCounts[decade] || 0) + 1;
+      yearCounts[s.launchYear] = (yearCounts[s.launchYear] || 0) + 1;
+    }
+    const p = window.UFOSat.propagate(s, vg.simTime || new Date());
+    if (p) bandCounts[window.UFOSat.orbitBand(p.alt)]++;
+  });
+  const groups = Object.entries(groupCounts).sort((a, b) => b[1] - a[1]);
+  const groupMax = groups[0]?.[1] || 1;
+  const decades = Object.entries(decadeCounts).sort((a, b) => Number(a[0]) - Number(b[0]));
+  const decadeMax = Math.max(1, ...decades.map(([, n]) => n));
+  const bands = Object.entries(bandCounts).filter(([, n]) => n);
+  const bandMax = Math.max(1, ...bands.map(([, n]) => n));
+  const launchYears = Object.entries(yearCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const launchMax = launchYears[0]?.[1] || 1;
+  const crewed = groupCounts.stations || 0;
+  const science = groupCounts.science || 0;
+  const latestYear = Math.max(0, ...filtered.map(s => s.launchYear || 0));
+  $('stats-content').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi"><span class="n">${fmtNum(filtered.length)}</span><label>${satText('objetos', 'objects')}</label></div>
+      <div class="kpi"><span class="n">${fmtNum(bandCounts.LEO)}</span><label>LEO</label></div>
+      <div class="kpi"><span class="n">${fmtNum(crewed)}</span><label>${satText('tripulados', 'crewed')}</label></div>
+      <div class="kpi"><span class="n">${fmtNum(science)}</span><label>${satText('ciencia', 'science')}</label></div>
+      <div class="kpi"><span class="n">${latestYear || '—'}</span><label>${satText('último año', 'latest year')}</label></div>
+    </div>
+    <div class="stats-context">${satText(
+      `Vista del catálogo activo${vg.filter ? ` · ${window.UFOSat.constMeta(vg.filter).label}` : ''}, acumulado hasta ${vg.yearMax || latestYear}.`,
+      `Active catalog view${vg.filter ? ` · ${window.UFOSat.constMeta(vg.filter).en || window.UFOSat.constMeta(vg.filter).label}` : ''}, cumulative through ${vg.yearMax || latestYear}.`
+    )}</div>
+    <div class="chart-block"><h4>${satText('Por régimen orbital', 'By orbital regime')}</h4>
+      ${bands.map(([label, n]) => hbar(label, n, bandMax)).join('')}</div>
+    <div class="chart-block"><h4>${satText('Por sistema o misión', 'By system or mission')}</h4>
+      ${groups.map(([group, n]) => hbar(currentLang === 'en' ? (window.UFOSat.constMeta(group).en || group) : window.UFOSat.constMeta(group).label, n, groupMax)).join('')}</div>
+    <div class="chart-block"><h4>${satText('Despliegue por década', 'Deployment by decade')}</h4>
+      ${decades.map(([decade, n]) => hbar(`${decade}s`, n, decadeMax)).join('')}</div>
+    <div class="chart-block"><h4>${satText('Años con más objetos aún catalogados', 'Top launch years among cataloged objects')}</h4>
+      ${launchYears.map(([year, n]) => hbar(year, n, launchMax)).join('')}</div>
+    <p class="hint">ⓘ ${satText(
+      'Recuento del conjunto CelesTrak mostrado, basado en TLE. No representa todos los objetos lanzados ni todo el residuo orbital; el estado operativo y la cobertura cambian con cada actualización.',
+      'Counts describe the displayed CelesTrak TLE set. They do not represent every launched object or all orbital debris; operational status and coverage change with each update.'
+    )}</p>`;
+}
 function renderStats() {
+  if (isSatelliteMode()) {
+    $('stats-title').textContent = `🛰 ${satText('Análisis orbital', 'Orbital analysis')}`;
+    renderSatelliteStats();
+    return;
+  }
+  $('stats-title').textContent = `📊 ${t('statsTitle')}`;
   const curated = filteredCases();
   const mass = massFiltered();
   const geipan = geipanFiltered();
@@ -4210,11 +4788,19 @@ function renderStats() {
     <p class="hint">⚠ ${t('statsBias')}</p>`;
 }
 function openStats() {
-  $('panel-case').classList.add('hidden');
-  $('panel-stats').classList.remove('hidden');
+  closeUILayer('case', { restoreFocus: false });
+  if (isMobile()) {
+    openSheet('panel-stats');
+    return;
+  }
+  openUILayer('stats');
   renderStats();
 }
-function closeStats() { $('panel-stats').classList.add('hidden'); }
+function closeStats(options) {
+  closeUILayer('stats', options);
+  setMobileSheetSemantics('panel-stats', false);
+  mobileOnSheetClose();
+}
 $('btn-stats').onclick = () => $('panel-stats').classList.contains('hidden') ? openStats() : closeStats();
 $('btn-close-stats').onclick = closeStats;
 
@@ -4304,9 +4890,9 @@ function encodeHash() {
 function scheduleHashUpdate() {
   if (applyingHash) return;
   clearTimeout(hashTimer);
-  hashTimer = setTimeout(() => { history.replaceState(null, '', '#' + encodeHash()); }, 300);
+  hashTimer = setTimeout(() => { history.replaceState(history.state, '', '#' + encodeHash()); }, 300);
 }
-scheduleHashUpdate.flush = () => { clearTimeout(hashTimer); history.replaceState(null, '', '#' + encodeHash()); };
+scheduleHashUpdate.flush = () => { clearTimeout(hashTimer); history.replaceState(history.state, '', '#' + encodeHash()); };
 function applyHash() {
   if (!location.hash || location.hash.length < 2) return null;
   applyingHash = true;
@@ -4349,27 +4935,55 @@ function toast(msg) {
 }
 
 // ---------- Journal: add sighting ----------
-$('btn-add').onclick = () => {
+let pickModeTrigger = $('btn-add');
+let sightingFormBaseline = '';
+function startPickMode(trigger = $('btn-add')) {
+  pickModeTrigger = trigger;
   state.pickMode = true;
-  $('pick-hint').classList.remove('hidden');
+  openUILayer('pick', { trigger });
   globe.controls().autoRotate = false;
   toast(t('registerMode'));
-};
-$('pick-cancel').onclick = () => { state.pickMode = false; $('pick-hint').classList.add('hidden'); };
+  emitUXEvent('report_mode_start');
+}
+function openModeReport(trigger = $('btn-add')) {
+  if (isSatelliteMode()) openModal('report', trigger);
+  else startPickMode(trigger);
+}
+$('btn-add').onclick = event => openModeReport(event.currentTarget);
+function cancelPickMode(options) {
+  state.pickMode = false;
+  closeUILayer('pick', options);
+  emitUXEvent('report_mode_cancel', { method: options?.reason || 'button' });
+}
+$('pick-cancel').onclick = () => cancelPickMode();
+function sightingFormSnapshot() {
+  return ['sf-name', 'sf-date', 'sf-time', 'sf-lat', 'sf-lng', 'sf-shape', 'sf-notes']
+    .map(id => $(id)?.value || '').join('\u001f');
+}
 function pickLocation(lat, lng) {
   state.pickMode = false;
-  $('pick-hint').classList.add('hidden');
+  closeUILayer('pick', { restoreFocus: false, preserveHistory: true });
   $('sf-lat').value = lat.toFixed(4);
   $('sf-lng').value = lng.toFixed(4);
   $('sf-date').value = new Date().toISOString().slice(0, 10);
   const sel = $('sf-shape');
   sel.innerHTML = '';
   SHAPE_META.forEach((s, i) => sel.add(new Option(shapeLabel(i), i)));
-  $('sight-overlay').classList.remove('hidden');
-  $('sf-name').focus();
+  sightingFormBaseline = sightingFormSnapshot();
+  openUILayer('sighting', { trigger: pickModeTrigger });
+  emitUXEvent('report_location_selected');
 }
-$('sight-close').onclick = () => $('sight-overlay').classList.add('hidden');
-$('sight-overlay').addEventListener('click', e => { if (e.target === $('sight-overlay')) $('sight-overlay').classList.add('hidden'); });
+function closeSightingForm(options = {}) {
+  const dirty = sightingFormBaseline && sightingFormSnapshot() !== sightingFormBaseline;
+  if (dirty && !options.force && !window.confirm(t('discardSighting'))) return false;
+  closeUILayer('sighting', options);
+  sightingFormBaseline = '';
+  return true;
+}
+$('sight-close').onclick = () => closeSightingForm({ reason: 'button' });
+$('sight-overlay').addEventListener('click', e => {
+  if (e.target === $('sight-overlay')) closeSightingForm({ reason: 'backdrop' });
+});
 $('sf-save').onclick = () => {
   const name = $('sf-name').value.trim();
   const date = $('sf-date').value;
@@ -4388,34 +5002,81 @@ $('sf-save').onclick = () => {
   journal.push(entry);
   saveJournal();
   state.types.add('MINE');
-  $('sight-overlay').classList.add('hidden');
+  closeSightingForm({ restoreFocus: false, preserveHistory: true, force: true });
   ['sf-name', 'sf-notes', 'sf-time'].forEach(i => $(i).value = '');
   buildTypeFilters();
   refresh();
   openCase(entry.id, true);
   toast(`${t('savedSighting')} 📓`);
+  emitUXEvent('report_saved');
 };
 
 // ---------- Expedition tour ----------
 const TOUR_DWELL = 14000; // ms per stop
-let tour = { active: false, idx: 0, timer: null, paused: false, t0: 0, remaining: 0 };
+const SPACE_EXPEDITION = [
+  [1957, 'Sputnik 1', 'Sputnik 1', 'La primera señal artificial desde la órbita inaugura la era espacial.', 'The first artificial signal from orbit opens the space age.', 55, 35, 2.25, null],
+  [1961, 'Vostok 1', 'Vostok 1', 'Yuri Gagarin completa la primera órbita humana alrededor de la Tierra.', 'Yuri Gagarin completes the first human orbit of Earth.', 51, 46, 2.0, 'stations'],
+  [1969, 'Apollo 11', 'Apollo 11', 'La humanidad pisa otro mundo y demuestra una cadena completa de navegación, comunicaciones y retorno.', 'Humans walk on another world, proving a complete chain of navigation, communications, and return.', 28, -80, 2.2, 'science'],
+  [1971, 'Salyut 1', 'Salyut 1', 'La primera estación espacial convierte la órbita en un lugar de trabajo prolongado.', 'The first space station turns orbit into a place for sustained work.', 46, 63, 2.0, 'stations'],
+  [1978, 'GPS', 'GPS', 'Los primeros satélites Navstar abren el camino a una infraestructura global de posición y tiempo.', 'The first Navstar satellites begin a global positioning and timing infrastructure.', 30, -100, 2.8, 'gps-ops'],
+  [1990, 'Hubble', 'Hubble', 'Un observatorio orbital transforma nuestra visión del universo y demuestra el valor del mantenimiento en órbita.', 'An orbital observatory transforms our view of the universe and proves the value of in-orbit servicing.', 12, -45, 2.1, 'science'],
+  [1998, 'ISS', 'ISS', 'Comienza el ensamblaje del mayor laboratorio humano en órbita.', 'Assembly begins on the largest human laboratory in orbit.', 35, 10, 1.9, 'stations'],
+  [2013, 'CubeSats', 'CubeSats', 'La estandarización y miniaturización abren el espacio a universidades, países y nuevas empresas.', 'Standardization and miniaturization open space to universities, nations, and new companies.', 0, 75, 2.15, 'science'],
+  [2019, 'Starlink', 'Starlink', 'Las megaconstelaciones cambian la escala del despliegue, la conectividad y el debate sobre sostenibilidad orbital.', 'Megaconstellations change the scale of deployment, connectivity, and the orbital-sustainability debate.', 25, -25, 2.4, 'starlink'],
+  [2021, 'James Webb', 'James Webb', 'JWST parte hacia el entorno Sol–Tierra L2: la infraestructura humana ya se extiende mucho más allá de la órbita terrestre.', 'JWST departs for the Sun–Earth L2 region: human infrastructure now extends far beyond Earth orbit.', -10, -70, 3.0, 'science'],
+];
+let tour = { active: false, idx: 0, timer: null, paused: false, t0: 0, remaining: 0, domain: 'uap', satPrevious: null };
 
-function tourStart() {
+function tourStart(trigger = $('btn-tour')) {
   tour.active = true; tour.idx = 0; tour.paused = false;
+  tour.domain = isSatelliteMode() ? 'satellites' : 'uap';
+  if (tour.domain === 'satellites') {
+    const vg = window.UFOSat?._vg?.();
+    tour.satPrevious = vg ? { filter: vg.filter || null, yearMax: vg.yearMax } : null;
+  }
   stopPlayback();
-  $('tour-card').classList.remove('hidden');
   tourGo(0);
+  openUILayer('tour', { trigger, priority: isMobile() ? 90 : 60 });
+  emitUXEvent('tour_start');
 }
 function tourGo(i) {
+  if (tour.domain === 'satellites') {
+    if (i < 0) i = 0;
+    if (i >= SPACE_EXPEDITION.length) { tourEnd({ completed: true, reason: 'complete' }); return; }
+    tour.idx = i;
+    const stop = SPACE_EXPEDITION[i];
+    const [year, esTitle, enTitle, esText, enText, lat, lng, altitude, group] = stop;
+    $('tour-progress').textContent = `${i + 1}/${SPACE_EXPEDITION.length}`;
+    $('tour-title').textContent = `${year} — ${currentLang === 'en' ? enTitle : esTitle}`;
+    $('tour-text').textContent = currentLang === 'en' ? enText : esText;
+    closeUILayer('case', { restoreFocus: false });
+    const vg = window.UFOSat?._vg?.();
+    if (vg) vg.yearMax = year;
+    if (window.UFOSat?.setFilter) window.UFOSat.setFilter(group);
+    globe.pointOfView({ lat, lng, altitude }, 1600);
+    clearTimeout(tour.timer);
+    tour.t0 = performance.now();
+    tour.remaining = TOUR_DWELL;
+    if (!tour.paused) tour.timer = setTimeout(() => tourGo(i + 1), TOUR_DWELL);
+    animateTourBar();
+    return;
+  }
   const ids = TOUR_IDS.filter(id => CASES.some(c => c.id === id));
   if (i < 0) i = 0;
-  if (i >= ids.length) { tourEnd(); return; }
+  if (i >= ids.length) { tourEnd({ completed: true, reason: 'complete' }); return; }
   tour.idx = i;
   const c = CASES.find(x => x.id === ids[i]);
   $('tour-progress').textContent = (i + 1) + '/' + ids.length;
   $('tour-title').textContent = c.year + ' — ' + caseName(c);
   $('tour-text').textContent = caseSummary(c);
-  openCase(c.id, false);
+  if (isMobile()) {
+    closeSheets({ restoreFocus: false, preserveHistory: true });
+    state.selectedCase = c.id;
+    renderCaseMarkersFromCurrent();
+    scheduleHashUpdate();
+  } else {
+    openCase(c.id, false, { history: false });
+  }
   globe.pointOfView({ lat: c.lat, lng: c.lng, altitude: 1.25 }, 1600);
   clearTimeout(tour.timer);
   tour.t0 = performance.now();
@@ -4438,14 +5099,26 @@ function animateTourBar() {
   };
   step();
 }
-function tourEnd() {
+function tourEnd(options = {}) {
+  if (!tour.active && $('tour-card').classList.contains('hidden')) return;
   tour.active = false;
   clearTimeout(tour.timer);
   cancelAnimationFrame(tourBarRaf);
-  $('tour-card').classList.add('hidden');
+  closeUILayer('case', { restoreFocus: false });
+  state.selectedCase = null;
+  clearInspectedMarker();
+  renderCaseMarkersFromCurrent();
+  if (tour.domain === 'satellites' && tour.satPrevious && window.UFOSat?._vg?.()) {
+    window.UFOSat._vg().yearMax = tour.satPrevious.yearMax;
+    window.UFOSat.setFilter(tour.satPrevious.filter);
+  }
+  tour.satPrevious = null;
+  scheduleHashUpdate();
+  closeUILayer('tour', options);
+  emitUXEvent(options.completed ? 'tour_complete' : 'tour_exit', { step: tour.idx + 1 });
 }
-$('btn-tour').onclick = () => tour.active ? tourEnd() : tourStart();
-$('tour-close').onclick = tourEnd;
+$('btn-tour').onclick = event => tour.active ? tourEnd() : tourStart(event.currentTarget);
+$('tour-close').onclick = () => tourEnd({ reason: 'button' });
 $('tour-next').onclick = () => { tour.paused = false; $('tour-pause').textContent = `⏸ ${t('pause')}`; tourGo(tour.idx + 1); };
 $('tour-prev').onclick = () => { tour.paused = false; $('tour-pause').textContent = `⏸ ${t('pause')}`; tourGo(tour.idx - 1); };
 $('tour-pause').onclick = () => {
@@ -4586,6 +5259,120 @@ function buildSourceAtlas() {
     </div>`;
 }
 
+function satelliteCards(items) {
+  return `<div class="sat-knowledge-grid">${items.map(item => `
+    <article class="sat-knowledge-card">
+      <span class="sat-knowledge-icon" aria-hidden="true">${item[0]}</span>
+      <div><b>${item[1]}</b><p>${item[2]}</p></div>
+    </article>`).join('')}</div>`;
+}
+function satelliteSourceLinks(items) {
+  return `<div class="source-atlas-grid">${items.map(([name, owner, description, url]) => `
+    <article class="source-card is-active">
+      <div class="source-card-head"><div><b>${name}</b><span>${owner}</span></div><em>${satText('OFICIAL', 'OFFICIAL')}</em></div>
+      <p>${description}</p>
+      <a class="cc-source-link" href="${url}" target="_blank" rel="noopener">${satText('Abrir recurso', 'Open resource')} ↗</a>
+    </article>`).join('')}</div>`;
+}
+const SATELLITE_TABS = {
+  structures: () => `
+    <p class="modal-eyebrow">${satText('ATLAS DE INFRAESTRUCTURA HUMANA', 'ATLAS OF HUMAN INFRASTRUCTURE')}</p>
+    <h3>${satText('Qué hemos construido en el espacio', 'What we have built in space')}</h3>
+    <p>${satText('Una guía por función: desde plataformas de comunicaciones hasta laboratorios habitados y observatorios fuera de la órbita terrestre.', 'A guide by function: from communications platforms to crewed laboratories and observatories beyond Earth orbit.')}</p>
+    ${satelliteCards([
+      ['◉', satText('Comunicaciones', 'Communications'), satText('Retransmiten internet, televisión, telefonía y datos. Operan en LEO, MEO o GEO según la latencia y cobertura necesarias.', 'Relay internet, television, telephony, and data. They operate in LEO, MEO, or GEO depending on latency and coverage needs.')],
+      ['⌖', satText('Navegación', 'Navigation'), satText('Constelaciones como GPS, Galileo, GLONASS y BeiDou proporcionan posición y tiempo de alta precisión.', 'Constellations such as GPS, Galileo, GLONASS, and BeiDou provide precise positioning and timing.')],
+      ['☁', satText('Observación de la Tierra', 'Earth observation'), satText('Miden tiempo atmosférico, clima, océanos, hielo, agricultura, incendios y cambios de la superficie.', 'Measure weather, climate, oceans, ice, agriculture, fires, and surface change.')],
+      ['✦', satText('Ciencia y astronomía', 'Science and astronomy'), satText('Telescopios y laboratorios observan el universo sin las limitaciones de la atmósfera y estudian el entorno espacial.', 'Telescopes and laboratories observe the universe without atmospheric limitations and study the space environment.')],
+      ['▣', satText('Estaciones espaciales', 'Space stations'), satText('La ISS y Tiangong son complejos modulares habitados para investigación, tecnología y cooperación en órbita baja.', 'The ISS and Tiangong are crewed modular complexes for research, technology, and cooperation in low Earth orbit.')],
+      ['◇', satText('Sondas, módulos y rovers', 'Probes, landers, and rovers'), satText('Vehículos robóticos exploran la Luna, Marte, asteroides, cometas y los planetas exteriores.', 'Robotic vehicles explore the Moon, Mars, asteroids, comets, and the outer planets.')],
+    ])}`,
+  orbits: () => `
+    <h3>${satText('La arquitectura de las órbitas', 'The architecture of orbits')}</h3>
+    <p>${satText('La altura no es solo una distancia: determina velocidad, periodo, cobertura, latencia, radiación y coste de acceso.', 'Altitude is not merely distance: it determines speed, period, coverage, latency, radiation, and access cost.')}</p>
+    ${satelliteCards([
+      ['LEO', satText('Órbita baja · 160–2.000 km', 'Low Earth orbit · 160–2,000 km'), satText('Vueltas rápidas, baja latencia y gran detalle terrestre. Aquí operan estaciones, observación y megaconstelaciones.', 'Fast revolutions, low latency, and detailed Earth views. Home to stations, imaging, and megaconstellations.')],
+      ['MEO', satText('Órbita media · 2.000–35.786 km', 'Medium Earth orbit · 2,000–35,786 km'), satText('Especialmente útil para navegación global: una constelación moderada cubre grandes áreas.', 'Especially useful for global navigation: a moderate constellation covers large areas.')],
+      ['GEO', satText('Geoestacionaria · 35.786 km', 'Geostationary · 35,786 km'), satText('Sobre el ecuador y con periodo sideral: el satélite parece fijo en el cielo. Clave para telecomunicaciones y meteorología.', 'Above the equator with a sidereal period: the satellite appears fixed in the sky. Key for telecoms and weather.')],
+      ['SSO', satText('Heliosíncrona', 'Sun-synchronous'), satText('Órbita polar que cruza cada lugar aproximadamente a la misma hora solar, ideal para comparar imágenes.', 'A polar orbit crossing each place at roughly the same solar time, ideal for comparable imaging.')],
+      ['HEO', satText('Muy elíptica', 'Highly elliptical'), satText('Permanece mucho tiempo sobre latitudes altas o permite misiones científicas con geometrías especiales.', 'Dwells over high latitudes or supports science missions requiring special geometry.')],
+      ['L₁–L₅', satText('Puntos de Lagrange', 'Lagrange points'), satText('Regiones de equilibrio gravitatorio. JWST orbita alrededor de Sol–Tierra L2, a unos 1,5 millones de km.', 'Gravitational balance regions. JWST orbits around Sun–Earth L2, about 1.5 million km away.')],
+    ])}`,
+  operators: () => `
+    <h3>${satText('Quién construye y opera el espacio', 'Who builds and operates in space')}</h3>
+    <p>${satText('El ecosistema combina agencias públicas, universidades, fabricantes, operadores de constelaciones y proveedores de lanzamiento.', 'The ecosystem combines public agencies, universities, manufacturers, constellation operators, and launch providers.')}</p>
+    ${satelliteCards([
+      ['NASA', 'NASA', satText('Exploración científica, vuelos tripulados, observación terrestre y grandes observatorios de Estados Unidos.', 'US science exploration, human spaceflight, Earth observation, and major observatories.')],
+      ['ESA', 'ESA', satText('Agencia intergubernamental europea: ciencia, navegación, observación, transporte y exploración.', 'European intergovernmental agency spanning science, navigation, observation, transport, and exploration.')],
+      ['中国', 'CNSA / CMSEO', satText('Exploración lunar y planetaria, observación y el programa tripulado que opera Tiangong.', 'Lunar and planetary exploration, observation, and the human program operating Tiangong.')],
+      ['JAXA', 'JAXA', satText('Agencia japonesa destacada en retorno de muestras, ciencia y observación de la Tierra.', 'Japan’s agency, known for sample return, science, and Earth observation.')],
+      ['ISRO', 'ISRO', satText('Programa indio de lanzadores, navegación, observación y exploración lunar y solar.', 'India’s launch, navigation, observation, lunar, and solar exploration program.')],
+      ['Sx', 'SpaceX', satText('Lanzamiento reutilizable, transporte tripulado y despliegue de la constelación Starlink.', 'Reusable launch, crew transport, and deployment of the Starlink constellation.')],
+      ['OB', 'Eutelsat OneWeb', satText('Operador de una constelación LEO de comunicaciones de cobertura global.', 'Operator of a global-coverage LEO communications constellation.')],
+      ['PL', satText('Planet, Maxar y observación comercial', 'Planet, Maxar, and commercial imaging'), satText('Empresas que convierten imágenes orbitales frecuentes y de alta resolución en servicios geoespaciales.', 'Companies turning frequent, high-resolution orbital imagery into geospatial services.')],
+    ])}`,
+  history: () => `
+    <h3>${satText('Hitos de la era espacial', 'Milestones of the space age')}</h3>
+    <p>${satText('De una señal de radio en 1957 a una infraestructura orbital global y exploradores robóticos en todo el Sistema Solar.', 'From a radio signal in 1957 to global orbital infrastructure and robotic explorers across the Solar System.')}</p>
+    ${[
+      ['1957', 'Sputnik 1', satText('Primer satélite artificial.', 'First artificial satellite.')],
+      ['1961', satText('Yuri Gagarin', 'Yuri Gagarin'), satText('Primer ser humano en órbita.', 'First human in orbit.')],
+      ['1969', 'Apollo 11', satText('Primer alunizaje tripulado.', 'First crewed Moon landing.')],
+      ['1971', 'Salyut 1', satText('Primera estación espacial.', 'First space station.')],
+      ['1990', 'Hubble', satText('El gran observatorio entra en órbita.', 'The great observatory reaches orbit.')],
+      ['1998', 'ISS', satText('Comienza el ensamblaje del laboratorio internacional.', 'Assembly of the international laboratory begins.')],
+      ['2012', 'Dragon', satText('Primera nave comercial en abastecer la ISS.', 'First commercial spacecraft to resupply the ISS.')],
+      ['2021', 'JWST', satText('Lanzamiento del observatorio hacia Sol–Tierra L2.', 'Observatory launches toward Sun–Earth L2.')],
+    ].map(([year, title, text]) => `<div class="dt-item"><div class="dt-year">${year}</div><div class="dt-body"><b>${title}</b><p>${text}</p></div></div>`).join('')}
+    <button class="btn-ghost sat-expedition-start" type="button">${satText('Iniciar expedición espacial', 'Start space expedition')} →</button>`,
+  glossary: () => `
+    <h3>${satText('Glosario orbital', 'Orbital glossary')}</h3>
+    ${[
+      ['TLE', satText('Conjunto de dos líneas que codifica una aproximación de la órbita para propagadores como SGP4.', 'A two-line data set encoding an orbit approximation for propagators such as SGP4.')],
+      ['NORAD ID', satText('Identificador numérico estable asignado a un objeto catalogado.', 'Stable numeric identifier assigned to a cataloged object.')],
+      ['Inclinación', satText('Ángulo entre el plano orbital y el ecuador terrestre.', 'Angle between the orbital plane and Earth’s equator.')],
+      ['Periodo', satText('Tiempo que tarda un objeto en completar una órbita.', 'Time an object takes to complete one orbit.')],
+      ['Perigeo / apogeo', satText('Puntos de mínima y máxima distancia a la Tierra.', 'Points of minimum and maximum distance from Earth.')],
+      ['Constelación', satText('Conjunto coordinado de satélites que presta un servicio común.', 'Coordinated set of satellites providing a common service.')],
+      ['CubeSat', satText('Estándar modular de pequeños satélites basado en unidades de 10 cm.', 'Modular small-satellite standard based on 10 cm units.')],
+      ['Kessler', satText('Escenario de colisiones en cascada que aumentan la población de residuos.', 'A cascade-collision scenario that increases the debris population.')],
+    ].map(([term, definition]) => `<div class="gl-item"><b>${term}</b><p>${definition}</p></div>`).join('')}`,
+  method: () => `
+    <h3>${satText('Cómo leer esta vista', 'How to read this view')}</h3>
+    <ol class="sat-method-list">
+      <li><b>${satText('Catálogo, no censo.', 'Catalog, not census.')}</b> ${satText('La selección agrupa fuentes públicas de CelesTrak; no incluye cada objeto rastreado ni garantiza estado operativo.', 'The selection groups public CelesTrak sources; it does not include every tracked object or guarantee operational status.')}</li>
+      <li><b>${satText('Órbitas que envejecen.', 'Orbits age.')}</b> ${satText('Un TLE pierde precisión con el tiempo. Comprueba siempre la época del elemento antes de una predicción.', 'A TLE loses accuracy over time. Always check its epoch before making a prediction.')}</li>
+      <li><b>${satText('Altitud visual comprimida.', 'Compressed visual altitude.')}</b> ${satText('La vista comprime la escala por defecto para que LEO, MEO y GEO sean legibles simultáneamente.', 'The view compresses scale by default so LEO, MEO, and GEO remain legible together.')}</li>
+      <li><b>${satText('Visibilidad ≠ estar encima.', 'Visibility ≠ being overhead.')}</b> ${satText('Hacen falta geometría, iluminación solar, oscuridad local, brillo y un horizonte despejado.', 'Geometry, sunlight, local darkness, brightness, and a clear horizon all matter.')}</li>
+      <li><b>${satText('Reproduce y contrasta.', 'Reproduce and cross-check.')}</b> ${satText('Guarda hora UTC, coordenadas, dirección, elevación y duración, y compara con más de una fuente.', 'Record UTC time, coordinates, direction, elevation, and duration, then compare more than one source.')}</li>
+    </ol>`,
+  sources: () => `
+    <h3>${satText('Fuentes para seguir explorando', 'Sources for further exploration')}</h3>
+    ${satelliteSourceLinks([
+      ['CelesTrak', satText('Seguimiento orbital', 'Orbital tracking'), satText('TLE, grupos de satélites y documentación de propagación.', 'TLE data, satellite groups, and propagation documentation.'), 'https://celestrak.org/'],
+      ['NASA NSSDCA', 'NASA', satText('Catálogo de naves y misiones científicas.', 'Catalog of spacecraft and science missions.'), 'https://nssdc.gsfc.nasa.gov/nmc/'],
+      ['ESA Space Debris Office', 'ESA', satText('Entorno de residuos y seguridad espacial.', 'Debris environment and space safety.'), 'https://www.esa.int/Space_Safety/Space_Debris'],
+      ['UNOOSA Register', 'United Nations', satText('Registro internacional de objetos lanzados al espacio ultraterrestre.', 'International register of objects launched into outer space.'), 'https://www.unoosa.org/oosa/en/spaceobjectregister/index.html'],
+      ['NASA Eyes', 'NASA', satText('Visualizaciones de misiones, Tierra y Sistema Solar.', 'Visualizations of missions, Earth, and the Solar System.'), 'https://eyes.nasa.gov/'],
+      ['ESA Science & Exploration', 'ESA', satText('Misiones científicas y de exploración europeas.', 'European science and exploration missions.'), 'https://www.esa.int/Science_Exploration'],
+    ])}`,
+  report: () => `
+    <p class="modal-eyebrow">${satText('CONTRIBUIR CON DATOS ÚTILES', 'CONTRIBUTE USEFUL DATA')}</p>
+    <h3>${satText('Reportar una observación o un problema orbital', 'Report an observation or orbital data issue')}</h3>
+    <p>${satText('No existe un único receptor para todo. El destino correcto depende de si observaste un paso, recibiste telemetría, detectaste una reentrada o encontraste un error de catálogo.', 'There is no single receiver for everything. The right destination depends on whether you observed a pass, received telemetry, detected a reentry, or found a catalog issue.')}</p>
+    ${satelliteCards([
+      ['👁', satText('Observación visual', 'Visual observation'), satText('Anota hora UTC, coordenadas, dirección, elevación, duración, patrón de brillo y condiciones del cielo. Evita inferir el objeto antes de comparar trayectorias.', 'Record UTC time, coordinates, direction, elevation, duration, brightness pattern, and sky conditions. Avoid identifying the object before comparing tracks.')],
+      ['⌁', satText('Radio y telemetría', 'Radio and telemetry'), satText('Contribuye observaciones reproducibles a la red abierta SatNOGS: frecuencia, estación, tiempo y datos recibidos.', 'Contribute reproducible observations to the open SatNOGS network: frequency, station, time, and received data.')],
+      ['☄', satText('Reentrada o bólido', 'Reentry or fireball'), satText('Conserva el vídeo original, hora exacta, orientación y ubicación. Compara con predicciones de reentrada y redes de meteoros.', 'Preserve the original video, exact time, orientation, and location. Compare with reentry predictions and meteor networks.')],
+      ['⚠', satText('Conjunción o peligro', 'Conjunction or hazard'), satText('Los avisos operativos pertenecen a operadores y autoridades de seguridad espacial; no uses un foro público para emergencias.', 'Operational alerts belong with operators and space-safety authorities; do not use a public forum for emergencies.')],
+    ])}
+    <div class="sat-report-links">
+      <a class="cc-source-link" href="https://network.satnogs.org/" target="_blank" rel="noopener">SatNOGS Network ↗</a>
+      <a class="cc-source-link" href="https://celestrak.org/contact.php" target="_blank" rel="noopener">${satText('Contacto de CelesTrak', 'CelesTrak contact')} ↗</a>
+      <a class="cc-source-link" href="https://fireball.amsmeteors.org/members/imo/report_intro" target="_blank" rel="noopener">${satText('Reporte de bólidos IMO/AMS', 'IMO/AMS fireball report')} ↗</a>
+    </div>`,
+};
+
 const TABS = {
   hynek: () => `
     <h3>${t('classificationTitle')}</h3>
@@ -4627,52 +5414,110 @@ const TABS = {
     ${reportLinks().map(([label, url]) => `<a class="cc-source-link" href="${url}" target="_blank" rel="noopener">${label}</a>`).join('')}`,
 };
 
-function openModal(tab) {
-  $('modal-overlay').classList.remove('hidden');
-  switchTab(tab || 'hynek');
+function openModal(tab, trigger = $('btn-knowledge')) {
+  configureKnowledgeTabs(tab);
+  openUILayer('knowledge', { trigger });
+  switchTab(tab || (isSatelliteMode() ? 'structures' : 'hynek'));
+}
+function closeModal(options) { closeUILayer('knowledge', options); }
+function configureKnowledgeTabs(preferredTab) {
+  const tabs = isSatelliteMode()
+    ? satelliteKnowledgeTabs()
+    : ['hynek', 'anatomy', 'disclosure', 'glossary', 'method', 'sources', 'report'].map((id, i) => [id, t('modalTabs')[i]]);
+  const valid = new Set(tabs.map(([id]) => id));
+  const active = valid.has(preferredTab) ? preferredTab : tabs[0][0];
+  $('modal-tabs').innerHTML = tabs.map(([id, label]) => `
+    <button id="knowledge-tab-${id}" role="tab" aria-controls="modal-body" data-tab="${id}" class="${id === active ? 'active' : ''}">${label}</button>`).join('');
+  bindKnowledgeTabEvents();
+  $('modal').setAttribute('aria-label', isSatelliteMode()
+    ? satText('Atlas de conocimiento espacial', 'Space knowledge atlas')
+    : t('titleKnowledge'));
 }
 function switchTab(tab) {
-  if (!TABS[tab]) tab = 'hynek';
-  document.querySelectorAll('#modal-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-  $('modal-body').innerHTML = TABS[tab]();
+  const tabMap = isSatelliteMode() ? SATELLITE_TABS : TABS;
+  const fallback = isSatelliteMode() ? 'structures' : 'hynek';
+  if (!tabMap[tab]) tab = fallback;
+  document.querySelectorAll('#modal-tabs button').forEach(b => {
+    const active = b.dataset.tab === tab;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-selected', active ? 'true' : 'false');
+    b.tabIndex = active ? 0 : -1;
+  });
+  $('modal-body').innerHTML = tabMap[tab]();
+  $('modal-body').setAttribute('aria-labelledby', `knowledge-tab-${tab}`);
   $('modal-body').scrollTop = 0;
 }
-document.querySelectorAll('#modal-tabs button').forEach(b => { b.onclick = () => switchTab(b.dataset.tab); });
+function bindKnowledgeTabEvents() {
+  document.querySelectorAll('#modal-tabs button').forEach(b => {
+    b.onclick = () => switchTab(b.dataset.tab);
+    b.onkeydown = event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      const tabs = [...document.querySelectorAll('#modal-tabs button')];
+      const index = tabs.indexOf(b);
+      const next = event.key === 'Home' ? tabs[0]
+        : event.key === 'End' ? tabs[tabs.length - 1]
+          : tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
+      event.preventDefault();
+      switchTab(next.dataset.tab);
+      next.focus();
+    };
+  });
+}
+bindKnowledgeTabEvents();
 // "ver caso real" in the Anatomy tab → close modal and fly to the example case
 $('modal-body').addEventListener('click', e => {
   const b = e.target.closest('.anatomy-go');
-  if (!b) return;
-  $('modal-overlay').classList.add('hidden');
-  openCase(b.dataset.go, true);
+  if (b) {
+    closeModal({ restoreFocus: false, preserveHistory: true });
+    openCase(b.dataset.go, true);
+    return;
+  }
+  if (e.target.closest('.sat-expedition-start')) {
+    closeModal({ restoreFocus: false, preserveHistory: true });
+    tourStart($('btn-tour'));
+  }
 });
-$('btn-knowledge').onclick = () => openModal('hynek');
-$('btn-close-modal').onclick = () => $('modal-overlay').classList.add('hidden');
+$('btn-knowledge').onclick = event => openModal(isSatelliteMode() ? 'structures' : 'hynek', event.currentTarget);
+$('btn-close-modal').onclick = () => closeModal({ reason: 'button' });
 $('modal-overlay').addEventListener('click', e => {
-  if (e.target === $('modal-overlay')) $('modal-overlay').classList.add('hidden');
+  if (e.target === $('modal-overlay')) closeModal({ reason: 'backdrop' });
 });
 
-function openAppInfo() { $('app-info-overlay').classList.remove('hidden'); }
-function closeAppInfo() { $('app-info-overlay').classList.add('hidden'); }
-$('btn-about').onclick = openAppInfo;
-if ($('btn-forum')) $('btn-forum').onclick = () => { if (window.UFOForum) UFOForum.openGeneral(); };
-$('btn-close-app-info').onclick = closeAppInfo;
-$('app-info-overlay').addEventListener('click', e => {
-  if (e.target === $('app-info-overlay')) closeAppInfo();
-});
-
-function openPassModal() {
-  applyPassI18n();
-  $('pass-overlay').classList.remove('hidden');
+function openAppInfo(trigger = $('btn-about')) { openUILayer('info', { trigger }); }
+function closeAppInfo(options) { closeUILayer('info', options); }
+$('btn-about').onclick = event => openAppInfo(event.currentTarget);
+function openModeCommunity() {
+  if (!window.UFOForum) return;
+  if (isSatelliteMode()) UFOForum.openBoard('astronomia-y-satelites');
+  else UFOForum.openGeneral();
 }
-function closePassModal() { $('pass-overlay').classList.add('hidden'); }
+if ($('btn-forum')) $('btn-forum').onclick = openModeCommunity;
+$('btn-close-app-info').onclick = () => closeAppInfo({ reason: 'button' });
+$('app-info-overlay').addEventListener('click', e => {
+  if (e.target === $('app-info-overlay')) closeAppInfo({ reason: 'backdrop' });
+});
+
+function openPassModal(trigger = $('btn-pass')) {
+  applyPassI18n();
+  passFormBaseline = $('pass-email')?.value || '';
+  openUILayer('pass', { trigger });
+}
+let passFormBaseline = '';
+function closePassModal(options = {}) {
+  const dirty = ($('pass-email')?.value || '') !== passFormBaseline;
+  if (dirty && !options.force && !window.confirm(t('discardPass'))) return false;
+  closeUILayer('pass', options);
+  passFormBaseline = $('pass-email')?.value || '';
+  return true;
+}
 function selectedPassLabel() {
   const active = document.querySelector(`.pass-plans button[data-plan="${selectedPassPlan}"]`);
   return active ? active.textContent.trim() : selectedPassPlan;
 }
-if ($('btn-pass')) $('btn-pass').onclick = openPassModal;
-if ($('btn-close-pass')) $('btn-close-pass').onclick = closePassModal;
+if ($('btn-pass')) $('btn-pass').onclick = event => openPassModal(event.currentTarget);
+if ($('btn-close-pass')) $('btn-close-pass').onclick = () => closePassModal({ reason: 'button' });
 if ($('pass-overlay')) $('pass-overlay').addEventListener('click', e => {
-  if (e.target === $('pass-overlay')) closePassModal();
+  if (e.target === $('pass-overlay')) closePassModal({ reason: 'backdrop' });
 });
 document.querySelectorAll('.pass-plans button').forEach(button => {
   button.onclick = () => {
@@ -4689,77 +5534,198 @@ if ($('pass-form')) $('pass-form').onsubmit = e => {
   const subject = encodeURIComponent(t('passMailSubject'));
   const body = encodeURIComponent(t('passMailBody', { plan, email }));
   toast(t('passInterestSaved'));
+  passFormBaseline = email;
   window.location.href = `mailto:${RESEARCH_PASS_EMAIL}?subject=${subject}&body=${body}`;
 };
 
+window.addEventListener('beforeunload', event => {
+  const sightingDirty = !$('sight-overlay').classList.contains('hidden')
+    && sightingFormBaseline && sightingFormSnapshot() !== sightingFormBaseline;
+  const passDirty = !$('pass-overlay').classList.contains('hidden')
+    && ($('pass-email')?.value || '') !== passFormBaseline;
+  if (!sightingDirty && !passDirty) return;
+  event.preventDefault();
+  event.returnValue = '';
+});
+
 document.addEventListener('keydown', e => {
+  if (trapTopModalFocus(e)) return;
   if (e.key === 'Escape') {
-    $('modal-overlay').classList.add('hidden');
-    closeAppInfo();
-    closePassModal();
-    $('panel-case').classList.add('hidden');
-    $('sight-overlay').classList.add('hidden');
-    closeStats();
-    if (state.pickMode) { state.pickMode = false; $('pick-hint').classList.add('hidden'); }
+    if (requestCloseTopUILayer('escape')) {
+      e.preventDefault();
+      return;
+    }
+    if (state.pickMode) {
+      state.pickMode = false;
+      $('pick-hint').classList.add('hidden');
+      e.preventDefault();
+    }
   }
-  if (e.key === ' ' && !e.target.closest('input,textarea,select')) { e.preventDefault(); $('btn-play').click(); }
+  if (e.key === ' ' && !e.target.closest('input,textarea,select,button,a,[role="button"]')) {
+    e.preventDefault();
+    $('btn-play').click();
+  }
 });
 
 // ---------- Mobile: bottom-sheet navigation ----------
-const mq = window.matchMedia('(max-width: 760px)');
+const mq = window.matchMedia('(max-width: 760px), (max-width: 900px) and (max-height: 500px)');
 function isMobile() { return mq.matches; }
 const SHEET_IDS = ['panel-left', 'timeline', 'panel-stats', 'panel-case', 'mobile-more'];
+const MOBILE_SHEET_LAYERS = {
+  'panel-left': 'filters',
+  timeline: 'timeline',
+  'panel-stats': 'stats',
+  'panel-case': 'case',
+  'mobile-more': 'more',
+};
 
 function setNav(active) {
-  document.querySelectorAll('#mobile-nav button').forEach(b =>
-    b.classList.toggle('active', b.dataset.sheet === active));
+  document.querySelectorAll('#mobile-nav button').forEach(b => {
+    const selected = b.dataset.sheet === active;
+    b.classList.toggle('active', selected);
+    b.setAttribute('aria-pressed', selected ? 'true' : 'false');
+  });
 }
-function closeSheets() {
-  SHEET_IDS.forEach(id => $(id).classList.add('hidden'));
-  state.selectedCase = null;
-  $('sheet-backdrop').classList.remove('show');
-  setNav('globe');
+
+function mobileSheetTrigger(id) {
+  return document.querySelector(`#mobile-nav button[data-sheet="${id}"]`)
+    || document.querySelector('#mobile-nav button[data-sheet="mobile-more"]');
 }
-function openSheet(id) {
-  SHEET_IDS.forEach(s => { if (s !== id) $(s).classList.add('hidden'); });
+
+function setMobileSheetSemantics(id, open) {
+  const sheet = $(id);
+  if (!sheet) return;
+  if (open) {
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-modal', 'true');
+    sheet.setAttribute('aria-hidden', 'false');
+    if (!sheet.getAttribute('aria-label') && !sheet.getAttribute('aria-labelledby')) {
+      sheet.setAttribute('aria-label', id === 'panel-left' ? t('mobileFilters') : t('mobileTime'));
+    }
+  } else {
+    if (id === 'panel-left' || id === 'timeline') {
+      sheet.removeAttribute('role');
+      sheet.removeAttribute('aria-modal');
+      if (isMobile()) sheet.setAttribute('aria-hidden', 'true');
+      else sheet.removeAttribute('aria-hidden');
+    } else {
+      sheet.setAttribute('aria-hidden', 'true');
+    }
+  }
+}
+
+function visibleMobileSheet() {
+  return SHEET_IDS.find(id => !$(id).classList.contains('hidden')) || null;
+}
+
+function syncMobileSheetChrome(active = visibleMobileSheet()) {
+  const hasSheet = Boolean(active);
+  $('sheet-backdrop').classList.toggle('show', hasSheet);
+  $('sheet-backdrop').setAttribute('aria-hidden', hasSheet ? 'false' : 'true');
+  setNav(active || 'globe');
+}
+
+function closeMobileSheet(id, options = {}) {
+  const layer = MOBILE_SHEET_LAYERS[id];
+  if (layer) closeUILayer(layer, {
+    restoreFocus: options.restoreFocus !== false,
+    preserveHistory: options.preserveHistory === true,
+    reason: options.reason,
+  });
+  else $(id)?.classList.add('hidden');
+  setMobileSheetSemantics(id, false);
+  if (id === 'panel-case' && options.clearSelection !== false) {
+    state.selectedCase = null;
+    clearInspectedMarker();
+    renderCaseMarkersFromCurrent();
+    scheduleHashUpdate();
+  } else if (id === 'panel-case' && options.preserveHistory !== true && uiHistoryClosing) {
+    uiHistoryAfterClose = () => scheduleHashUpdate();
+  }
+  if (options.updateChrome !== false) syncMobileSheetChrome();
+}
+
+function closeSheets(options = {}) {
+  const active = visibleMobileSheet();
+  SHEET_IDS.forEach(id => closeMobileSheet(id, {
+    restoreFocus: id === active && options.restoreFocus !== false,
+    clearSelection: options.clearSelection === true,
+    preserveHistory: options.preserveHistory === true,
+    reason: options.reason,
+    updateChrome: false,
+  }));
+  syncMobileSheetChrome(null);
+}
+
+function openSheet(id, options = {}) {
+  const layer = MOBILE_SHEET_LAYERS[id];
+  SHEET_IDS.forEach(other => {
+    if (other !== id) closeMobileSheet(other, {
+      restoreFocus: false,
+      clearSelection: false,
+      preserveHistory: true,
+      updateChrome: false,
+    });
+  });
   $('panel-left').classList.remove('collapsed');
-  $(id).classList.remove('hidden');
-  $('sheet-backdrop').classList.add('show');
-  setNav(id);
+  setMobileSheetSemantics(id, true);
+  openUILayer(layer, {
+    trigger: options.trigger || mobileSheetTrigger(id),
+    modal: true,
+    priority: 80,
+    inertExempt: ['sheet-backdrop'],
+  });
+  syncMobileSheetChrome(id);
   if (id === 'timeline') requestAnimationFrame(() => { positionHandles(); drawHistogram(); renderTimelineEvents(); });
   if (id === 'panel-stats') renderStats();
 }
 // openCase()/openMassReport() call this so the case sheet behaves like the rest
 function mobileOnCaseOpen() {
   if (!isMobile()) return;
-  ['panel-left', 'timeline', 'panel-stats', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
-  $('sheet-backdrop').classList.add('show');
-  setNav(null);
+  SHEET_IDS.filter(id => id !== 'panel-case').forEach(id => closeMobileSheet(id, {
+    restoreFocus: false,
+    clearSelection: false,
+    preserveHistory: true,
+    updateChrome: false,
+  }));
+  setMobileSheetSemantics('panel-case', true);
+  syncMobileSheetChrome('panel-case');
 }
 function mobileOnSheetClose() {
   if (!isMobile()) return;
-  $('sheet-backdrop').classList.remove('show');
-  setNav('globe');
+  syncMobileSheetChrome();
 }
 
 document.querySelectorAll('#mobile-nav button').forEach(b => {
   b.onclick = () => {
     const t = b.dataset.sheet;
     if (t === 'globe') { closeSheets(); return; }
-    $(t).classList.contains('hidden') ? openSheet(t) : closeSheets();
+    $(t).classList.contains('hidden') ? openSheet(t, { trigger: b }) : closeMobileSheet(t);
   };
 });
-$('sheet-backdrop').onclick = closeSheets;
-$('btn-close-more').onclick = closeSheets;
+$('sheet-backdrop').onclick = () => closeSheets({ reason: 'backdrop' });
+$('btn-close-more').onclick = () => closeMobileSheet('mobile-more', { reason: 'button' });
+$('btn-close-filters').onclick = () => closeMobileSheet('panel-left', { reason: 'button' });
+$('btn-close-timeline').onclick = () => closeMobileSheet('timeline', { reason: 'button' });
 
 // "Más" sheet reuses the existing (hidden on mobile) top-bar handlers
 document.querySelectorAll('#mobile-more .more-grid button').forEach(b => {
-  const map = { add: 'btn-add', forum: 'btn-forum', tour: 'btn-tour', knowledge: 'btn-knowledge', about: 'btn-about',
-    pass: 'btn-pass', audio: 'btn-audio', csv: 'btn-export-csv', json: 'btn-export-json', permalink: 'btn-permalink' };
+  const map = { audio: 'btn-audio', csv: 'btn-export-csv', json: 'btn-export-json', permalink: 'btn-permalink' };
   b.onclick = () => {
     const act = b.dataset.act;
-    closeSheets();
-    if (act === 'stats') { openSheet('panel-stats'); return; }
+    closeSheets({ restoreFocus: false, preserveHistory: true });
+    const returnTarget = mobileSheetTrigger('mobile-more');
+    returnTarget?.focus({ preventScroll: true });
+    if (act === 'stats') { openSheet('panel-stats', { trigger: returnTarget }); return; }
+    if (act === 'knowledge') { openModal(isSatelliteMode() ? 'structures' : 'hynek', returnTarget); return; }
+    if (act === 'about') { openAppInfo(returnTarget); return; }
+    if (act === 'pass') { openPassModal(returnTarget); return; }
+    if (act === 'tour') { tourStart(returnTarget); return; }
+    if (act === 'add') { openModeReport(returnTarget); return; }
+    if (act === 'forum') {
+      openModeCommunity();
+      return;
+    }
     const id = map[act];
     if (id) $(id).click();
   };
@@ -4787,14 +5753,14 @@ function applyMobileLayout() {
   document.body.classList.toggle('is-mobile', m);
   applyPerfTier(m);
   if (m) {
-    closeSheets();
+    closeSheets({ restoreFocus: false, preserveHistory: true });
     globe.controls().autoRotate = true;
     globe.pointOfView({ lat: 22, lng: -30, altitude: 2.9 }, 0);
   } else {
-    $('sheet-backdrop').classList.remove('show');
+    closeSheets({ restoreFocus: false, preserveHistory: true });
     $('panel-left').classList.remove('hidden', 'collapsed');
     $('timeline').classList.remove('hidden');
-    ['panel-stats', 'panel-case', 'mobile-more'].forEach(id => $(id).classList.add('hidden'));
+    ['panel-left', 'timeline'].forEach(id => setMobileSheetSemantics(id, false));
   }
   refresh();   // rebins the heatmap at the new resolution + re-applies marker rules
 }
@@ -4823,7 +5789,7 @@ positionHandles();
 renderTimelineEvents();
 refresh();
 applyMobileLayout();
-if (startCase) setTimeout(() => openCase(startCase, true), 800);
+if (startCase) setTimeout(() => openCase(startCase, true, { history: false }), 800);
 setTimeout(() => { positionHandles(); drawHistogram(); renderTimelineEvents(); }, 300);
 
 })();
