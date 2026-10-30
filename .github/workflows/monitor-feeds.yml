@@ -1,0 +1,116 @@
+name: Publish Monitor and refresh sources
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: pages-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      published_sha: ${{ steps.snapshot.outputs.sha }}
+      refresh_outcome: ${{ steps.refresh.outcome }}
+    steps:
+      # Always build the latest main, including previews already published there.
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          lfs: true
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Validate Monitor behavior and source ingestion
+        run: npm run test:monitor
+      - name: Validate community destinations
+        run: npm run test:community
+      - name: Validate public packaging
+        run: python tools/test_build_public_site.py
+      - name: Refresh real source metadata
+        id: refresh
+        continue-on-error: true
+        run: python tools/update_monitor_feeds.py
+      - name: Commit only the source snapshot without replacing newer main
+        id: snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_sha="$(git rev-parse HEAD)"
+          remote_sha="$(git ls-remote --exit-code origin refs/heads/main | cut -f1)"
+          if [[ "$remote_sha" != "$base_sha" ]]; then
+            echo "::error::main changed during this build; aborting publication."
+            exit 1
+          fi
+          git add -- data/monitor-feed.json
+          if ! git diff --cached --quiet -- data/monitor-feed.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit --only -m "Update attributed Monitor feed metadata" -- data/monitor-feed.json
+            # A concurrent update rejects this normal fast-forward push.
+            git push origin HEAD:main
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Assemble public site and preserve existing preview URLs
+        run: python scripts/build-public-site.py --source . --output _site
+      - name: Upload the complete Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+          retention-days: 1
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Refuse an artifact superseded by a newer main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ needs.build.outputs.published_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)"
+          if [[ "$remote_sha" != "$EXPECTED_SHA" ]]; then
+            echo "::error::main changed after this artifact was built; aborting publication."
+            exit 1
+          fi
+      - name: Deploy this run's artifact to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+  report-refresh-failure:
+    needs: [build, deploy]
+    if: >-
+      always() && needs.deploy.result == 'success' &&
+      needs.build.outputs.refresh_outcome == 'failure'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Surface the failed refresh after publishing retained data
+        run: |
+          echo "::error::All feed refreshes failed. The retained snapshot and current source diagnostics were published successfully."
+          exit 1

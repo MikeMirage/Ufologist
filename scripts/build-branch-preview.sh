@@ -39,6 +39,7 @@ copy_path() {
 }
 
 copy_path index.html
+copy_path globe.html
 copy_path css
 copy_path js
 copy_path assets

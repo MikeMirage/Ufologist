@@ -1,7 +1,10 @@
 {
   "scripts": {
     "test:community": "node tools/validate-community-links.js",
-    "test:ux": "playwright test tests/ux-regression.spec.js"
+    "test:ux": "playwright test tests/ux-regression.spec.js",
+    "dev": "python3 tools/serve_monitor.py",
+    "feeds:update": "python3 tools/update_monitor_feeds.py",
+    "test:monitor": "node --test tests/monitor-model.test.js && python3 tools/test_monitor_feeds.py && python3 tools/test_monitor_server.py"
   },
   "dependencies": {
     "pdf-parse": "^2.4.5"

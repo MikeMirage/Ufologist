@@ -1,68 +1,134 @@
-# 🛸 UFOlogist — Atlas global del fenómeno UAP
+# UFOlogist — Observatorio UAP
 
-Aplicación web interactiva para explorar avistamientos OVNI/UAP documentados (1942–2024) sobre un globo 3D con mapa de calor y línea de tiempo reproducible. **80.000+ reportes geolocalizados.**
+Monitor de publicaciones y fuentes del fenómeno UAP, con atlas 2D y expedientes
+históricos. Distingue la fecha de publicación de la fecha del suceso, conserva
+los enlaces originales y muestra cuándo se consultó cada fuente.
 
-🔭 **Demo en vivo:** **https://mikemirage.github.io/Ufologist/**
+- **Monitor**: publicaciones reales de RSS, con filtros de periodo, fuente y tema.
+- **Atlas**: mapa 2D y lista de casos del catálogo editorial; coordenadas aproximadas.
+- **Casos**: referencias, contexto, material audiovisual cuando existe y enlaces compartibles.
+- **Fuentes**: cobertura, última consulta, última publicación y estado del canal.
+- **Globo 3D opcional**: la experiencia anterior se conserva en `globe.html`.
 
-💬 **Comunidad e investigación de casos:** **https://github.com/MikeMirage/Ufologist/discussions**
+El mapa del Monitor ofrece contexto histórico; una noticia sin localización
+atribuida no recibe un marcador inventado. Las publicaciones automáticas se
+identifican como pendientes de revisión editorial. Los guardados son locales
+al navegador y no activan una suscripción ni avisos por correo.
+
+[Sitio publicado](https://mikemirage.github.io/Ufologist/) ·
+[Comunidad](https://github.com/MikeMirage/Ufologist/discussions)
 
 ## Ejecutar en local
 
-Es una web 100% estática (sin build, sin backend). Cualquier servidor de archivos vale:
+Con Python 3 y Node.js disponibles:
 
-```bash
-npx http-server -p 8642
-# o
-python3 -m http.server 8642
+```sh
+npm run dev
 ```
 
-Y abrir `http://localhost:8642`. Requiere internet (CDN de globe.gl y texturas).
-También funciona abriendo `index.html` directamente (`file://`): la base masiva carga
-desde `data/nuforc.js` como respaldo cuando `fetch()` está bloqueado.
+Abrir `http://127.0.0.1:8642/`. Para elegir otro puerto:
 
-## Funcionalidades
+```sh
+npm run dev -- --port 8643
+```
 
-- **Globo 3D** con capa de puntos (color por tipo/forma) y **mapa de calor hexagonal** (escala logarítmica adaptativa) para ver tendencias geográficas.
-- **Base masiva NUFORC**: 80.332 reportes ciudadanos geolocalizados (1906–2014) integrados como capa conmutables; se muestran como puntos individuales cuando la selección baja del límite.
-- **Base GEIPAN · Francia**: 2.677 casos oficiales de la agencia espacial francesa (CNES, 1937–2018), geolocalizados por departamento, con **filtro por clasificación A/B/C/D** (A=identificado … D=inexplicado). Reduce el sesgo estadounidense del mapa de calor con datos oficiales europeos.
-- **Filtros de la base masiva**: 10 morfologías (luz, triángulo, disco, esfera…) y franja horaria (24h / día / noche).
-- **Línea de tiempo 1942–2025**: histograma anual (log), rombos ◆ con los hitos del fenómeno, rango ajustable y modo reproducción (▶ o espacio) acumulado o ventana de 10 años.
-- **📊 Análisis**: KPIs, distribución por década, por forma, día vs noche y top-10 localidades de la selección actual.
-- **🧭 Expedición**: tour guiado cinemático por 16 casos esenciales (1947–2023).
-- **🔥 Hotspots legendarios**: capa de 13 lugares míticos (Área 51, Skinwalker, Hessdalen…).
-- **➕ Cuaderno de campo**: registra tus avistamientos con clic en el globo (coordenadas precisas), guardados en localStorage.
-- **🔗 Permalinks**: el estado completo (filtros + caso) vive en la URL; botón de copiar enlace.
-- **⬇ Export**: descarga CSV/JSON de la selección filtrada (curados + NUFORC + cuaderno).
-- **Ficha de caso**: resumen riguroso, evidencia 1–5★, enlace a vista satélite (Google Maps) y fuentes originales.
-- **Comunidad de investigación**: hub integrado con 20 subforos, referencias y
-  formatos recurrentes; GitHub Discussions como capa pública y Giscus embebido
-  en cada ficha mediante un identificador estable. Los casos del cuaderno local
-  pasan antes por una revisión de privacidad.
-- **🎬 Multimedia por caso**: vídeos oficiales de dominio público embebidos (metraje FLIR de la Navy y de las tandas PURSUE 2026), **imagen principal de Wikipedia cargada en tiempo real** (API REST, sin hardcodear), lightbox y botones de búsqueda dirigida (YouTube / Google Imágenes) para cobertura total sin enlaces rotos.
-- **Centro de conocimiento** (📚): clasificación Hynek, cronología del disclosure en EE.UU. (1947–2026, incluida la desclasificación **PURSUE**), glosario, metodología y dónde reportar.
-- **📱 Modo móvil (≤760px):** vista vertical simplificada con globo inmersivo a pantalla completa, **barra de pestañas inferior** (Globo · Filtros · Tiempo · Datos · Más) y los paneles convertidos en **bottom sheets** que se deslizan. Se activa solo y se adapta a rotación/resize.
+No hay paso de build. El servidor local permite una consulta explícita de los
+feeds mediante **Actualizar fuentes**; limita y serializa esas solicitudes.
+También se puede servir el frontend con un servidor estático, pero este solo
+lee la última copia publicada de `data/monitor-feed.json`. Usar HTTP en lugar de
+abrir `index.html` mediante `file://`.
 
-## Datos
+La cartografía 2D, MapLibre, iconos y glifos del mapa se sirven desde `assets/`.
+Las tipografías de interfaz, los enlaces multimedia y la vista 3D utilizan
+recursos externos. La lista de casos y fuentes ofrece una alternativa si falla
+el mapa o WebGL.
 
-- `js/data.js` — ~100 casos canónicos curados con coordenadas, fecha, tipo, evidencia y fuentes; más hotspots, eventos de timeline y guion del tour. Para añadir un caso, copia una entrada de `CASES`.
-- `data/nuforc.json` — 80.332 reportes NUFORC geocodificados (formato compacto `[fechaInt, hora, lat, lng, formaIdx, "ciudad, estado, país"]`).
-- `data/nuforc.js` — el mismo dataset envuelto en `window.NUFORC_DATA` para el respaldo `file://`.
-- `tools/process_nuforc.js` — regenera ambos a partir del CSV original (instrucciones en la cabecera del script).
-- `data/geipan.json` (+ `.js`) — 2.677 casos GEIPAN (`[fechaInt, lat, lng, claseIdx, "zona", "resumen"]`), geocodificados por centroide de departamento francés. `tools/process_geipan.js` los regenera desde el CSV oficial `export_cas_pub` de geipan.fr.
+## Feeds reales y actualización
 
-## Stack
+El pipeline consulta los RSS de [NASA](https://www.nasa.gov/feed/),
+[The Debrief](https://thedebrief.org/feed/),
+[The Black Vault](https://www.theblackvault.com/documentarchive/feed/) y
+[GEIPAN](https://cnes-geipan.fr/rss.xml). Filtra publicaciones UAP y contexto
+del cielo; no importa todos los temas de esas webs. NARA, AARO y NUFORC son
+fuentes enlazadas, sin integración automática activa en este pipeline.
 
-HTML/CSS/JS vanilla + [globe.gl](https://globe.gl) (Three.js) vía CDN. Tipografías: Space Grotesk, Inter, JetBrains Mono. Sin dependencias de build.
+```sh
+npm run feeds:update
+```
 
-## Créditos y datos
+Se guardan títulos, URL, fecha y descripciones breves atribuidas; no se descargan
+artículos completos ni imágenes periodísticas. En caso de fallo se conserva el
+último contenido válido y su fecha original. Un feed sin novedades puede estar
+funcionando correctamente. Esto es un monitor de publicaciones, no un servicio
+de avistamientos verificados en tiempo real.
 
-- **Reportes masivos:** National UFO Reporting Center (NUFORC), vía el dataset público [`planetsig/ufo-reports`](https://github.com/planetsig/ufo-reports). Geocodificados a nivel de localidad. Son testimonios ciudadanos sin verificar: su valor es estadístico (tendencias, geografía, formas), no probatorio caso a caso.
-- **Casos oficiales europeos:** [GEIPAN](https://www.cnes-geipan.fr/) (CNES, Francia), CSV público `export_cas_pub`. Geolocalización a nivel de departamento (el CSV no incluye coordenadas exactas). Clasificación oficial A–D.
-- **Casos curados:** selección editorial con fuentes primarias enlazadas en cada ficha (archivos desclasificados, NICAP, Black Vault, GEIPAN, prensa de la época).
-- **Render 3D:** [globe.gl](https://globe.gl) · texturas de [three-globe](https://github.com/vasturiano/three-globe).
+El workflow `.github/workflows/monitor-feeds.yml` publica `main` mediante
+GitHub Pages y programa consultas a los minutos **17 y 47 de cada hora**.
+Cada ejecución valida el producto, consulta los RSS, guarda únicamente el
+snapshot actualizado y despliega la web en la misma ejecución. Así los commits
+automáticos no dependen de disparar otro workflow para llegar al sitio público.
+También se ejecuta al publicar cambios en `main` y se puede lanzar manualmente
+desde Actions. GitHub Pages debe estar configurado con **GitHub Actions** como
+origen de publicación.
 
-> ⚠️ Proyecto divulgativo e independiente. No afiliado a NUFORC ni a ningún organismo oficial.
+El Monitor comprueba la copia publicada cada minuto mientras está visible.
+**Recargar publicaciones** lee esa copia; la consulta a los medios la realiza
+el workflow. GitHub puede retrasar las tareas programadas o desactivarlas por
+inactividad. El estado de cada fuente permite comprobar la fecha del último
+intento y del último éxito; una caída conserva su contenido anterior.
 
-## Licencia
+Contrato, reglas de clasificación, límites y comportamiento de errores:
+[docs/monitor-feeds.md](docs/monitor-feeds.md).
 
-Código bajo licencia MIT (ver `LICENSE`). Los datos de NUFORC pertenecen a sus respectivos titulares y se incluyen con fines divulgativos y de investigación.
+## Pruebas
+
+```sh
+npm run test:monitor
+npm run test:community
+python3 tools/test_build_public_site.py
+```
+
+`test:monitor` comprueba el modelo de contenido, fechas y estado de URL,
+parsing/deduplicación de feeds y el endpoint local. Las pruebas de ingestión
+son deterministas; no necesitan consultar internet. Para actualizar la copia
+con respuestas reales se usa `feeds:update`. La revisión visual y las
+interacciones del mapa se comprueban en navegador por separado.
+
+Para generar el mismo artefacto público que se despliega en Pages:
+
+```sh
+python3 scripts/build-public-site.py --source . --output _site
+```
+
+El empaquetado conserva la app y las previews existentes, y excluye herramientas,
+pruebas, informes internos y archivos de adquisición de fuentes.
+
+## Estructura
+
+| Archivo | Función |
+| --- | --- |
+| `index.html`, `css/monitor.css`, `js/monitor.js` | Monitor, mapa 2D y detalle de casos/fuentes. |
+| `js/monitor-model.js` | Normalización, fechas, filtros, procedencia y enlaces compartibles. |
+| `data/monitor-feed.json` | Última copia de metadatos recibidos y estado por fuente. |
+| `tools/update_monitor_feeds.py` | Ingestión RSS/Atom y publicación del snapshot. |
+| `tools/serve_monitor.py` | Servidor local y consulta de feeds bajo demanda. |
+| `js/data.js` | Catálogo editorial de casos y referencias históricas. |
+| `globe.html`, `js/app.js`, `css/styles.css` | Atlas 3D anterior, con sus filtros, análisis, cuaderno y comunidad. |
+
+Los datasets históricos NUFORC y GEIPAN de la vista 3D no son feeds de actualidad.
+Se conservan sus coberturas y precisiones originales; sus permisos y los de
+cada medio deben revisarse antes de ampliar la redistribución o explotación.
+
+## Créditos y licencia
+
+Código bajo [licencia MIT](LICENSE). Los datos, textos, medios y dependencias
+mantienen sus propias condiciones; la licencia del código no las sustituye.
+Los metadatos de publicaciones conservan atribución y enlace al original.
+
+Créditos y procedencia de MapLibre, Tabler, Natural Earth y Noto Sans:
+[assets/monitor-assets.md](assets/monitor-assets.md).
+La vista 3D usa [globe.gl](https://globe.gl) y texturas de
+[three-globe](https://github.com/vasturiano/three-globe).
+
+Proyecto independiente creado por Miquel Gelabert. No afiliado a NASA, NUFORC,
+GEIPAN, CNES, AARO ni a ningún organismo oficial.

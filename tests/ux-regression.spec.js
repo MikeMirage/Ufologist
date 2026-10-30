@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 async function enterAtlas(page) {
-  await page.goto('/');
+  await page.goto('/globe.html');
   const enter = page.locator('#landing-skip');
   // The landing can finish automatically between the visibility check and
   // the click. Force-dispatching keeps this helper atomic through that fade.
@@ -186,89 +186,16 @@ test('satellite mode remaps every primary information action to the space domain
   });
 });
 
-test('mobile sheets, history, report mode and dirty forms remain coherent', async ({ page }, testInfo) => {
-  test.setTimeout(60_000);
+test('portrait phone clearly requests landscape orientation', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile-chromium');
   await expectNoRuntimeErrors(page, async () => {
-    await enterAtlas(page);
-    const moreNav = page.locator('#mobile-nav button[data-sheet="mobile-more"]');
-
-    await page.locator('#mobile-nav button[data-sheet="panel-left"]').click();
-    await expect(page.locator('#panel-left')).toBeVisible();
-    await expect(page.locator('#btn-close-filters')).toBeFocused();
-    await expect(page.locator('#panel-left')).toHaveAttribute('aria-modal', 'true');
-    expect(await page.locator('#mobile-nav').evaluate(element => element.inert)).toBe(true);
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#panel-left')).toBeHidden();
-    await expect(page.locator('#mobile-nav button[data-sheet="panel-left"]')).toBeFocused();
-
-    await moreNav.click();
-    const moreOrder = await page.locator('#mobile-more .more-grid').first().locator('button').evaluateAll(buttons =>
-      buttons.map(button => button.dataset.act));
-    expect(moreOrder).toEqual([
-      'stats',
-      'knowledge',
-      'forum',
-      'add',
-      'tour',
-      'about',
-      'pass',
-      'audio',
-    ]);
-    const moreLabels = await page.locator('#mobile-more .more-grid').first().locator('button').evaluateAll(buttons =>
-      Object.fromEntries(buttons.map(button => [button.dataset.act, button.querySelector('span')?.textContent])));
-    expect(moreLabels).toEqual({
-      stats: 'Análisis',
-      knowledge: 'Conocimiento',
-      forum: 'Comunidad',
-      add: 'Reportar',
-      tour: 'Expedición',
-      about: 'Info',
-      pass: 'Pass',
-      audio: 'Ambiente',
-    });
-    await expect(page.locator('#mobile-more [data-act="add"]')).toHaveClass(/mobile-primary-action/);
-    await page.goBack();
-    await expect(page.locator('#mobile-more')).toBeHidden();
-    await expect(page.locator('#sheet-backdrop')).not.toHaveClass(/show/);
-
-    await moreNav.click();
-    await page.locator('#mobile-more [data-act="knowledge"]').click();
-    await expect(page.locator('#modal-overlay')).toBeVisible();
-    await expect(page.locator('#btn-close-modal')).toBeFocused();
-    const modalZ = await page.locator('#modal-overlay').evaluate(element => Number(getComputedStyle(element).zIndex));
-    const navZ = await page.locator('#mobile-nav').evaluate(element => Number(getComputedStyle(element).zIndex));
-    expect(modalZ).toBeGreaterThan(navZ);
-    await page.goBack();
-    await expect(page.locator('#modal-overlay')).toBeHidden();
-    await expect(moreNav).toBeFocused();
-
-    await moreNav.click();
-    await page.locator('#mobile-more [data-act="tour"]').click();
-    await expect(page.locator('#tour-card')).toBeVisible();
-    await expect(page.locator('#panel-case')).toBeHidden();
-    await expect(page.locator('#sheet-backdrop')).not.toHaveClass(/show/);
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#tour-card')).toBeHidden();
-
-    await moreNav.click();
-    await page.locator('#mobile-more [data-act="add"]').click();
-    await expect(page.locator('#pick-hint')).toBeVisible();
-    await expect(page.locator('#pick-cancel')).toBeFocused();
-    await page.evaluate(() => {
-      window.__ufologistGlobe.onGlobeClick()({ lat: 40.4168, lng: -3.7038 });
-    });
-    await expect(page.locator('#sight-overlay')).toBeVisible();
-    await expect(page.locator('#sf-name')).toBeFocused();
-    await page.locator('#sf-name').fill('Prueba sin guardar');
-
-    page.once('dialog', dialog => dialog.dismiss());
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#sight-overlay')).toBeVisible();
-    page.once('dialog', dialog => dialog.accept());
-    await page.keyboard.press('Escape');
-    await expect(page.locator('#sight-overlay')).toBeHidden();
-    await expect(moreNav).toBeFocused();
+    await page.goto('/globe.html');
+    await expect(page.locator('#orientation-gate')).toBeVisible();
+    await expect(page.locator('#orientation-title')).toContainText('Gira el dispositivo');
+    await expect(page.locator('#orientation-gate')).toHaveCSS('position', 'fixed');
+    const gate = await page.locator('#orientation-gate').boundingBox();
+    expect(gate.width).toBe(390);
+    expect(gate.height).toBe(844);
   });
 });
 
@@ -317,21 +244,48 @@ test('tablet layout preserves access to primary controls and panels', async ({ p
   });
 });
 
-test('landscape phone retains the mobile interaction model', async ({ page }, testInfo) => {
+test('landscape phone preserves the desktop flow in a compact touch layout', async ({ page }, testInfo) => {
+  test.setTimeout(75_000);
   test.skip(testInfo.project.name !== 'mobile-landscape-chromium');
   await expectNoRuntimeErrors(page, async () => {
+    await page.route('https://celestrak.org/**', route => route.fulfill({ status: 200, body: '' }));
     await enterAtlas(page);
-    await expect(page.locator('body')).toHaveClass(/is-mobile/);
-    await expect(page.locator('#mobile-nav')).toBeVisible();
-    await expect(page.locator('#panel-left')).toBeHidden();
-    await page.locator('#mobile-nav button[data-sheet="panel-left"]').click();
+    await expect(page.locator('body')).toHaveClass(/is-compact-landscape/);
+    await expect(page.locator('#orientation-gate')).toBeHidden();
+    await expect(page.locator('#mobile-nav')).toBeHidden();
+    await expect(page.locator('.topbar-actions')).toBeVisible();
     await expect(page.locator('#panel-left')).toBeVisible();
-    await expect(page.locator('#btn-close-filters')).toBeFocused();
-    const sheetHeight = await page.locator('#panel-left').evaluate(element =>
-      element.getBoundingClientRect().height);
-    expect(sheetHeight).toBeLessThanOrEqual(390 * .75);
+    await expect(page.locator('#timeline')).toBeVisible();
+
+    const overflow = await page.locator('#topbar').evaluate(element => element.scrollWidth > element.clientWidth);
+    expect(overflow).toBe(false);
+    const topTargets = await page.locator('.topbar-actions .btn-ghost').evaluateAll(buttons =>
+      buttons.map(button => ({ width: button.getBoundingClientRect().width, height: button.getBoundingClientRect().height })));
+    topTargets.forEach(target => {
+      expect(target.width).toBeGreaterThanOrEqual(40);
+      expect(target.height).toBeGreaterThanOrEqual(40);
+    });
+
+    await page.locator('#btn-knowledge').click();
+    await expect(page.locator('#modal-overlay')).toBeVisible();
+    const modal = await page.locator('#modal').boundingBox();
+    expect(modal.height).toBeLessThanOrEqual(390);
+    expect(modal.width).toBeLessThanOrEqual(844);
     await page.keyboard.press('Escape');
-    await expect(page.locator('#panel-left')).toBeHidden();
+
+    await page.locator('#btn-stats').click();
+    await expect(page.locator('#panel-stats')).toBeVisible();
+    await expect(page.locator('#panel-stats')).not.toHaveAttribute('aria-modal', 'true');
+    await page.locator('#btn-close-stats').click();
+
+    await page.locator('#btn-view-orbit').click();
+    await page.waitForFunction(() => window.UFOSat?._vg?.()?.sats?.length > 0);
+    await expect(page.locator('#sat-panel')).toBeVisible();
+    await page.locator('#btn-tour').click();
+    await expect(page.locator('#tour-card')).toBeVisible();
+    await expect(page.locator('#sat-detail')).toBeVisible();
+    expect(await page.evaluate(() => Boolean(window.UFOSat._vg().followMarkerObj))).toBe(true);
+    await page.keyboard.press('Escape');
   });
 });
 
@@ -340,14 +294,13 @@ test('breakpoint changes close transient layers without stranding focus', async 
   await expectNoRuntimeErrors(page, async () => {
     await enterAtlas(page);
     await page.locator('#btn-knowledge').click();
-    await page.setViewportSize({ width: 390, height: 844 });
+    await page.setViewportSize({ width: 844, height: 390 });
     await expect(page.locator('body')).toHaveClass(/is-mobile/);
+    await expect(page.locator('body')).toHaveClass(/is-compact-landscape/);
     await expect(page.locator('#modal-overlay')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('#modal-overlay')).toBeHidden();
-    await expect(page.locator('#mobile-nav')).toBeVisible();
-
-    await page.locator('#mobile-nav button[data-sheet="panel-left"]').click();
+    await expect(page.locator('#mobile-nav')).toBeHidden();
     await expect(page.locator('#panel-left')).toBeVisible();
     await page.setViewportSize({ width: 1440, height: 900 });
     await expect(page.locator('body')).not.toHaveClass(/is-mobile/);

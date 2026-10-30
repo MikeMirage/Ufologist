@@ -622,7 +622,14 @@ function syncModeNavigation(mode = document.body.dataset.viewMode) {
   defs.forEach(([id, icon, value]) => {
     const button = $(id);
     if (!button) return;
-    button.textContent = `${icon} ${value[0]}`;
+    const iconEl = document.createElement('span');
+    iconEl.className = 'action-icon';
+    iconEl.setAttribute('aria-hidden', 'true');
+    iconEl.textContent = icon;
+    const labelEl = document.createElement('span');
+    labelEl.className = 'action-label';
+    labelEl.textContent = value[0];
+    button.replaceChildren(iconEl, document.createTextNode(' '), labelEl);
     button.title = value[1];
     button.setAttribute('aria-label', value[1]);
   });
@@ -4176,11 +4183,12 @@ function openOfficialReport(d, fly) {
   }
 }
 function openCaseLayer(options = {}) {
+  const sheetMode = usesMobileSheets();
   openUILayer('case', {
     ...options,
-    modal: isMobile(),
-    priority: isMobile() ? 80 : 40,
-    inertExempt: isMobile() ? ['sheet-backdrop'] : [],
+    modal: sheetMode,
+    priority: sheetMode ? 80 : 40,
+    inertExempt: sheetMode ? ['sheet-backdrop'] : [],
   });
 }
 function closeCasePanel(options = {}) {
@@ -4789,7 +4797,7 @@ function renderStats() {
 }
 function openStats() {
   closeUILayer('case', { restoreFocus: false });
-  if (isMobile()) {
+  if (usesMobileSheets()) {
     openSheet('panel-stats');
     return;
   }
@@ -5120,7 +5128,7 @@ function tourGo(i) {
   $('tour-progress').textContent = (i + 1) + '/' + ids.length;
   $('tour-title').textContent = c.year + ' — ' + caseName(c);
   $('tour-text').textContent = caseSummary(c);
-  if (isMobile()) {
+  if (usesMobileSheets()) {
     closeSheets({ restoreFocus: false, preserveHistory: true });
     state.selectedCase = c.id;
     renderCaseMarkersFromCurrent();
@@ -5623,9 +5631,13 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ---------- Mobile: bottom-sheet navigation ----------
+// ---------- Mobile: performance + portrait fallback sheets ----------
 const mq = window.matchMedia('(max-width: 760px), (max-width: 900px) and (max-height: 500px)');
+const mobileSheetMq = window.matchMedia('(max-width: 760px) and (orientation: portrait)');
+const compactLandscapeMq = window.matchMedia('(orientation: landscape) and (max-height: 560px) and (max-width: 980px)');
 function isMobile() { return mq.matches; }
+function usesMobileSheets() { return mq.matches && mobileSheetMq.matches; }
+function isCompactLandscape() { return compactLandscapeMq.matches; }
 const SHEET_IDS = ['panel-left', 'timeline', 'panel-stats', 'panel-case', 'mobile-more'];
 const MOBILE_SHEET_LAYERS = {
   'panel-left': 'filters',
@@ -5662,7 +5674,7 @@ function setMobileSheetSemantics(id, open) {
     if (id === 'panel-left' || id === 'timeline') {
       sheet.removeAttribute('role');
       sheet.removeAttribute('aria-modal');
-      if (isMobile()) sheet.setAttribute('aria-hidden', 'true');
+      if (usesMobileSheets()) sheet.setAttribute('aria-hidden', 'true');
       else sheet.removeAttribute('aria-hidden');
     } else {
       sheet.setAttribute('aria-hidden', 'true');
@@ -5737,7 +5749,7 @@ function openSheet(id, options = {}) {
 }
 // openCase()/openMassReport() call this so the case sheet behaves like the rest
 function mobileOnCaseOpen() {
-  if (!isMobile()) return;
+  if (!usesMobileSheets()) return;
   SHEET_IDS.filter(id => id !== 'panel-case').forEach(id => closeMobileSheet(id, {
     restoreFocus: false,
     clearSelection: false,
@@ -5748,7 +5760,7 @@ function mobileOnCaseOpen() {
   syncMobileSheetChrome('panel-case');
 }
 function mobileOnSheetClose() {
-  if (!isMobile()) return;
+  if (!usesMobileSheets()) return;
   syncMobileSheetChrome();
 }
 
@@ -5792,6 +5804,8 @@ $('btn-close-stats').addEventListener('click', mobileOnSheetClose);
 $('btn-close-case').addEventListener('click', mobileOnSheetClose);
 
 let wasMobile = null;
+let wasSheetMode = null;
+let wasCompactLandscape = null;
 function applyPerfTier(m) {
   // m = mobile. Phones: cap pixel ratio (the #1 cost on retina), drop the
   // bump-map shader and the night-sky background sphere, and coarsen the
@@ -5804,11 +5818,16 @@ function applyPerfTier(m) {
 }
 function applyMobileLayout() {
   const m = isMobile();
-  if (m === wasMobile) return;   // only act when crossing the breakpoint
+  const sheetMode = usesMobileSheets();
+  const compactLandscape = isCompactLandscape();
+  if (m === wasMobile && sheetMode === wasSheetMode && compactLandscape === wasCompactLandscape) return;
   wasMobile = m;
+  wasSheetMode = sheetMode;
+  wasCompactLandscape = compactLandscape;
   document.body.classList.toggle('is-mobile', m);
+  document.body.classList.toggle('is-compact-landscape', compactLandscape);
   applyPerfTier(m);
-  if (m) {
+  if (sheetMode) {
     closeSheets({ restoreFocus: false, preserveHistory: true });
     globe.controls().autoRotate = true;
     globe.pointOfView({ lat: 22, lng: -30, altitude: 2.9 }, 0);
@@ -5817,10 +5836,16 @@ function applyMobileLayout() {
     $('panel-left').classList.remove('hidden', 'collapsed');
     $('timeline').classList.remove('hidden');
     ['panel-left', 'timeline'].forEach(id => setMobileSheetSemantics(id, false));
+    if (compactLandscape) {
+      globe.controls().autoRotate = false;
+      globe.pointOfView({ lat: 22, lng: -30, altitude: 2.55 }, 0);
+    }
   }
   refresh();   // rebins the heatmap at the new resolution + re-applies marker rules
 }
 mq.addEventListener ? mq.addEventListener('change', applyMobileLayout) : mq.addListener(applyMobileLayout);
+mobileSheetMq.addEventListener ? mobileSheetMq.addEventListener('change', applyMobileLayout) : mobileSheetMq.addListener(applyMobileLayout);
+compactLandscapeMq.addEventListener ? compactLandscapeMq.addEventListener('change', applyMobileLayout) : compactLandscapeMq.addListener(applyMobileLayout);
 
 // ---------- Init ----------
 // browsers restore form values across reloads — force controls to match state
