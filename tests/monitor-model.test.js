@@ -83,10 +83,36 @@ test('stale successful copies are marked independently of published dates', () =
 });
 
 test('state roundtrip preserves no-source filter and selected case', () => {
-  const state = { view: 'atlas', period: 'all', query: 'Observación & NASA', category: 'uap', sources: [], selectedId: 'nimitz-2004', selectedKind: 'case' };
+  const state = { view: 'atlas', spatial: 'globe', period: 'all', query: 'Observación & NASA', category: 'uap', sources: [], selectedId: 'nimitz-2004', selectedKind: 'case' };
   assert.deepEqual(model.readState(model.writeState(state)), state);
   assert.equal(model.readState('#view=monitor').sources, null);
   assert.deepEqual(model.readState('#view=monitor&sources=').sources, []);
+});
+
+test('spatial state defaults to globe for old links and invalid modes', () => {
+  assert.equal(model.DEFAULT_STATE.spatial, 'globe');
+  assert.equal(model.normalizeState({}).spatial, 'globe');
+  assert.equal(model.readState('#view=atlas&id=nimitz-2004&kind=case').spatial, 'globe');
+  for (const spatial of ['', 'invalid', '3d', 'MAP', null]) {
+    assert.equal(model.normalizeState({ spatial }).spatial, 'globe');
+    assert.equal(model.readState('#spatial=' + encodeURIComponent(spatial)).spatial, 'globe');
+  }
+});
+
+test('2D map deep links restore search, selected case and all filters', () => {
+  const state = { view: 'atlas', spatial: 'map', period: '7', query: 'Observación & NASA', category: 'uap', sources: ['nasa', 'archive'], selectedId: 'nimitz-2004', selectedKind: 'case' };
+  const hash = model.writeState(state);
+  assert.equal(new URLSearchParams(hash.slice(1)).get('spatial'), 'map');
+  assert.deepEqual(model.readState('https://example.com/' + hash), state);
+});
+
+test('switching from map to globe removes the override without losing selection', () => {
+  const map = model.readState('#view=atlas&spatial=map&q=Nimitz&id=nimitz-2004&kind=case&sources=');
+  const globe = { ...map, spatial: 'globe' };
+  const hash = model.writeState(globe);
+  assert.equal(new URLSearchParams(hash.slice(1)).has('spatial'), false);
+  assert.deepEqual(model.readState(hash), globe);
+  assert.deepEqual(model.readState(model.writeState({ ...globe, spatial: 'map' })), map);
 });
 
 test('state validation rejects unknown surfaces and serializes source filters', () => {

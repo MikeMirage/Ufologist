@@ -1,4 +1,4 @@
-/* UFOlogist Monitor — map-first observatory; legacy globe keeps styles.css. */
+/* UFOlogist Monitor — integrated 3D observatory with an optional 2D atlas. */
 :root {
   color-scheme: dark;
   --bg: #02060d;
@@ -66,15 +66,34 @@ button { border: 0; background: none; }
 #app-main { flex: 1 1 auto; min-height: 0; position: relative; }
 .workspace { display: grid; grid-template-columns: minmax(0, 1.98fr) minmax(365px, 1fr); width: 100%; height: 100%; min-height: 0; }
 .map-panel { min-width: 0; min-height: 0; position: relative; overflow: hidden; background: #06121c; }
-#monitor-map { position: absolute; inset: 0; }
-.map-toolbar { position: absolute; top: 20px; left: 24px; right: 24px; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 12px; pointer-events: none; }
+#monitor-map, #monitor-globe { position: absolute; inset: 0; }
+#monitor-globe { overflow: hidden; background: var(--bg); touch-action: none; z-index: 0; }
+.monitor-globe-cluster:hover { filter: brightness(1.25); }
+.monitor-globe-cluster:focus-visible { outline: 2px solid white; outline-offset: 4px; }
+#monitor-globe > div { width: 100%; height: 100%; }
+#monitor-globe canvas { display: block; width: 100%; height: 100%; }
+#monitor-globe .scene-nav-info { display: none; }
+#monitor-globe .scene-tooltip { font: 12px/1.55 var(--font-body); background: #071725f5; border: 1px solid #2b4c63; border-radius: 5px; color: #e4eff8; padding: 9px 12px; box-shadow: 0 5px 24px #0005; }
+#monitor-globe .scene-tooltip:empty { display: none; }
+body[data-spatial="map"] #monitor-globe,
+body[data-spatial="map"] #globe-hint,
+body[data-spatial="map"] #globe-zoom-controls { display: none; }
+.map-toolbar { position: absolute; top: 20px; left: 24px; right: 24px; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 10px 12px; flex-wrap: wrap; pointer-events: none; }
 .map-toolbar > * { pointer-events: auto; }
 .segmented-control { display: inline-flex; align-items: center; border: 1px solid #1b3549; border-radius: 5px; background: #04101bd9; overflow: hidden; }
 .segmented-control button { padding: 0 20px; min-height: 38px; color: #b9c9db; font-size: 13px; border-right: 1px solid #1b3549; }
 .segmented-control button:last-child { border-right: 0; }
 .segmented-control button:hover { background: #0c2738; color: var(--text); }
 .segmented-control button.is-active, .segmented-control button[aria-pressed="true"] { color: var(--cyan); background: #082535; box-shadow: inset 0 0 0 1px var(--cyan); }
-.map-toolbar-actions { display: flex; gap: 9px; }
+.map-toolbar-actions { display: flex; align-items: stretch; gap: 9px; margin-left: auto; }
+.spatial-control button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding-inline: 13px; min-height: 39px; font-size: 12px; }
+.spatial-control .icon { width: 16px; height: 16px; opacity: .85; }
+.globe-hint { position: absolute; z-index: 3; top: 77px; left: 50%; transform: translateX(-50%); max-width: calc(100% - 48px); text-align: center; color: #7e98ae; font-size: 11px; line-height: 1.6; pointer-events: none; }
+.globe-zoom-controls { position: absolute; right: 18px; bottom: 32px; z-index: 5; display: flex; flex-direction: column; width: 76px; border: 1px solid #28485e; border-radius: 5px; overflow: hidden; background: #071725ed; }
+.globe-zoom-controls button { min-height: 44px; padding: 6px 9px; font-size: 11px; color: #b9cddd; }
+.globe-zoom-controls button + button { border-top: 1px solid var(--line); }
+.globe-zoom-controls button:hover { background: #0b2b3c; color: var(--cyan); }
+.globe-zoom-controls button:focus-visible { outline-offset: -4px; }
 .toolbar-button { min-height: 39px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 13px; background: #04101bea; border: 1px solid #284152; border-radius: 5px; color: #cbd6e3; font-size: 12px; white-space: nowrap; }
 .toolbar-button:hover, .toolbar-button[aria-expanded="true"] { border-color: var(--cyan); color: var(--cyan); background: #0a2535; }
 .toolbar-button .icon { width: 16px; height: 16px; }
@@ -303,8 +322,10 @@ button.catalog-card:hover, .catalog-card:has(button:hover) { border-color: #2e6d
   .feed-list { padding-inline: 9px; }
   .map-toolbar { gap: 8px; }
   .map-toolbar-actions { gap: 6px; }
-  #globe-link span, #map-reset span { display: none; }
-  #globe-link, #map-reset { width: 39px; padding: 0; }
+  #map-reset span { display: none; }
+  #map-reset { width: 39px; padding: 0; }
+  .spatial-control button { gap: 6px; padding-inline: 10px; font-size: 11px; }
+  .spatial-control .icon { width: 15px; height: 15px; }
   .segmented-control button { padding-inline: 12px; }
   .map-legend { left: 18px; bottom: 92px; }
   .map-caption { left: 18px; right: 18px; }
@@ -314,6 +335,13 @@ button.catalog-card:hover, .catalog-card:has(button:hover) { border-color: #2e6d
   .detail-content:has(.detail-publications:empty) { grid-template-columns: minmax(0, 1fr) 270px; }
   .sources-bar { padding-inline: 18px; gap: 12px; }
   .source-health-item { padding-inline: 17px; min-width: 150px; }
+}
+@media (max-width: 960px) {
+  .map-toolbar { align-items: flex-start; }
+  .map-toolbar-actions { width: 100%; justify-content: flex-end; }
+  .globe-hint { top: 126px; }
+  .filter-panel { top: 121px; max-height: calc(100% - 145px); }
+  .map-fallback { padding-top: 150px; }
 }
 @media (max-width: 760px) {
   :root { --header-height: 120px; --footer-height: 64px; }
@@ -339,7 +367,16 @@ button.catalog-card:hover, .catalog-card:has(button:hover) { border-color: #2e6d
   .map-panel, .feed-panel { width: 100%; height: 100%; }
   body[data-mobile-view="list"] .workspace { display: flex; flex-direction: column; }
   body[data-mobile-view="list"] .map-panel { display: block; height: 64px; flex: 0 0 64px; overflow: visible; z-index: 8; border-bottom: 1px solid var(--line); }
+  body[data-mobile-view="list"] .map-toolbar { flex-wrap: nowrap; }
+  body[data-mobile-view="list"] .map-toolbar-actions { width: auto; }
+  body[data-mobile-view="list"] #spatial-control,
+  body[data-mobile-view="list"] #map-reset { display: none; }
+  body[data-mobile-view="list"] .filter-panel { top: 61px; }
+  body[data-spatial="globe"] .map-legend { display: none; }
   body[data-mobile-view="list"] .map-panel #monitor-map,
+  body[data-mobile-view="list"] .map-panel #monitor-globe,
+  body[data-mobile-view="list"] .map-panel #globe-hint,
+  body[data-mobile-view="list"] .map-panel #globe-zoom-controls,
   body[data-mobile-view="list"] .map-panel .map-caption,
   body[data-mobile-view="list"] .map-panel .map-legend,
   body[data-mobile-view="list"] .map-panel #map-fallback { display: none !important; }
@@ -362,6 +399,10 @@ button.catalog-card:hover, .catalog-card:has(button:hover) { border-color: #2e6d
   .segmented-control button { min-height: 40px; padding-inline: 12px; font-size: 11px; }
   .toolbar-button { min-height: 40px; font-size: 11px; gap: 6px; }
   .toolbar-button .icon { width: 15px; height: 15px; }
+  .spatial-control button { min-height: 40px; padding-inline: 12px; font-size: 11px; }
+  .globe-hint { display: none; }
+  .globe-zoom-controls { right: 15px; bottom: 32px; width: 70px; }
+  .globe-zoom-controls button { min-height: 44px; font-size: 10px; }
   .map-legend { left: 15px; bottom: 92px; padding: 12px 14px; min-width: 0; }
   .map-legend > p { font-size: 11px; margin-bottom: 6px; }
   .map-legend > div { font-size: 10px; margin-top: 5px; }
@@ -369,7 +410,7 @@ button.catalog-card:hover, .catalog-card:has(button:hover) { border-color: #2e6d
   .map-caption { left: 15px; right: 15px; bottom: 30px; }
   #view-description { font-size: 10px; }
   #map-message { font-size: 9px; margin-top: 7px; }
-  .filter-panel { right: 15px; top: 61px; width: calc(100% - 30px); max-height: min(60dvh, 500px); }
+  .filter-panel { right: 15px; top: 114px; width: calc(100% - 30px); max-height: min(60dvh, 500px); }
   .source-filters label { min-height: 39px; }
   .sources-bar { gap: 12px; padding-inline: 16px; }
   .sources-bar-label { min-width: 92px; font-size: 10px; }
@@ -411,6 +452,7 @@ button.catalog-card:hover, .catalog-card:has(button:hover) { border-color: #2e6d
   .map-toolbar { left: 11px; right: 11px; }
   .segmented-control button { padding-inline: 9px; }
   .toolbar-button { padding-inline: 9px; }
+  .spatial-control button { padding-inline: 9px; }
   #filter-toggle span { display: none; }
 }
 @media (max-height: 550px) and (min-width: 761px) {
@@ -422,6 +464,8 @@ button.catalog-card:hover, .catalog-card:has(button:hover) { border-color: #2e6d
   .primary-nav button { font-size: 12px; }
   .app-search-wrap input { height: 35px; }
   .map-toolbar { top: 12px; }
+  .globe-hint { display: none; }
+  body[data-spatial="globe"] .map-legend { display: none; }
   .map-legend { bottom: 65px; }
   .map-caption { bottom: 23px; }
   .feed-header { padding-top: 15px; }

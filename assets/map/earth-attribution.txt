@@ -1,0 +1,14 @@
+UFOlogist integrated globe: local Earth textures
+
+Earth imagery and bump map distributed by three-globe examples, version 2.31.3:
+https://cdn.jsdelivr.net/npm/three-globe@2.31.3/example/img/earth-blue-marble.jpg
+https://cdn.jsdelivr.net/npm/three-globe@2.31.3/example/img/earth-topology.png
+Upstream project: https://github.com/vasturiano/three-globe
+
+Renderer: globe.gl 2.32.2, bundled build with its own Three.js instance.
+https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js
+Copyright (c) 2019 Vasco Asturiano. MIT license in
+assets/vendor/globe-gl-LICENSE.txt. Bundled license notices remain intact.
+
+Texture files are served locally; loading the globe does not require fetching
+textures from a CDN. Attribution records origin and does not imply affiliation.

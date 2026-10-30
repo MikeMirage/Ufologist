@@ -24,6 +24,10 @@
   let snapshot = { sources: [], items: [], generatedAt: null };
   let loading = true, loadError = '', refreshing = false, canRefreshOrigins = false;
   let map = null, mapReady = false, mapFailed = false, contextMap = null;
+  let globe = null, globeReady = false, globeFailed = false, globePromise = null;
+  let globeGeneration = 0;
+  let mapPromise = null, worldPromise = null, mapLibrePromise = null;
+  let globeCasesKey = '', mapCasesKey = '';
   let world = null, toastTimer, mapErrorShown = false, dialogTrigger = null;
   let saved = readSaved();
   let currentDetailKey = '';
@@ -73,7 +77,7 @@
   function navigate(view) {
     commit({ view, selectedId: null, selectedKind: null }, true);
     if (view === 'atlas') { document.body.dataset.mobileView = 'map'; syncMobile(); }
-    setTimeout(() => map?.resize(), 60);
+    requestAnimationFrame(syncSpatial);
   }
 
   async function loadSnapshot(manual = false) {
@@ -119,6 +123,7 @@
 
   function render() {
     document.body.dataset.view = state.view;
+    document.body.dataset.spatial = state.spatial;
     document.querySelectorAll('#primary-nav [data-view]').forEach(button => {
       button.classList.toggle('is-active', button.dataset.view === state.view);
       if (button.dataset.view === state.view) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current');
@@ -134,12 +139,22 @@
     if (state.view !== 'monitor') { $('filter-panel').hidden = true; $('filter-toggle').setAttribute('aria-expanded', 'false'); }
     $('workspace').hidden = !['monitor', 'atlas'].includes(state.view);
     $('catalog-view').hidden = ['monitor', 'atlas'].includes(state.view);
-    $('globe-link').href = 'globe.html' + (state.selectedKind === 'case' ? '#case=' + encodeURIComponent(state.selectedId) : '');
+    document.querySelectorAll('#spatial-control [data-spatial]').forEach(button => {
+      const active = button.dataset.spatial === state.spatial;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    $('monitor-globe').hidden = state.spatial !== 'globe';
+    $('monitor-map').hidden = state.spatial !== 'map' || mapFailed;
+    $('map-fallback').hidden = state.spatial !== 'map' || !mapFailed;
+    $('globe-zoom-controls').hidden = state.spatial !== 'globe';
+    $('globe-hint').hidden = state.spatial !== 'globe';
     renderSources();
     if (state.view === 'monitor' || state.view === 'atlas') renderFeed(); else renderCatalog();
     updateMap();
     renderDetail();
     syncMobile();
+    syncSpatial();
   }
 
   function renderSources() {
@@ -164,7 +179,7 @@
     $('feed-subtitle').textContent = atlas ? 'Expedientes históricos del catálogo. La posición puede ser aproximada.' : 'Publicaciones reales, documentos y contexto del cielo. Siempre con enlace al original.';
     $('feed-count').textContent = items.length + (atlas ? (items.length === 1 ? ' caso' : ' casos') : (items.length === 1 ? ' publicación' : ' publicaciones'));
     document.querySelector('.feed-order').innerHTML = atlas ? '<span>Fecha del suceso</span><span>Catálogo editorial</span>' : '<span>Fecha de publicación</span><span>Más recientes primero</span>';
-    $('view-description').textContent = atlas ? 'Atlas histórico · Casos del catálogo editorial' : 'Mapa: casos históricos · Lista: publicaciones recientes';
+    $('view-description').textContent = atlas ? 'Atlas histórico · Casos del catálogo editorial' : 'Atlas: casos históricos · Feed: publicaciones recientes';
     $('feed-state').textContent = loadError || (loading && !atlas ? 'Cargando las publicaciones de las fuentes…' : '');
     $('feed-state').hidden = !loadError && (!loading || atlas);
     $('feed-retry').hidden = atlas || loading;
@@ -248,7 +263,7 @@
     const flir = media?.commons === 'FLIR1 Official UAP Footage from the USG for Public Release.webm';
     const videoURL = flir ? 'https://upload.wikimedia.org/wikipedia/commons/7/70/FLIR1_Official_UAP_Footage_from_the_USG_for_Public_Release.webm' : media ? 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(media.commons) : '';
     const mediaHTML = media ? `<figure class="case-video"><div class="case-video-preview">${flir ? '<img src="assets/media/flir1-official.jpg" alt="Fotograma original de FLIR1, US Navy / Department of Defense" width="330" height="247">' : ''}<button class="primary-button" data-play-video="${esc(videoURL)}">${flir ? 'Reproducir vídeo original' : 'Cargar vídeo original'}</button></div><figcaption>${esc(media.cap || 'Material audiovisual enlazado')}. ${external('https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(media.commons), 'Ver archivo y atribución')}</figcaption></figure>` : '';
-    $('detail-body').innerHTML = `<p class="detail-kicker">Expediente del archivo</p>${mediaHTML}<section class="detail-section"><h3>Lo que recoge el registro</h3><p>${esc(c.summary)}</p></section><section class="detail-section"><h3>Documentación y referencias</h3>${linkedSources(c.sources)}</section><section class="detail-section"><h3>Qué sigue sin resolverse</h3><p>Este resumen reúne el relato y las referencias del catálogo. La publicación de un documento, un vídeo o un testimonio no determina por sí sola la naturaleza de lo observado. Contrasta las afirmaciones y las explicaciones con sus fuentes.</p></section><div class="detail-actions">${saveButton('case', c.id)}<a class="text-link" href="globe.html#case=${encodeURIComponent(c.id)}">Explorar en 3D ${icon('globe')}</a></div>`;
+    $('detail-body').innerHTML = `<p class="detail-kicker">Expediente del archivo</p>${mediaHTML}<section class="detail-section"><h3>Lo que recoge el registro</h3><p>${esc(c.summary)}</p></section><section class="detail-section"><h3>Documentación y referencias</h3>${linkedSources(c.sources)}</section><section class="detail-section"><h3>Qué sigue sin resolverse</h3><p>Este resumen reúne el relato y las referencias del catálogo. La publicación de un documento, un vídeo o un testimonio no determina por sí sola la naturaleza de lo observado. Contrasta las afirmaciones y las explicaciones con sus fuentes.</p></section><div class="detail-actions">${saveButton('case', c.id)}<button class="text-link" data-explore-case="${esc(c.id)}">Ver en el globo ${icon('globe')}</button></div>`;
     const related = snapshot.items.filter(item => item.caseIds?.includes(c.id));
     $('detail-publications').innerHTML = '<h3>En este expediente</h3>' + (related.length ? related.map(item => relatedButton('item', item.id, item.title, day(item.publishedAt))).join('') : '<p class="detail-note">Todavía no hay publicaciones del monitor vinculadas editorialmente a este caso.</p>') + '<h3>Explorar otros casos</h3>' + cases.filter(x => x.id !== c.id && x.country === c.country).slice(0, 4).map(x => relatedButton('case', x.id, x.title, day(x.observedAt))).join('');
     $('detail-context').innerHTML = `<h3>Contexto geográfico</h3>${c.location ? '<div id="detail-map" class="context-map" aria-label="Ubicación aproximada del caso"></div>' : '<p class="detail-note">No hay una ubicación documentada.</p>'}${facts([['Lugar', c.location?.label || 'No documentado'], ['Precisión', 'Ubicación aproximada del catálogo'], ['Suceso', day(c.observedAt)], ['Publicación del expediente', 'Sin fecha de publicación atribuida']])}<p class="detail-note">La región representada orienta la lectura; no define el alcance del fenómeno ni una posición exacta.</p>`;
@@ -273,6 +288,78 @@
     $('detail-context').innerHTML = `<h3>Estado del canal</h3>${facts([['Conectividad', health.label], ['Último intento', s.checkedAt ? M.formatDate(s.checkedAt, { includeTime: true }) + ' UTC' : 'Sin consulta automática'], ['Último éxito', s.lastSuccessAt ? M.formatDate(s.lastSuccessAt, { includeTime: true }) + ' UTC' : 'No disponible'], ['Última publicación en origen', s.lastPublishedAt ? day(s.lastPublishedAt) : 'No disponible'], ['Publicaciones retenidas', String(items.length)]])}${s.feedUrl ? external(s.feedUrl, 'Consultar RSS') : '<p class="detail-note">Fuente enlazada. No hay un conector automático activo.</p>'}${s.status === 'error' ? '<p class="detail-note">La última consulta falló. Se mantiene el contenido recibido anteriormente.</p>' : ''}<p class="detail-note">La fecha de consulta y la fecha de publicación son distintas. Un canal antiguo puede funcionar correctamente sin novedades.</p>`;
   }
 
+  function loadWorld() {
+    if (world) return Promise.resolve(world);
+    if (!worldPromise) worldPromise = fetch('assets/map/countries.geojson', { signal: AbortSignal.timeout(15000) })
+      .then(response => { if (!response.ok) throw new Error('Geografía no disponible'); return response.json(); })
+      .then(data => { if (!Array.isArray(data.features)) throw new Error('Geografía no válida'); world = data; return world; })
+      .catch(error => { worldPromise = null; throw error; });
+    return worldPromise;
+  }
+  function loadMapLibre() {
+    if (window.maplibregl) return Promise.resolve();
+    if (!mapLibrePromise) mapLibrePromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      const timeout = setTimeout(() => { script.remove(); reject(new Error('El mapa 2D ha tardado demasiado en cargar')); }, 20000);
+      script.src = new URL('assets/vendor/maplibre-gl.js', document.baseURI).href;
+      script.onload = () => { clearTimeout(timeout); window.maplibregl ? resolve() : reject(new Error('Motor 2D no disponible')); };
+      script.onerror = () => { clearTimeout(timeout); script.remove(); reject(new Error('Motor 2D no disponible')); };
+      document.head.appendChild(script);
+    }).catch(error => { mapLibrePromise = null; throw error; });
+    return mapLibrePromise;
+  }
+  function surfaceVisible(mode) {
+    const element = mode === 'globe' ? $('monitor-globe') : $('monitor-map');
+    return !document.hidden && !$('detail-dialog').open && ['monitor', 'atlas'].includes(state.view)
+      && state.spatial === mode && element.offsetWidth > 0 && element.offsetHeight > 0;
+  }
+  function syncSpatial() {
+    const active = surfaceVisible('globe');
+    globe?.setActive(active);
+    if (active) {
+      if (globe) globe.resize();
+      else if (!globeFailed) ensureGlobe();
+    }
+    if (surfaceVisible('map')) {
+      if (map) map.resize(); else if (!mapFailed) initMap();
+    }
+  }
+  async function ensureGlobe() {
+    if (globe) return globe;
+    if (globePromise) return globePromise;
+    const generation = ++globeGeneration;
+    const promise = (async () => {
+      await loadWorld();
+      // A user can open a source or the publication list during loading.
+      // Delay WebGL allocation until the globe surface is visible again.
+      if (!surfaceVisible('globe')) return null;
+      const renderer = await window.UFOMonitorGlobe.create({
+        container: $('monitor-globe'), world, reducedMotion: reducedMotion(),
+        onCase: id => openDetail('case', id),
+        onError: error => { if (generation === globeGeneration) failGlobe(error); },
+      });
+      if (generation !== globeGeneration || globeFailed) { renderer.destroy(); return null; }
+      globe = renderer;
+      globeReady = true; globeCasesKey = '';
+      updateMap(); syncSpatial();
+      const selected = state.selectedKind === 'case' ? caseById.get(state.selectedId) : publication(state.selectedId);
+      if (selected) globe.select(selected);
+      return globe;
+    })().catch(error => { if (generation === globeGeneration) failGlobe(error); return null; })
+      .finally(() => { if (globePromise === promise) globePromise = null; });
+    globePromise = promise;
+    return promise;
+  }
+  function failGlobe(error) {
+    if (globeFailed) return;
+    globeFailed = true; globeReady = false; globeGeneration++;
+    globe?.destroy(); globe = null;
+    console.warn('UFOlogist globe:', error?.message || 'Globo no disponible');
+    if (state.spatial === 'globe') {
+      toast('El globo no está disponible en este navegador. Puedes explorar el mapa 2D y las fichas.');
+      commit({ spatial: 'map' });
+    }
+  }
   function baseStyle() {
     const labels = world.features.filter(f => Number.isFinite(f.properties.LABEL_X) && Number.isFinite(f.properties.LABEL_Y) && f.properties.ADMIN !== 'Antarctica').map(f => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [f.properties.LABEL_X, f.properties.LABEL_Y] }, properties: { name: f.properties.NAME_ES || f.properties.NAME, rank: f.properties.LABELRANK || 5 } }));
     return {
@@ -291,16 +378,16 @@
     };
   }
   async function initMap() {
-    if (!window.maplibregl) return failMap();
+    if (map || mapPromise) return mapPromise;
+    mapPromise = (async () => {
     try {
-      const response = await fetch('assets/map/countries.geojson');
-      if (!response.ok) throw new Error('Geografía no disponible');
-      world = await response.json();
+      await Promise.all([loadWorld(), loadMapLibre()]);
+      if (!surfaceVisible('map')) return;
       map = new maplibregl.Map({ container: 'monitor-map', style: baseStyle(), center: [0, 18], zoom: 0.65, minZoom: -0.7, maxZoom: 7, attributionControl: false, renderWorldCopies: false });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
       map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
       map.on('load', () => {
-        mapReady = true;
+        mapReady = true; mapCasesKey = '';
         map.addSource('cases', { type: 'geojson', data: caseGeoJSON(), cluster: true, clusterMaxZoom: 5, clusterRadius: 43 });
         map.addLayer({ id: 'case-clusters', type: 'circle', source: 'cases', filter: ['has', 'point_count'], paint: { 'circle-color': '#073b4c', 'circle-stroke-color': '#27c8e4', 'circle-stroke-width': 1.5, 'circle-radius': ['step', ['get', 'point_count'], 17, 10, 22, 25, 27], 'circle-opacity': 0.96 } });
         map.addLayer({ id: 'cluster-count', type: 'symbol', source: 'cases', filter: ['has', 'point_count'], layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Noto Sans Regular'], 'text-size': 12 }, paint: { 'text-color': '#d9faff' } });
@@ -328,6 +415,8 @@
       });
       map.getCanvas().setAttribute('aria-label', 'Mapa histórico. Los mismos casos se pueden consultar en Atlas y Casos.');
     } catch (error) { console.warn('UFOlogist map initialization:', error.stack || error.message); failMap(); }
+    })().finally(() => { mapPromise = null; });
+    return mapPromise;
   }
   function reducedMotion() { return matchMedia('(prefers-reduced-motion: reduce)').matches; }
   function resetWorld(duration = 450) {
@@ -340,30 +429,37 @@
     return { type: 'FeatureCollection', features: visibleCases().filter(c => validLocation(c.location)).map(c => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [c.location.lng, c.location.lat] }, properties: { id: c.id, title: c.title, observedAt: c.observedAt } })) };
   }
   function updateMap() {
-    const count = visibleCases().filter(c => validLocation(c.location)).length;
-    $('map-message').textContent = mapFailed ? 'Mapa no disponible · Consulta los casos en la lista' : mapReady ? count + (count === 1 ? ' caso' : ' casos') + ' del archivo · Coordenadas aproximadas' : 'Preparando el atlas…';
-    if (!mapReady) return;
-    map.getSource('cases')?.setData(caseGeoJSON());
-    if (!['monitor', 'atlas'].includes(state.view)) return;
-    requestAnimationFrame(() => map?.resize());
+    const filtered = visibleCases().filter(c => validLocation(c.location));
+    const count = filtered.length;
+    const ready = state.spatial === 'globe' ? globeReady : mapReady;
+    const failed = state.spatial === 'globe' ? globeFailed : mapFailed;
+    $('map-message').textContent = failed ? 'Atlas no disponible · Consulta los casos en la lista' : ready ? count + (count === 1 ? ' caso' : ' casos') + ' del archivo · Coordenadas aproximadas' : state.spatial === 'globe' ? 'Preparando el globo…' : 'Preparando el mapa 2D…';
+    $('map-reset').disabled = !ready;
+    $('globe-zoom-in').disabled = !globeReady;
+    $('globe-zoom-out').disabled = !globeReady;
+    const key = filtered.map(c => c.id).join('|');
+    if (globeReady && globe && key !== globeCasesKey) { globe.setCases(filtered); globeCasesKey = key; }
+    if (mapReady && key !== mapCasesKey) { map.getSource('cases')?.setData(caseGeoJSON()); mapCasesKey = key; }
   }
   function failMap() {
     mapFailed = true; mapReady = false;
-    $('map-fallback').hidden = false;
-    $('monitor-map').hidden = true;
-    $('map-message').textContent = 'Mapa no disponible · La lista y las fuentes siguen funcionando';
-    renderFeed();
+    // A late 2D loading error must not cover a healthy active globe.
+    render();
   }
   function selectOnMap(item) {
+    globe?.select(item);
     if (!mapReady || !map.getSource('selection')) return;
     const loc = item?.location;
     map.getSource('selection').setData({ type: 'FeatureCollection', features: validLocation(loc) ? [{ type: 'Feature', geometry: { type: 'Point', coordinates: [loc.lng, loc.lat] }, properties: {} }] : [] });
     if (validLocation(loc)) map.easeTo({ center: [loc.lng, loc.lat], zoom: Math.max(3, map.getZoom()), duration: reducedMotion() ? 0 : 500 });
   }
   function destroyContext() { if (contextMap) { contextMap.remove(); contextMap = null; } }
-  function initContextMap(loc) {
-    if (!world || !$('detail-map') || !window.maplibregl || contextMap) return;
+  async function initContextMap(loc) {
+    if (!$('detail-map') || contextMap) return;
+    const key = currentDetailKey;
     try {
+      await Promise.all([loadWorld(), loadMapLibre()]);
+      if (key !== currentDetailKey || !$('detail-dialog').open || !$('detail-map') || contextMap) return;
       contextMap = new maplibregl.Map({ container: 'detail-map', style: baseStyle(), center: [loc.lng, loc.lat], zoom: 3, minZoom: 1, maxZoom: 6, interactive: false, attributionControl: false, renderWorldCopies: false });
       contextMap.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
       contextMap.on('load', () => {
@@ -372,19 +468,29 @@
         contextMap.addLayer({ id: 'approximate-location', type: 'circle', source: 'location', paint: { 'circle-radius': 26, 'circle-color': '#18d7ff', 'circle-opacity': 0.08, 'circle-stroke-color': '#7cdfef', 'circle-stroke-width': 1.5, 'circle-stroke-opacity': 0.8 } });
         contextMap.addLayer({ id: 'location-center', type: 'circle', source: 'location', paint: { 'circle-radius': 3, 'circle-color': '#c8f7ff' } });
       });
-    } catch (_) { $('detail-map').innerHTML = '<p class="detail-note">Ubicación aproximada: ' + esc(loc.label || '') + '</p>'; }
+    } catch (_) { if (key === currentDetailKey && $('detail-map')) $('detail-map').innerHTML = '<p class="detail-note">Ubicación aproximada: ' + esc(loc.label || '') + '</p>'; }
   }
   function syncMobile() {
     const mode = document.body.dataset.mobileView || 'list';
     document.querySelectorAll('[data-mobile-view]').forEach(button => { if (button.tagName === 'BUTTON') { button.classList.toggle('is-active', button.dataset.mobileView === mode); button.setAttribute('aria-pressed', String(button.dataset.mobileView === mode)); } });
   }
+  async function exploreCase(id) {
+    const item = caseById.get(id);
+    if (!item) return;
+    document.body.dataset.mobileView = 'map';
+    commit({ view: 'atlas', spatial: 'globe', query: '', selectedId: null, selectedKind: null }, true);
+    const renderer = await ensureGlobe();
+    renderer?.select(item);
+    if (renderer) $('monitor-globe').focus({ preventScroll: true });
+  }
 
   document.addEventListener('click', event => {
-    const action = event.target.closest('[data-open-item],[data-open-case],[data-open-source],[data-save-kind],[data-copy-link],[data-play-video],[data-reset-filters],[data-clear-search],a[data-view]');
+    const action = event.target.closest('[data-open-item],[data-open-case],[data-open-source],[data-explore-case],[data-save-kind],[data-copy-link],[data-play-video],[data-reset-filters],[data-clear-search],a[data-view]');
     if (!action) return;
     if (action.dataset.openItem) openDetail('item', action.dataset.openItem, action);
     else if (action.dataset.openCase) openDetail('case', action.dataset.openCase, action);
     else if (action.dataset.openSource) openDetail('source', action.dataset.openSource, action);
+    else if (action.dataset.exploreCase) exploreCase(action.dataset.exploreCase);
     else if (action.dataset.saveKind) toggleSaved(action.dataset.saveKind, action.dataset.saveId);
     else if (action.dataset.playVideo && M.safeURL(action.dataset.playVideo)) {
       const preview = action.closest('.case-video-preview');
@@ -405,14 +511,25 @@
     else if (action.dataset.view) { event.preventDefault(); navigate(action.dataset.view); }
   });
   $('primary-nav').addEventListener('click', event => { const button = event.target.closest('button[data-view]'); if (button) navigate(button.dataset.view); });
+  $('spatial-control').addEventListener('click', event => {
+    const button = event.target.closest('button[data-spatial]');
+    if (!button) return;
+    document.body.dataset.mobileView = 'map';
+    if (button.dataset.spatial === 'globe' && globeFailed) { globeFailed = false; globePromise = null; }
+    if (button.dataset.spatial === 'map' && mapFailed) { map?.remove(); map = null; mapPromise = null; mapFailed = false; mapErrorShown = false; }
+    if (state.spatial === button.dataset.spatial) render();
+    else commit({ spatial: button.dataset.spatial }, true);
+  });
   $('period-control').addEventListener('click', event => { const button = event.target.closest('[data-period]'); if (button) commit({ period: button.dataset.period }); });
   $('app-search').addEventListener('input', event => commit({ query: event.target.value }));
   $('category-filter').addEventListener('change', event => commit({ category: event.target.value }));
   $('source-filters').addEventListener('change', () => { const checked = [...$('source-filters').querySelectorAll('input:checked')].map(x => x.value); commit({ sources: checked.length === snapshot.sources.filter(s => s.feedUrl).length ? null : checked }); });
   $('filter-toggle').addEventListener('click', () => { const open = $('filter-panel').hidden; $('filter-panel').hidden = !open; $('filter-toggle').setAttribute('aria-expanded', String(open)); if (open) $('category-filter').focus(); });
-  $('mobile-views').addEventListener('click', event => { const button = event.target.closest('button'); if (button) { document.body.dataset.mobileView = button.dataset.mobileView; syncMobile(); setTimeout(() => map?.resize(), 40); } });
+  $('mobile-views').addEventListener('click', event => { const button = event.target.closest('button'); if (button) { document.body.dataset.mobileView = button.dataset.mobileView; syncMobile(); requestAnimationFrame(syncSpatial); } });
   $('feed-retry').addEventListener('click', () => loadSnapshot(true));
-  $('map-reset')?.addEventListener('click', () => resetWorld());
+  $('map-reset').addEventListener('click', () => state.spatial === 'globe' ? globe?.reset() : resetWorld());
+  $('globe-zoom-in').addEventListener('click', () => globe?.zoom(1));
+  $('globe-zoom-out').addEventListener('click', () => globe?.zoom(-1));
   $('detail-close').addEventListener('click', closeDetail);
   $('detail-dialog').addEventListener('cancel', event => { event.preventDefault(); closeDetail(); });
   $('detail-dialog').addEventListener('click', event => { if (event.target === $('detail-dialog')) { const rect = event.target.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDetail(); } });
@@ -429,10 +546,9 @@
   }
   window.addEventListener('popstate', restoreState);
   window.addEventListener('hashchange', restoreState);
-  window.addEventListener('resize', () => map?.resize());
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && !refreshing) loadSnapshot(); });
+  window.addEventListener('resize', syncSpatial);
+  document.addEventListener('visibilitychange', () => { syncSpatial(); if (!document.hidden && !refreshing) loadSnapshot(); });
   setInterval(() => { if (!document.hidden) loadSnapshot(); }, 60000);
   render();
-  initMap();
   loadSnapshot();
 }());

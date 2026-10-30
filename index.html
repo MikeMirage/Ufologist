@@ -11,13 +11,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/vendor/maplibre-gl.css" />
-  <link rel="stylesheet" href="css/monitor.css?v=1" />
-  <script defer src="assets/vendor/maplibre-gl.js"></script>
+  <link rel="stylesheet" href="css/monitor.css?v=2" />
   <script defer src="js/data.js?v=13"></script>
-  <script defer src="js/monitor-model.js?v=1"></script>
-  <script defer src="js/monitor.js?v=1"></script>
+  <script defer src="js/monitor-model.js?v=2"></script>
+  <script defer src="js/monitor-globe.js?v=2"></script>
+  <script defer src="js/monitor.js?v=2"></script>
 </head>
-<body data-view="monitor" data-mobile-view="list">
+<body data-view="monitor" data-mobile-view="map" data-spatial="globe">
   <a class="skip-link" href="#feed-list">Ir a las publicaciones</a>
   <header class="app-header">
     <a class="brand" href="./" aria-label="UFOlogist, inicio">
@@ -44,8 +44,8 @@
 
   <main id="app-main">
     <div id="mobile-views" class="mobile-views" role="group" aria-label="Vista del monitor">
-      <button type="button" data-mobile-view="list" class="is-active" aria-pressed="true">Publicaciones</button>
-      <button type="button" data-mobile-view="map" aria-pressed="false">Mapa</button>
+      <button type="button" data-mobile-view="list" aria-pressed="false">Publicaciones</button>
+      <button type="button" data-mobile-view="map" class="is-active" aria-pressed="true">Explorar</button>
     </div>
     <div id="workspace" class="workspace">
       <section class="map-panel" aria-label="Atlas geográfico">
@@ -56,11 +56,11 @@
             <button type="button" data-period="all" aria-pressed="false">Todo</button>
           </div>
           <div class="map-toolbar-actions">
-            <a id="globe-link" class="toolbar-button" href="globe.html" title="Explorar el atlas en el globo 3D">
-              <img src="assets/icons/globe.svg" alt="" class="icon" width="17" height="17" />
-              <span>Globo 3D</span>
-            </a>
-            <button id="map-reset" class="toolbar-button" type="button" aria-label="Restablecer la vista global del mapa" title="Vista global">
+            <div id="spatial-control" class="segmented-control spatial-control" role="group" aria-label="Visualización geográfica">
+              <button type="button" data-spatial="globe" class="is-active" aria-pressed="true"><img src="assets/icons/globe.svg" alt="" class="icon" width="16" height="16" /><span>Globo 3D</span></button>
+              <button type="button" data-spatial="map" aria-pressed="false"><img src="assets/icons/map.svg" alt="" class="icon" width="16" height="16" /><span>Mapa 2D</span></button>
+            </div>
+            <button id="map-reset" class="toolbar-button" type="button" aria-label="Restablecer la vista global" title="Vista global">
               <img src="assets/icons/map.svg" alt="" class="icon" width="17" height="17" />
               <span>Vista global</span>
             </button>
@@ -80,10 +80,16 @@
           </select>
           <fieldset><legend>Fuentes</legend><div id="source-filters" class="source-filters"></div></fieldset>
         </section>
-        <div id="monitor-map" role="region" aria-label="Mapa interactivo de casos documentados"></div>
+        <div id="monitor-globe" role="region" aria-label="Globo 3D interactivo de casos documentados" aria-describedby="globe-hint" tabindex="-1"></div>
+        <div id="monitor-map" role="region" aria-label="Mapa 2D interactivo de casos documentados" hidden></div>
+        <p id="globe-hint" class="globe-hint">Arrastra para girar. Acerca la vista para explorar una zona.</p>
+        <div id="globe-zoom-controls" class="globe-zoom-controls" role="group" aria-label="Zoom del globo 3D">
+          <button id="globe-zoom-in" type="button" aria-label="Acercar el globo">Acercar</button>
+          <button id="globe-zoom-out" type="button" aria-label="Alejar el globo">Alejar</button>
+        </div>
         <div id="map-fallback" class="map-fallback" hidden>
           <h2>El atlas también se puede explorar en una lista</h2>
-          <p>El mapa no está disponible en este navegador. Puedes seguir consultando los casos y sus fuentes.</p>
+          <p>La visualización geográfica no está disponible. Puedes seguir consultando los casos y sus fuentes.</p>
           <div id="map-list-fallback" class="map-list-fallback"></div>
         </div>
         <div class="map-caption">
@@ -91,7 +97,7 @@
           <p id="map-message" role="status">Preparando el atlas…</p>
         </div>
         <div class="map-legend" aria-label="Leyenda del mapa">
-          <p>En el mapa</p>
+          <p>En el atlas</p>
           <div><span class="legend-marker legend-marker--case" aria-hidden="true"></span><span>Casos del archivo</span></div>
           <span class="legend-note">La ubicación puede ser aproximada.</span>
         </div>

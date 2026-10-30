@@ -81,3 +81,17 @@ availability does not establish permission to republish its full content.
 
 - Archivo: https://commons.wikimedia.org/wiki/File:FLIR1_Official_UAP_Footage_from_the_USG_for_Public_Release.webm
 - Miniatura: https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/FLIR1_Official_UAP_Footage_from_the_USG_for_Public_Release.webm/330px--FLIR1_Official_UAP_Footage_from_the_USG_for_Public_Release.webm.jpg
+
+## Integrated globe
+
+The main Monitor uses `assets/vendor/globe-gl-2.32.2.min.js`, the official bundled
+[globe.gl 2.32.2 distribution](https://cdn.jsdelivr.net/npm/globe.gl@2.32.2/dist/globe.gl.min.js).
+Its MIT license is preserved in `assets/vendor/globe-gl-LICENSE.txt`.
+The bundle owns its Three.js instance; the Monitor does not load the legacy
+application or a second Three.js global.
+
+Original Earth imagery and topology are served locally from `assets/map/`.
+Their upstream URLs and attribution are recorded in
+`assets/map/earth-attribution.txt`. These are real geographic textures reused
+from the original globe, not generated illustrations. Natural Earth country
+boundaries provide the same contextual overlay as the 2D map.

@@ -12,10 +12,11 @@
 
   const DAY = 86400000;
   const DEFAULT_STATE = Object.freeze({
-    view: 'monitor', period: '30', query: '', category: 'all',
+    view: 'monitor', spatial: 'globe', period: '30', query: '', category: 'all',
     sources: null, selectedId: null, selectedKind: null,
   });
   const VIEWS = new Set(['monitor', 'atlas', 'cases', 'sources']);
+  const SPATIAL_MODES = new Set(['globe', 'map']);
   const CATEGORIES = new Set(['all', 'uap', 'sky-context']);
   const SELECTED_KINDS = new Set(['case', 'source', 'item', 'publication', 'document', 'article', 'update']);
 
@@ -190,6 +191,7 @@
     const input = state || {};
     return {
       view: VIEWS.has(input.view) ? input.view : DEFAULT_STATE.view,
+      spatial: SPATIAL_MODES.has(input.spatial) ? input.spatial : DEFAULT_STATE.spatial,
       period: ['7', '30', 'all'].includes(String(input.period)) ? String(input.period) : DEFAULT_STATE.period,
       query: String(input.query || '').slice(0, 500),
       category: CATEGORIES.has(input.category) ? input.category : 'all',
@@ -207,7 +209,7 @@
     }
     const params = query instanceof URLSearchParams ? query : new URLSearchParams(String(query || '').replace(/^[#?]/, ''));
     return normalizeState({
-      view: params.get('view'), period: params.get('period'), query: params.get('q'), category: params.get('category'),
+      view: params.get('view'), spatial: params.get('spatial'), period: params.get('period'), query: params.get('q'), category: params.get('category'),
       sources: params.has('sources') ? params.get('sources').split(',').filter(Boolean) : null,
       selectedId: params.get('id'), selectedKind: params.get('kind'),
     });
@@ -216,6 +218,7 @@
   function writeState(value) {
     const state = normalizeState(value), params = new URLSearchParams();
     params.set('view', state.view);
+    if (state.spatial !== DEFAULT_STATE.spatial) params.set('spatial', state.spatial);
     if (state.period !== DEFAULT_STATE.period) params.set('period', state.period);
     if (state.query) params.set('q', state.query);
     if (state.category !== 'all') params.set('category', state.category);
