@@ -95,3 +95,19 @@ Their upstream URLs and attribution are recorded in
 `assets/map/earth-attribution.txt`. These are real geographic textures reused
 from the original globe, not generated illustrations. Natural Earth country
 boundaries provide the same contextual overlay as the 2D map.
+
+At close zoom, `js/monitor-globe-tiles.js` reuses the legacy globe's
+[Esri World Imagery service](https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer),
+with the optional
+[World Boundaries and Places reference service](https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer).
+These are live map requests, not downloaded datasets bundled with the app.
+Current source metadata credits imagery to Esri, Vantor, Earthstar Geographics
+and the GIS User Community, and references to Esri, HERE, Garmin,
+© OpenStreetMap contributors and the GIS User Community. Visible map credits
+link to both sources and show the reference attribution when that layer loads.
+
+The provider's Web Mercator images are reprojected to the globe's latitude-linear
+tile UVs. Reference labels use the parent tile's correctly cropped quadrant for
+readability. The viewport uses at most 81 tiles, with an 81-entry cache and five
+concurrent loads; detail is inactive at global zoom and falls back to the local
+Earth image when unavailable. Mercator imagery does not extend to the poles.

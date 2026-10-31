@@ -114,3 +114,12 @@ test('points and clusters retain safe category colors with the selected case hig
   }
   assert.equal(globe.dominantColor([first, second, third]), '#aabbcc');
 });
+
+test('close views show discreet groups while global views retain counts', () => {
+  const small = { cluster: true, count: 30 }, dense = { cluster: true, count: 20000 };
+  assert.equal(globe.compactMarker(small, 2.5), false);
+  assert.equal(globe.compactMarker(small, 0.8), true);
+  assert.equal(globe.compactMarker(dense, 0.8), false);
+  assert.equal(globe.compactMarker(dense, 0.18), true);
+  assert.equal(globe.compactMarker({ cluster: false, count: 1 }, 0.18), false);
+});

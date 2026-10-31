@@ -11,11 +11,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/vendor/maplibre-gl.css" />
-  <link rel="stylesheet" href="css/monitor.css?v=3" />
+  <link rel="stylesheet" href="css/monitor.css?v=4" />
   <script defer src="js/data.js?v=13"></script>
   <script defer src="js/monitor-model.js?v=3"></script>
   <script defer src="js/monitor-catalog.js?v=3"></script>
-  <script defer src="js/monitor-globe.js?v=3"></script>
+  <script defer src="js/monitor-globe-layout.js?v=1"></script>
+  <script defer src="js/monitor-globe-tiles.js?v=1"></script>
+  <script defer src="js/monitor-globe.js?v=4"></script>
   <script defer src="js/monitor.js?v=3"></script>
 </head>
 <body data-view="monitor" data-mobile-view="map" data-spatial="globe">
@@ -91,6 +93,10 @@
           <button id="globe-zoom-in" type="button" aria-label="Acercar el globo">Acercar</button>
           <button id="globe-zoom-out" type="button" aria-label="Alejar el globo">Alejar</button>
         </div>
+        <details id="globe-imagery-credit" class="globe-imagery-credit" hidden>
+          <summary>Cartografía ©Esri y colaboradores</summary>
+          <div><p><a href="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" target="_blank" rel="noopener noreferrer">Imágenes</a>: Esri, Vantor, Earthstar Geographics y GIS User Community.</p><p data-credit-layer="reference" hidden><a href="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer" target="_blank" rel="noopener noreferrer">Referencias</a>: Esri, HERE, Garmin, ©OpenStreetMap contributors y GIS User Community.</p></div>
+        </details>
         <div id="map-fallback" class="map-fallback" hidden>
           <h2>El atlas también se puede explorar en una lista</h2>
           <p>La visualización geográfica no está disponible. Puedes seguir consultando los casos y sus fuentes.</p>
@@ -103,7 +109,7 @@
         <div class="map-legend" aria-label="Leyenda del mapa">
           <p>En el atlas</p>
           <div><span class="legend-marker legend-marker--case" aria-hidden="true"></span><span>Casos del archivo</span></div>
-          <span class="legend-note">La ubicación puede ser aproximada.</span>
+          <span class="legend-note">Los grupos reúnen casos cercanos.<br>Pasa el cursor o pulsa para explorar.<br>La ubicación puede ser aproximada.</span>
           <a href="globe.html" class="archive-advanced-link">Herramientas avanzadas</a>
         </div>
       </section>

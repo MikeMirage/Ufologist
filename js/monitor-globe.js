@@ -57,6 +57,10 @@
       : marker && marker.cluster ? caseColor(marker) : caseColor(marker && marker.item);
   }
 
+  function compactMarker(marker, altitude) {
+    return !!marker.cluster && (altitude < 0.55 || (altitude < 1.5 && marker.count < 1000));
+  }
+
   function centerOf(rows) {
     let x = 0, y = 0, z = 0;
     rows.forEach(item => {
@@ -167,6 +171,9 @@
     if (!root.document || !container || typeof container.appendChild !== 'function') {
       throw new Error('Falta el contenedor del globo.');
     }
+    if (!root.UFOMonitorGlobeLayout || typeof root.UFOMonitorGlobeLayout.layout !== 'function') {
+      throw new Error('No se pudo preparar la agrupación del globo.');
+    }
     const resourceURL = path => new URL(path, baseURL || root.document.baseURI).href;
     const earthURL = resourceURL('assets/map/earth-blue-marble.jpg');
     const bumpURL = resourceURL('assets/map/earth-topology.png');
@@ -178,7 +185,11 @@
     }
     return new Promise((resolve, reject) => {
       let globe, ready = false, destroyed = false, cases = [], selected = null;
-      let active = !root.document.hidden, markerView = null, raf = null;
+      let active = !root.document.hidden, markerView = null, layoutView = null, raf = null;
+      let geographicMarkers = [], layoutTimer = null, lastLayoutAt = 0;
+      let cartography = null;
+      const credit = container.parentElement.querySelector('#globe-imagery-credit');
+      const renderedMarkers = new Map();
       const mobile = root.matchMedia && root.matchMedia('(max-width: 760px)').matches;
       const reducedMotion = opts.reducedMotion === undefined
         ? !!(root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -203,48 +214,111 @@
         container.dataset.renderState = playing ? 'active' : 'paused';
         if (playing) globe.resumeAnimation();
         else globe.pauseAnimation();
+        updateCartography();
       }
+
+      function updateCartography() {
+        if (cartography) cartography.update(ready && active && !root.document.hidden ? globe.pointOfView() : null);
+      }
+
+      function cartographyState(value) {
+        container.dataset.cartography = value.state;
+        container.dataset.detailTileCount = String(value.tileCount);
+        container.dataset.referenceTileCount = String(value.referenceTileCount);
+        if (credit) {
+          credit.hidden = value.tileCount === 0;
+          const reference = credit.querySelector('[data-credit-layer="reference"]');
+          if (reference) reference.hidden = value.referenceTileCount === 0;
+        }
+        layoutView = null;
+        if (raf === null) raf = root.requestAnimationFrame(() => { raf = null; updateMarkers(false); });
+      }
+
+      function creditChanged() { layoutView = null; updateMarkers(false); }
 
       function resize() {
         if (!globe || destroyed) return;
         const box = container.getBoundingClientRect();
         // A hidden tab may have zero dimensions during initial creation.
         globe.width(Math.max(1, Math.round(box.width))).height(Math.max(1, Math.round(box.height)));
+        updateMarkers(false);
+      }
+
+      function reservedAreas() {
+        const box = container.getBoundingClientRect();
+        return [...container.parentElement.querySelectorAll('.map-toolbar,.map-legend,.map-caption,.globe-hint,#globe-zoom-controls,#globe-imagery-credit')]
+          .map(element => element.getBoundingClientRect())
+          .filter(rect => rect.width > 0 && rect.height > 0)
+          .map(rect => ({ x: rect.left - box.left, y: rect.top - box.top, width: rect.width, height: rect.height }));
+      }
+
+      function projectMarker(marker) {
+        const point = globe.getCoords(marker.lat, marker.lng, 0);
+        const camera = globe.camera().position;
+        const radiusSquared = point.x * point.x + point.y * point.y + point.z * point.z;
+        const facing = point.x * camera.x + point.y * camera.y + point.z * camera.z;
+        return { ...globe.getScreenCoords(marker.lat, marker.lng, 0.001), visible: facing > radiusSquared * 1.01 };
       }
 
       function updateMarkers(force) {
-        if (!globe || destroyed) return;
+        if (!globe || destroyed || !ready) return;
+        updateCartography();
         const view = globe.pointOfView(), altitude = view.altitude;
         const cell = markerCellForAltitude(altitude);
         const movement = Math.max(1, cell);
         const radiusBand = Math.floor(Math.max(5, altitude * 45) / Math.max(2, cell));
         const key = cell + ':' + radiusBand + ':' + (altitude <= MIN_ALTITUDE + 0.01)
           + ':' + Math.floor(view.lat / movement) + ':' + Math.floor(view.lng / movement);
-        if (!force && key === markerView) return;
-        markerView = key;
-        const rows = selected && locationOf(selected) && !cases.some(item => item.id === selected.id)
-          ? cases.concat(selected) : cases;
-        const markers = buildMarkers(rows, altitude, selected && selected.id, view);
-        globe.pointsData(markers.filter(marker => !marker.cluster));
-        globe.htmlElementsData(markers.filter(marker => marker.cluster));
-        globe.labelsData([]);
-      }
-
-      function tooltip(marker) {
-        const element = root.document.createElement('div');
-        element.className = 'monitor-globe-tooltip';
-        element.textContent = marker.cluster
-          ? marker.count + ' registros agrupados del archivo · explorar región'
-          : String(marker.item.title || marker.item.name || 'Caso del archivo');
-        return element;
+        const box = container.getBoundingClientRect(), camera = globe.camera().position;
+        const reserved = reservedAreas();
+        const screenKey = [camera.x, camera.y, camera.z, box.width, box.height].map(value => Math.round(value * 100)).join(':')
+          + ':' + JSON.stringify(reserved);
+        if (!force && key === markerView && screenKey === layoutView) return;
+        // CSS2D keeps anchors moving with the camera. Limit the heavier collision
+        // pass while dragging, and always run once more after the final movement.
+        const elapsed = root.performance.now() - lastLayoutAt;
+        if (!force && elapsed < 60) {
+          if (layoutTimer === null) layoutTimer = root.setTimeout(() => { layoutTimer = null; updateMarkers(false); }, 60 - elapsed);
+          return;
+        }
+        if (force || key !== markerView) {
+          const rows = selected && locationOf(selected) && !cases.some(item => item.id === selected.id)
+            ? cases.concat(selected) : cases;
+          geographicMarkers = buildMarkers(rows, altitude, selected && selected.id, view);
+          markerView = key;
+        }
+        layoutView = screenKey;
+        lastLayoutAt = root.performance.now();
+        const result = root.UFOMonitorGlobeLayout.layout(geographicMarkers, projectMarker, {
+          width: box.width, height: box.height, gap: mobile ? 10 : 8, padding: 8,
+          reserved, reservedPadding: 6,
+          radius: marker => marker.cluster && !compactMarker(marker, altitude) ? (mobile ? 18 : 16) : 12,
+        });
+        const next = new Map();
+        const markers = result.markers.map(marker => {
+          const stable = renderedMarkers.get(marker.id);
+          if (stable) stable.screenOffset = null;
+          const value = stable ? Object.assign(stable, marker) : marker;
+          if (value.button) refreshMarkerButton(value);
+          next.set(value.id, value);
+          return value;
+        });
+        renderedMarkers.clear(); next.forEach((marker, id) => renderedMarkers.set(id, marker));
+        // No angular-radius cylinders: all symbols use fixed CSS pixel sizes.
+        globe.htmlElementsData(markers);
+        container.dataset.sourceCaseCount = String(cases.length);
+        container.dataset.representedCaseCount = String(result.stats.totalCases);
+        container.dataset.visibleMarkerCount = String(markers.length);
+        container.dataset.cameraLat = String(view.lat);
+        container.dataset.cameraLng = String(view.lng);
+        container.dataset.cameraAltitude = String(view.altitude);
       }
 
       function activate(marker) {
         if (!marker || destroyed) return;
         if (marker.cluster) {
           const view = globe.pointOfView();
-          if (view.altitude <= MIN_ALTITUDE + 0.01
-            && angularDistance(view, marker) < Math.max(1, marker.cell || 1)) {
+          if (view.altitude <= MIN_ALTITUDE + 0.01) {
             if (typeof opts.onCluster === 'function') opts.onCluster(marker.rows.slice(), marker);
             return;
           }
@@ -255,19 +329,34 @@
         } else if (typeof opts.onCase === 'function') opts.onCase(marker.item.id);
       }
 
-      function clusterBadge(marker) {
+      function refreshMarkerButton(marker) {
+        const button = marker.button;
+        button.className = 'monitor-globe-marker ' + (marker.cluster ? 'monitor-globe-cluster' : 'monitor-globe-point') + (marker.selected ? ' is-selected' : '') + (compactMarker(marker, globe.pointOfView().altitude) ? ' is-compact' : '');
+        button.style.setProperty('--case-color', caseColor(marker.item));
+        const face = button.firstElementChild;
+        face.textContent = marker.cluster ? marker.count >= 10000 ? Math.round(marker.count / 1000) + 'k'
+          : marker.count >= 1000 ? new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 }).format(marker.count / 1000) + 'k' : String(marker.count) : '';
+        const action = globe.pointOfView().altitude <= MIN_ALTITUDE + 0.01 ? 'ver fichas de esta región' : 'acercar esta región';
+        const label = marker.cluster ? 'Explorar ' + marker.count + ' casos en esta región · ' + action
+          : 'Abrir caso: ' + String(marker.item.title || marker.item.name || 'Caso del archivo');
+        button.title = label;
+        button.setAttribute('aria-label', label);
+        button.dataset.markerCount = String(marker.count);
+        button.dataset.markerCountLabel = new Intl.NumberFormat('es-ES', { useGrouping: true }).format(marker.count) + ' casos';
+        button.dataset.markerId = marker.id;
+        button.style.setProperty('--marker-offset-x', (marker.screenOffset?.x || 0) + 'px');
+        button.style.setProperty('--marker-offset-y', (marker.screenOffset?.y || 0) + 'px');
+      }
+
+      function markerButton(marker) {
         const button = root.document.createElement('button');
         button.type = 'button';
-        button.className = 'monitor-globe-cluster';
-        button.textContent = marker.count >= 1000
-          ? new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 }).format(marker.count)
-          : String(marker.count);
-        const action = globe.pointOfView().altitude <= MIN_ALTITUDE + 0.01 ? 'ver fichas de esta región' : 'acercar esta región';
-        button.title = marker.count + ' registros agrupados del archivo · ' + action;
-        button.setAttribute('aria-label', 'Explorar ' + marker.count + ' casos en esta región · ' + action);
-        button.style.cssText = 'width:34px;height:34px;min-width:34px;padding:0;display:grid;place-items:center;border:1px solid #41cde4;border-radius:50%;background:rgba(7,23,38,.94);color:#b5f4ff;font:600 13px/1 Inter,sans-serif;cursor:pointer;pointer-events:auto;box-shadow:0 1px 6px rgba(0,0,0,.32)';
-        button.style.borderColor = markerColor(marker);
-        button.style.color = markerColor(marker);
+        const face = root.document.createElement('span');
+        face.className = 'monitor-globe-marker-face';
+        face.setAttribute('aria-hidden', 'true');
+        button.appendChild(face);
+        marker.button = button;
+        refreshMarkerButton(marker);
         button.addEventListener('pointerdown', event => event.stopPropagation());
         button.addEventListener('click', event => {
           event.stopPropagation();
@@ -287,6 +376,9 @@
         container.dataset.renderState = 'destroyed';
         root.clearTimeout(timeout);
         if (raf !== null) root.cancelAnimationFrame(raf);
+        if (layoutTimer !== null) root.clearTimeout(layoutTimer);
+        cartography?.destroy(); cartography = null;
+        if (credit) { credit.removeEventListener('toggle', creditChanged); credit.hidden = true; }
         if (resizeObserver) resizeObserver.disconnect();
         root.document.removeEventListener('visibilitychange', updatePlayback);
         root.removeEventListener('resize', resize);
@@ -336,18 +428,10 @@
           .showAtmosphere(true)
           .atmosphereColor('#7eb9dc')
           .atmosphereAltitude(0.12)
-          .pointLat('lat').pointLng('lng')
-          .pointColor(markerColor)
-          .pointRadius(marker => marker.selected ? 1 : 0.65)
-          .pointAltitude(marker => marker.selected ? 0.027 : 0.012)
-          .pointResolution(mobile ? 6 : 10)
-          .pointsMerge(false)
-          .pointsTransitionDuration(0)
-          .pointLabel(tooltip)
-          .onPointClick(activate)
+          .pointsData([])
           .htmlLat('lat').htmlLng('lng')
-          .htmlAltitude(0.025)
-          .htmlElement(clusterBadge)
+          .htmlAltitude(0.001)
+          .htmlElement(markerButton)
           .htmlTransitionDuration(0)
           .onZoom(() => {
             if (raf !== null) return;
@@ -357,6 +441,7 @@
             if (destroyed) return;
             ready = true;
             root.clearTimeout(timeout);
+            if (root.UFOMonitorGlobeTiles) cartography = root.UFOMonitorGlobeTiles.create(globe, { onState: cartographyState });
             resize();
             updateMarkers(true);
             updatePlayback();
@@ -386,11 +471,12 @@
         resize();
         updatePlayback();
         if (resizeObserver) resizeObserver.observe(container);
+        credit?.addEventListener('toggle', creditChanged);
         root.document.addEventListener('visibilitychange', updatePlayback);
         root.addEventListener('resize', resize);
       } catch (error) { fail(error); }
     });
   }
 
-  return { create, locationOf, safeCases, caseColor, dominantColor, markerColor, centerOf, markerCellForAltitude, buildMarkers, HOME, MAX_MARKERS };
+  return { create, locationOf, safeCases, caseColor, dominantColor, markerColor, compactMarker, centerOf, markerCellForAltitude, buildMarkers, HOME, MAX_MARKERS };
 }));

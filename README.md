@@ -50,6 +50,14 @@ Los grupos conservan todos los registros; el límite se aplica únicamente a los
 marcadores visuales. Acercar un grupo permite consultar sus fichas, también
 cuando varios reportes comparten las mismas coordenadas. Las listas se paginan
 sin recortar los resultados de búsqueda ni los puntos del globo y del mapa.
+Los símbolos conservan un tamaño fijo en pantalla, sin columnas 3D. El globo
+agrupa también los marcadores que se pisan en pantalla y reserva espacio para
+los controles. Al acercar, los recuentos quedan disponibles al pasar el cursor,
+enfocar o abrir un grupo, y los puntos individuales conservan su categoría.
+En el zoom cercano se carga cartografía de detalle y referencias de Esri,
+reutilizando la fuente del globo anterior; los créditos aparecen en el mapa.
+La carga y la caché están acotadas, se detienen al ocultar el globo y un fallo
+del proveedor conserva la textura local y el acceso a los casos.
 **Casos** en la barra del globo abre los filtros por procedencia, tipo, forma,
 clasificación de origen, país, precisión geográfica y años del suceso. Estos
 filtros son independientes de los periodos y fuentes de las publicaciones RSS.
@@ -126,6 +134,8 @@ pruebas, informes internos y archivos de adquisición de fuentes.
 | --- | --- |
 | `index.html`, `css/monitor.css`, `js/monitor.js` | Monitor, selector 3D/2D y detalle de casos/fuentes. |
 | `js/monitor-globe.js` | Globo 3D integrado, agrupación de casos y control de renderizado. |
+| `js/monitor-globe-layout.js` | Agrupación en píxeles y separación de controles y selección, sin recortar datos. |
+| `js/monitor-globe-tiles.js` | Cartografía de detalle, reproyección y caché acotada con fallback local. |
 | `js/monitor-model.js` | Normalización, fechas, filtros, procedencia y enlaces compartibles. |
 | `js/monitor-catalog.js` | Adaptadores del catálogo completo, IDs estables, categorías originales y búsqueda. |
 | `data/monitor-feed.json` | Última copia de metadatos recibidos y estado por fuente. |
