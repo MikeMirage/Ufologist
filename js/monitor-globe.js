@@ -12,7 +12,9 @@
   'use strict';
 
   const HOME = Object.freeze({ lat: 22, lng: -30, altitude: 2.5 });
-  const MAX_CASES = 128;
+  const MIN_ALTITUDE = 0.18;
+  // This bounds rendered objects, never the records represented by their counts.
+  const MAX_MARKERS = 768;
   const sourceScript = root.document && root.document.currentScript;
   const baseURL = sourceScript ? new URL('../', sourceScript.src).href : null;
   let vendorPromise = null;
@@ -32,7 +34,27 @@
       if (!item || !item.id || !locationOf(item) || seen.has(String(item.id))) return false;
       seen.add(String(item.id));
       return true;
-    }).slice(0, MAX_CASES);
+    });
+  }
+
+  function caseColor(item) {
+    return item && /^#[0-9a-f]{6}$/i.test(item.color) ? item.color.toLowerCase() : '#61dfef';
+  }
+
+  function dominantColor(rows) {
+    const counts = new Map();
+    let winner = '#61dfef', maximum = 0;
+    rows.forEach(item => {
+      const color = caseColor(item), count = (counts.get(color) || 0) + 1;
+      counts.set(color, count);
+      if (count > maximum) { winner = color; maximum = count; }
+    });
+    return winner;
+  }
+
+  function markerColor(marker) {
+    return marker && marker.selected ? '#ffffff'
+      : marker && marker.cluster ? caseColor(marker) : caseColor(marker && marker.item);
   }
 
   function centerOf(rows) {
@@ -46,33 +68,59 @@
     return { lat: Math.atan2(z, Math.hypot(x, y)) * 180 / Math.PI, lng: Math.atan2(y, x) * 180 / Math.PI };
   }
 
-  function buildMarkers(items, altitude, selectedId) {
+  function markerCellForAltitude(altitude) {
+    return altitude >= 1.8 ? 28 : altitude >= 0.9 ? 14 : altitude >= 0.55 ? 7
+      : altitude >= 0.35 ? 3.5 : altitude >= 0.24 ? 1 : 0.25;
+  }
+
+  function angularDistance(a, b) {
+    const radians = Math.PI / 180;
+    const first = a.lat * radians, second = b.lat * radians;
+    const cosine = Math.sin(first) * Math.sin(second)
+      + Math.cos(first) * Math.cos(second) * Math.cos((a.lng - b.lng) * radians);
+    return Math.acos(Math.max(-1, Math.min(1, cosine))) / radians;
+  }
+
+  function buildMarkers(items, altitude, selectedId, view) {
     const cases = safeCases(items);
     const selectedKey = selectedId === null || selectedId === undefined ? null : String(selectedId);
-    const cell = altitude >= 1.8 ? 28 : altitude >= 0.9 ? 14 : 0;
-    const buckets = new Map(), markers = [];
-    cases.forEach(item => {
+    let cell = markerCellForAltitude(altitude);
+    const focus = view && Number.isFinite(view.lat) && Number.isFinite(view.lng) ? view : null;
+    const radius = Math.max(5, Number(altitude) * 45);
+    // Refinement follows the camera. The rest of the world remains represented in
+    // coarse groups, instead of creating thousands of off-screen DOM/3D objects.
+    const entries = cases.map(item => {
       const location = locationOf(item);
-      if (!cell || String(item.id) === selectedKey) {
-        markers.push({ id: String(item.id), lat: location.lat, lng: location.lng, count: 1,
-          item, selected: String(item.id) === String(selectedId), cluster: false });
-      } else {
-        const key = Math.floor((location.lat + 90) / cell) + ':' + Math.floor((location.lng + 180) / cell);
-        if (!buckets.has(key)) buckets.set(key, []);
-        buckets.get(key).push(item);
-      }
+      return { item, location, focused: !focus || angularDistance(location, focus) <= radius };
     });
-    buckets.forEach((rows, key) => {
-      if (rows.length === 1) {
-        const item = rows[0], location = locationOf(item);
-        markers.push({ id: String(item.id), lat: location.lat, lng: location.lng,
-          count: 1, item, selected: false, cluster: false });
-      } else {
-        markers.push({ id: 'cluster:' + cell + ':' + key, ...centerOf(rows),
-          count: rows.length, rows, selected: false, cluster: true });
-      }
-    });
-    return markers;
+    let markers;
+    do {
+      const buckets = new Map();
+      markers = [];
+      entries.forEach(({ item, location, focused }) => {
+        if (String(item.id) === selectedKey) {
+          markers.push({ id: String(item.id), lat: location.lat, lng: location.lng, count: 1,
+            item, selected: true, cluster: false });
+          return;
+        }
+        const size = focused ? cell : Math.max(28, cell);
+        const key = size + ':' + Math.floor((location.lat + 90) / size) + ':' + Math.floor((location.lng + 180) / size);
+        if (!buckets.has(key)) buckets.set(key, { rows: [], size });
+        buckets.get(key).rows.push(item);
+      });
+      buckets.forEach(({ rows, size }, key) => {
+        if (rows.length === 1) {
+          const item = rows[0], location = locationOf(item);
+          markers.push({ id: String(item.id), lat: location.lat, lng: location.lng,
+            count: 1, item, selected: false, cluster: false });
+        } else {
+          markers.push({ id: 'cluster:' + key, ...centerOf(rows), cell: size,
+            count: rows.length, rows, color: dominantColor(rows), selected: false, cluster: true });
+        }
+      });
+      if (markers.length <= MAX_MARKERS || cell >= 180) return markers;
+      cell = Math.min(180, cell * 2);
+    } while (true);
   }
 
   function loadVendor() {
@@ -130,7 +178,7 @@
     }
     return new Promise((resolve, reject) => {
       let globe, ready = false, destroyed = false, cases = [], selected = null;
-      let active = !root.document.hidden, markerCell = null, raf = null;
+      let active = !root.document.hidden, markerView = null, raf = null;
       const mobile = root.matchMedia && root.matchMedia('(max-width: 760px)').matches;
       const reducedMotion = opts.reducedMotion === undefined
         ? !!(root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -166,13 +214,17 @@
 
       function updateMarkers(force) {
         if (!globe || destroyed) return;
-        const altitude = globe.pointOfView().altitude;
-        const cell = altitude >= 1.8 ? 28 : altitude >= 0.9 ? 14 : 0;
-        if (!force && cell === markerCell) return;
-        markerCell = cell;
+        const view = globe.pointOfView(), altitude = view.altitude;
+        const cell = markerCellForAltitude(altitude);
+        const movement = Math.max(1, cell);
+        const radiusBand = Math.floor(Math.max(5, altitude * 45) / Math.max(2, cell));
+        const key = cell + ':' + radiusBand + ':' + (altitude <= MIN_ALTITUDE + 0.01)
+          + ':' + Math.floor(view.lat / movement) + ':' + Math.floor(view.lng / movement);
+        if (!force && key === markerView) return;
+        markerView = key;
         const rows = selected && locationOf(selected) && !cases.some(item => item.id === selected.id)
           ? cases.concat(selected) : cases;
-        const markers = buildMarkers(rows, altitude, selected && selected.id);
+        const markers = buildMarkers(rows, altitude, selected && selected.id, view);
         globe.pointsData(markers.filter(marker => !marker.cluster));
         globe.htmlElementsData(markers.filter(marker => marker.cluster));
         globe.labelsData([]);
@@ -182,7 +234,7 @@
         const element = root.document.createElement('div');
         element.className = 'monitor-globe-tooltip';
         element.textContent = marker.cluster
-          ? marker.count + ' casos del archivo · acercar región'
+          ? marker.count + ' registros agrupados del archivo · explorar región'
           : String(marker.item.title || marker.item.name || 'Caso del archivo');
         return element;
       }
@@ -190,7 +242,13 @@
       function activate(marker) {
         if (!marker || destroyed) return;
         if (marker.cluster) {
-          const altitude = Math.max(0.35, globe.pointOfView().altitude * 0.53);
+          const view = globe.pointOfView();
+          if (view.altitude <= MIN_ALTITUDE + 0.01
+            && angularDistance(view, marker) < Math.max(1, marker.cell || 1)) {
+            if (typeof opts.onCluster === 'function') opts.onCluster(marker.rows.slice(), marker);
+            return;
+          }
+          const altitude = Math.max(MIN_ALTITUDE, view.altitude * 0.53);
           globe.pointOfView({ lat: marker.lat, lng: marker.lng, altitude }, reducedMotion ? 0 : 350);
           updateMarkers(true);
           container.focus({ preventScroll: true });
@@ -201,10 +259,15 @@
         const button = root.document.createElement('button');
         button.type = 'button';
         button.className = 'monitor-globe-cluster';
-        button.textContent = String(marker.count);
-        button.title = marker.count + ' casos del archivo · acercar esta región';
-        button.setAttribute('aria-label', 'Explorar ' + marker.count + ' casos en esta región');
+        button.textContent = marker.count >= 1000
+          ? new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 }).format(marker.count)
+          : String(marker.count);
+        const action = globe.pointOfView().altitude <= MIN_ALTITUDE + 0.01 ? 'ver fichas de esta región' : 'acercar esta región';
+        button.title = marker.count + ' registros agrupados del archivo · ' + action;
+        button.setAttribute('aria-label', 'Explorar ' + marker.count + ' casos en esta región · ' + action);
         button.style.cssText = 'width:34px;height:34px;min-width:34px;padding:0;display:grid;place-items:center;border:1px solid #41cde4;border-radius:50%;background:rgba(7,23,38,.94);color:#b5f4ff;font:600 13px/1 Inter,sans-serif;cursor:pointer;pointer-events:auto;box-shadow:0 1px 6px rgba(0,0,0,.32)';
+        button.style.borderColor = markerColor(marker);
+        button.style.color = markerColor(marker);
         button.addEventListener('pointerdown', event => event.stopPropagation());
         button.addEventListener('click', event => {
           event.stopPropagation();
@@ -256,7 +319,7 @@
           if (!globe || destroyed) return;
           const view = globe.pointOfView();
           const inward = direction === 'in' || direction === 1 || direction === '+';
-          globe.pointOfView({ ...view, altitude: Math.max(0.18, Math.min(4.5, view.altitude * (inward ? 0.7 : 1.4))) }, 0);
+          globe.pointOfView({ ...view, altitude: Math.max(MIN_ALTITUDE, Math.min(4.5, view.altitude * (inward ? 0.7 : 1.4))) }, 0);
           updateMarkers(true);
         },
         destroy,
@@ -274,7 +337,7 @@
           .atmosphereColor('#7eb9dc')
           .atmosphereAltitude(0.12)
           .pointLat('lat').pointLng('lng')
-          .pointColor(marker => marker.selected ? '#ffffff' : marker.cluster ? '#25cbe7' : '#61dfef')
+          .pointColor(markerColor)
           .pointRadius(marker => marker.selected ? 1 : 0.65)
           .pointAltitude(marker => marker.selected ? 0.027 : 0.012)
           .pointResolution(mobile ? 6 : 10)
@@ -329,5 +392,5 @@
     });
   }
 
-  return { create, locationOf, safeCases, centerOf, buildMarkers, HOME };
+  return { create, locationOf, safeCases, caseColor, dominantColor, markerColor, centerOf, markerCellForAltitude, buildMarkers, HOME, MAX_MARKERS };
 }));

@@ -131,3 +131,21 @@ test('date-only formatting stays in the recorded day and invalid dates are expli
   assert.equal(model.formatDate('nonsense'), 'Fecha no disponible');
   assert.equal(model.relativeTime('2026-10-30T11:30:00Z', { now: NOW }), 'Hace 30 min');
 });
+
+test('archive categories survive switching visualizations and deep-link reloads independently of feed filters', () => {
+  const state = model.normalizeState({ view: 'atlas', spatial: 'map', period: '7', sources: ['nasa'], category: 'sky-context', query: 'Avistamiento', caseFilters: { source: 'nuforc', shape: 'triangle', classification: 'D', country: 'United States', geo: 'locality', from: 1947, to: 2014 } });
+  assert.deepEqual(model.readState(model.writeState(state)), state);
+  const globe = { ...state, spatial: 'globe' };
+  assert.deepEqual(model.readState(model.writeState(globe)), globe);
+  assert.equal(model.readState(model.writeState(globe)).caseFilters.shape, 'triangle');
+  assert.deepEqual(model.normalizeCaseFilters({ source: 'all', type: '', from: '', to: 'NaN' }), {});
+  assert.deepEqual(model.normalizeCaseFilters({ from: '1947', to: '2101', geo: 'country' }), { geo: 'country', from: 1947 });
+});
+
+test('legacy case permalinks work for archive IDs that load asynchronously', () => {
+  const state = model.readState('#case=uk_mod%3Ab0d46846eea9');
+  assert.equal(state.view, 'atlas');
+  assert.equal(state.selectedKind, 'case');
+  assert.equal(state.selectedId, 'uk_mod:b0d46846eea9');
+  assert.deepEqual(model.readState(model.writeState(state)), state);
+});

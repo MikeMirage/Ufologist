@@ -11,11 +11,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/vendor/maplibre-gl.css" />
-  <link rel="stylesheet" href="css/monitor.css?v=2" />
+  <link rel="stylesheet" href="css/monitor.css?v=3" />
   <script defer src="js/data.js?v=13"></script>
-  <script defer src="js/monitor-model.js?v=2"></script>
-  <script defer src="js/monitor-globe.js?v=2"></script>
-  <script defer src="js/monitor.js?v=2"></script>
+  <script defer src="js/monitor-model.js?v=3"></script>
+  <script defer src="js/monitor-catalog.js?v=3"></script>
+  <script defer src="js/monitor-globe.js?v=3"></script>
+  <script defer src="js/monitor.js?v=3"></script>
 </head>
 <body data-view="monitor" data-mobile-view="map" data-spatial="globe">
   <a class="skip-link" href="#feed-list">Ir a las publicaciones</a>
@@ -66,7 +67,10 @@
             </button>
             <button id="filter-toggle" class="toolbar-button" type="button" aria-label="Filtrar publicaciones" aria-expanded="false" aria-controls="filter-panel">
               <img src="assets/icons/filter.svg" alt="" class="icon" width="17" height="17" />
-              <span>Filtrar</span>
+              <span>Feeds</span>
+            </button>
+            <button id="archive-filter-toggle" class="toolbar-button" type="button" aria-label="Filtrar casos del archivo" aria-expanded="false" aria-controls="archive-filter-panel">
+              <img src="assets/icons/filter.svg" alt="" class="icon" width="17" height="17" /><span>Casos</span><span id="archive-filter-count" class="filter-count" hidden></span>
             </button>
           </div>
         </div>
@@ -100,6 +104,7 @@
           <p>En el atlas</p>
           <div><span class="legend-marker legend-marker--case" aria-hidden="true"></span><span>Casos del archivo</span></div>
           <span class="legend-note">La ubicación puede ser aproximada.</span>
+          <a href="globe.html" class="archive-advanced-link">Herramientas avanzadas</a>
         </div>
       </section>
       <section class="feed-panel" aria-labelledby="feed-title">
@@ -114,8 +119,22 @@
       </section>
     </div>
     <section id="catalog-view" class="catalog-view" aria-labelledby="catalog-title" hidden>
-      <header class="catalog-header"><p class="eyebrow">UFOlogist</p><h1 id="catalog-title"></h1><p id="catalog-intro"></p></header>
+      <header class="catalog-header"><p class="eyebrow">UFOlogist</p><h1 id="catalog-title"></h1><p id="catalog-intro"></p><div id="catalog-actions" class="catalog-actions" hidden><button class="secondary-button" data-archive-filters>Filtrar casos del archivo</button><a href="globe.html" class="text-link">Herramientas avanzadas, cronología y cuaderno</a></div></header>
       <div id="catalog-list" class="catalog-list"></div>
+    </section>
+    <section id="archive-filter-panel" class="filter-panel archive-filter-panel" aria-label="Filtros del archivo de casos" hidden>
+      <div class="filter-panel-head"><h2>Archivo de casos</h2><p id="archive-status" role="status">Cargando el catálogo completo…</p></div>
+      <label class="filter-label" for="case-source">Procedencia</label><select id="case-source" data-case-filter="source"><option value="all">Todas las bases y archivos</option></select>
+      <label class="filter-label" for="case-type">Tipo de encuentro</label><select id="case-type" data-case-filter="type"><option value="all">Todos los tipos</option></select>
+      <p class="detail-note">Taxonomía Hynek ampliada del explorador original. Cuando el archivo no declara un tipo, se conserva la inferencia de UFOlogist y se indica en la ficha.</p>
+      <label class="filter-label" for="case-shape">Forma reportada</label><select id="case-shape" data-case-filter="shape"><option value="all">Todas las formas</option></select>
+      <label class="filter-label" for="case-classification">Clasificación de origen</label><select id="case-classification" data-case-filter="classification"><option value="all">Todas las clasificaciones</option></select>
+      <label class="filter-label" for="case-country">País registrado</label><select id="case-country" data-case-filter="country"><option value="all">Todos los países</option></select>
+      <label class="filter-label" for="case-geo">Precisión geográfica</label><select id="case-geo" data-case-filter="geo"><option value="all">Todas las ubicaciones</option></select>
+      <div class="archive-year-range"><label class="filter-label" for="case-from">Desde el año<input id="case-from" type="number" min="1" max="2100" placeholder="Todos" data-case-filter="from"></label><label class="filter-label" for="case-to">Hasta el año<input id="case-to" type="number" min="1" max="2100" placeholder="Todos" data-case-filter="to"></label></div>
+      <p class="detail-note">Los filtros del archivo se aplican al globo, al mapa y a la lista. Los periodos del feed filtran fechas de publicación.</p>
+      <div class="catalog-actions"><button class="secondary-button" data-reset-archive>Mostrar todos los casos</button><button class="text-link" data-close-archive>Cerrar filtros</button></div>
+      <a href="globe.html" class="archive-advanced-link">Abrir herramientas avanzadas y cuaderno original</a>
     </section>
   </main>
 

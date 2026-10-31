@@ -189,6 +189,7 @@
 
   function normalizeState(state) {
     const input = state || {};
+    const filters = normalizeCaseFilters(input.caseFilters);
     return {
       view: VIEWS.has(input.view) ? input.view : DEFAULT_STATE.view,
       spatial: SPATIAL_MODES.has(input.spatial) ? input.spatial : DEFAULT_STATE.spatial,
@@ -198,7 +199,22 @@
       sources: input.sources == null ? null : [...new Set((typeof input.sources === 'string' ? input.sources.split(',') : [...input.sources]).map(String).filter(Boolean))].slice(0, 50),
       selectedId: input.selectedId ? String(input.selectedId).slice(0, 250) : null,
       selectedKind: SELECTED_KINDS.has(input.selectedKind) ? input.selectedKind : null,
+      ...(Object.keys(filters).length ? { caseFilters: filters } : {}),
     };
+  }
+
+  function normalizeCaseFilters(value) {
+    const input = value || {}, result = {};
+    for (const key of ['source', 'type', 'shape', 'classification', 'country', 'geo']) {
+      if (typeof input[key] === 'string' && input[key] && input[key] !== 'all') result[key] = input[key].slice(0, 120);
+    }
+    for (const key of ['from', 'to']) {
+      if (input[key] !== '' && input[key] != null && /^\d{1,4}$/.test(String(input[key]))) {
+        const year = Number(input[key]);
+        if (year >= 1 && year <= 2100) result[key] = year;
+      }
+    }
+    return result;
   }
 
   function readState(value) {
@@ -208,10 +224,12 @@
       try { const url = new URL(query); query = url.hash || url.search; } catch (_) { query = ''; }
     }
     const params = query instanceof URLSearchParams ? query : new URLSearchParams(String(query || '').replace(/^[#?]/, ''));
+    const legacyCase = !params.has('view') ? params.get('case') : null;
     return normalizeState({
-      view: params.get('view'), spatial: params.get('spatial'), period: params.get('period'), query: params.get('q'), category: params.get('category'),
+      view: params.get('view') || (legacyCase ? 'atlas' : null), spatial: params.get('spatial'), period: params.get('period'), query: params.get('q'), category: params.get('category'),
       sources: params.has('sources') ? params.get('sources').split(',').filter(Boolean) : null,
-      selectedId: params.get('id'), selectedKind: params.get('kind'),
+      selectedId: params.get('id') || legacyCase, selectedKind: params.get('kind') || (legacyCase ? 'case' : null),
+      caseFilters: Object.fromEntries(['source', 'type', 'shape', 'classification', 'country', 'geo', 'from', 'to'].map(key => [key, params.get('case-' + key)])),
     });
   }
 
@@ -225,6 +243,7 @@
     if (state.sources !== null) params.set('sources', state.sources.join(','));
     if (state.selectedId) params.set('id', state.selectedId);
     if (state.selectedKind) params.set('kind', state.selectedKind);
+    for (const [key, value] of Object.entries(state.caseFilters || {})) params.set('case-' + key, String(value));
     return '#' + params.toString();
   }
 
@@ -234,6 +253,6 @@
   return Object.freeze({
     DAY, DEFAULT_STATE, safeURL, canonicalURL, sourceKind, timestamp, normalizeSource,
     normalizeCases, fold, matchesQuery, filterItems, filterCases, sourceHealth,
-    formatDate, relativeTime, normalizeState, readState, writeState, getEditorialDocuments,
+    formatDate, relativeTime, normalizeCaseFilters, normalizeState, readState, writeState, getEditorialDocuments,
   });
 }));

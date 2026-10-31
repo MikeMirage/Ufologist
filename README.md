@@ -6,7 +6,8 @@ los enlaces originales y muestra cuándo se consultó cada fuente.
 
 - **Monitor**: publicaciones reales de RSS, con filtros de periodo, fuente y tema.
 - **Atlas**: globo 3D como vista principal y mapa 2D opcional, con la misma lista
-  de casos del catálogo editorial y coordenadas aproximadas.
+  completa de **86.919 registros**: 80.332 NUFORC, 2.677 GEIPAN, 3.799 de
+  archivos oficiales y 111 del catálogo editorial.
 - **Casos**: referencias, contexto, material audiovisual cuando existe y enlaces compartibles.
 - **Fuentes**: cobertura, última consulta, última publicación y estado del canal.
 - **Una interfaz compartida**: cambiar entre Globo 3D y Mapa 2D conserva la
@@ -45,6 +46,15 @@ y los glifos del mapa se sirven desde `assets/`. El mapa 2D se carga al elegirlo
 o al abrir el contexto de una ficha. El globo agrupa los casos según el zoom,
 mantiene una cámara estable y pausa su renderizado al ocultarse, abrir una
 ficha o cambiar de sección. Su resolución se limita en pantallas de alta densidad.
+Los grupos conservan todos los registros; el límite se aplica únicamente a los
+marcadores visuales. Acercar un grupo permite consultar sus fichas, también
+cuando varios reportes comparten las mismas coordenadas. Las listas se paginan
+sin recortar los resultados de búsqueda ni los puntos del globo y del mapa.
+**Casos** en la barra del globo abre los filtros por procedencia, tipo, forma,
+clasificación de origen, país, precisión geográfica y años del suceso. Estos
+filtros son independientes de los periodos y fuentes de las publicaciones RSS.
+**Herramientas avanzadas** conserva la cronología, el cuaderno y los controles
+originales en `globe.html`; sus enlaces antiguos siguen funcionando.
 Las tipografías de interfaz, los enlaces multimedia y la vista 3D utilizan
 recursos externos. La lista de casos y fuentes ofrece una alternativa si falla
 el mapa o WebGL.
@@ -95,6 +105,7 @@ python3 tools/test_build_public_site.py
 ```
 
 `test:monitor` comprueba el modelo de contenido, fechas y estado de URL,
+la integridad de los 86.919 registros, sus categorías y los conteos del globo,
 parsing/deduplicación de feeds y el endpoint local. Las pruebas de ingestión
 son deterministas; no necesitan consultar internet. Para actualizar la copia
 con respuestas reales se usa `feeds:update`. La revisión visual y las
@@ -116,13 +127,14 @@ pruebas, informes internos y archivos de adquisición de fuentes.
 | `index.html`, `css/monitor.css`, `js/monitor.js` | Monitor, selector 3D/2D y detalle de casos/fuentes. |
 | `js/monitor-globe.js` | Globo 3D integrado, agrupación de casos y control de renderizado. |
 | `js/monitor-model.js` | Normalización, fechas, filtros, procedencia y enlaces compartibles. |
+| `js/monitor-catalog.js` | Adaptadores del catálogo completo, IDs estables, categorías originales y búsqueda. |
 | `data/monitor-feed.json` | Última copia de metadatos recibidos y estado por fuente. |
 | `tools/update_monitor_feeds.py` | Ingestión RSS/Atom y publicación del snapshot. |
 | `tools/serve_monitor.py` | Servidor local y consulta de feeds bajo demanda. |
 | `js/data.js` | Catálogo editorial de casos y referencias históricas. |
 | `globe.html`, `js/app.js`, `css/styles.css` | Experiencia anterior conservada para enlaces y funciones históricas. |
 
-Los datasets históricos NUFORC y GEIPAN de la vista 3D no son feeds de actualidad.
+Los datasets históricos NUFORC, GEIPAN y archivos oficiales del atlas no son feeds de actualidad.
 Se conservan sus coberturas y precisiones originales; sus permisos y los de
 cada medio deben revisarse antes de ampliar la redistribución o explotación.
 

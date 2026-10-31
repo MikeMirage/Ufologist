@@ -10,16 +10,19 @@
   const kinds = { article: 'Publicación', document: 'Documento', update: 'Actualización', case: 'Caso histórico' };
   const sourceKinds = { institution: 'Institución', media: 'Medio', archive: 'Archivo' };
   const originalCases = typeof CASES !== 'undefined' ? CASES : [];
-  const cases = M.normalizeCases(originalCases);
+  const C = window.UFOMonitorCatalog;
+  let cases = C.mergeCatalog(M.normalizeCases(originalCases).map((item, index) => ({ ...item, sourceId: 'ufologist_curated', sourceName: 'Catálogo editorial', year: Number(originalCases[index]?.date?.slice(0, 4)) || null, classification: item.type, classificationSystem: 'Hynek ampliada', credibility: originalCases[index]?.cred, time: originalCases[index]?.time || null, timezone: originalCases[index]?.timezone || null, color: typeof TYPE_META !== 'undefined' ? TYPE_META[item.type]?.color : null })));
   const caseById = new Map(cases.map(item => [item.id, item]));
+  const catalogLoads = new Map();
+  let catalogVersion = 0, caseCache = null, regionIds = null, casePage = 0, pageKey = '';
+  const PAGE_SIZE = 50;
+  const number = value => Number(value).toLocaleString('es-ES', { useGrouping: true });
   let state = M.readState(location.hash);
   const legacy = new URLSearchParams(location.hash.slice(1));
-  if (!legacy.has('view') && [...legacy.keys()].some(key => ['y', 't', 'm', 'l', 's', 'gc'].includes(key))) {
+  const legacyFilterKeys = new Set(['y', 't', 'm', 'l', 's', 'gc', 'c', 'h', 'g', 'co', 'e', 'q', 'x', 'sp', 'hs']);
+  if (!legacy.has('view') && [...legacy.keys()].some(key => legacyFilterKeys.has(key))) {
     location.replace('globe.html' + location.hash);
     return;
-  }
-  if (legacy.get('case') && caseById.has(legacy.get('case'))) {
-    state = M.normalizeState({ view: 'atlas', selectedKind: 'case', selectedId: legacy.get('case') });
   }
   let snapshot = { sources: [], items: [], generatedAt: null };
   let loading = true, loadError = '', refreshing = false, canRefreshOrigins = false;
@@ -59,7 +62,98 @@
       query: state.query, period: state.period, category: state.category, sourceIds: state.sources,
     });
   }
-  function visibleCases() { return M.filterCases(cases, { query: state.query }); }
+  function visibleCases() {
+    const key = catalogVersion + ':' + state.query + ':' + JSON.stringify(state.caseFilters || {}) + ':' + (regionIds ? 'region' : 'all');
+    if (caseCache?.key === key) return caseCache.rows;
+    const filters = state.caseFilters || {};
+    let rows = C.filterCatalog(cases, {
+      query: state.query, sourceIds: filters.source ? [filters.source] : null,
+      types: filters.type ? [filters.type] : null, shapes: filters.shape ? [filters.shape] : null,
+      classifications: filters.classification ? [filters.classification] : null,
+      yearFrom: filters.from, yearTo: filters.to,
+    });
+    if (filters.country) rows = rows.filter(item => (item.countryKey || C.normalizeCountry(item.country)) === filters.country);
+    if (filters.geo) rows = rows.filter(item => item.location?.precision === filters.geo);
+    if (regionIds) rows = rows.filter(item => regionIds.has(item.id));
+    caseCache = { key, rows };
+    return rows;
+  }
+  function archiveStatus() {
+    const pending = [...catalogLoads.values()].filter(item => item.status === 'loading').length;
+    const failures = [...catalogLoads.values()].filter(item => item.status === 'error');
+    return `${number(cases.length)} registros cargados` + (pending ? ` · ${pending} bases cargando…` : '') + (failures.length ? ' · No se pudo cargar: ' + failures.map(item => item.label).join(', ') : '');
+  }
+  async function loadCatalog() {
+    const datasets = [
+      ['nuforc', 'NUFORC', 'data/nuforc.json', C.normalizeNUFORC],
+      ['geipan', 'GEIPAN', 'data/geipan.json', C.normalizeGEIPAN],
+      ['official', 'Archivos oficiales', 'data/official-cases.json', C.normalizeOfficial],
+    ];
+    await Promise.allSettled(datasets.map(async ([id, label, path, normalize]) => {
+      if (catalogLoads.get(id)?.status === 'ok' || catalogLoads.get(id)?.status === 'loading') return;
+      catalogLoads.set(id, { label, status: 'loading' });
+      renderArchiveFilters();
+      try {
+        const response = await fetch(path, { signal: AbortSignal.timeout(45000) });
+        if (!response.ok) throw new Error(label + ' no disponible');
+        const payload = await response.json();
+        if (!Array.isArray(payload.rows)) throw new Error('Formato de archivo no válido');
+        const rows = normalize(payload);
+        if (rows.length !== payload.rows.length) throw new Error('El archivo no se ha cargado completo');
+        const imported = C.mergeCatalog(rows);
+        cases = cases.concat(imported);
+        imported.forEach(item => caseById.set(item.id, item));
+        catalogLoads.set(id, { label, status: 'ok', count: rows.length });
+        catalogVersion++; caseCache = null;
+      } catch (error) {
+        console.warn('UFOlogist archive:', label, error.message);
+        catalogLoads.set(id, { label, status: 'error' });
+      }
+      render();
+    }));
+    render();
+  }
+  function renderArchiveFilters() {
+    const panel = $('archive-filter-panel'), filters = state.caseFilters || {};
+    $('archive-status').textContent = archiveStatus();
+    let retry = panel.querySelector('[data-retry-archive]');
+    const failed = [...catalogLoads.values()].some(item => item.status === 'error');
+    if (failed && !retry) { retry = document.createElement('button'); retry.className = 'secondary-button'; retry.dataset.retryArchive = ''; retry.textContent = 'Reintentar bases pendientes'; $('archive-status').after(retry); }
+    if (retry) retry.hidden = !failed;
+    if (panel.dataset.version !== String(catalogVersion)) {
+      const definitions = [
+        ['source', 'Todas las bases y archivos', item => item.sourceId, item => item.sourceName || item.sourceId],
+        ['type', 'Todos los tipos', item => item.encounterType || item.type, item => (typeof TYPE_META !== 'undefined' && TYPE_META[item.encounterType || item.type]?.label) || item.encounterType || item.type],
+        ['shape', 'Todas las formas', item => item.shape, item => item.shapeLabel || item.shape],
+        ['classification', 'Todas las clasificaciones', item => item.classification, item => item.classificationSystem ? item.classificationSystem + ' · ' + (item.classificationLabel || item.classification) : item.classificationLabel || item.classification],
+        ['country', 'Todos los países', item => item.countryKey || C.normalizeCountry(item.country), item => countryLabel(item.countryKey || C.normalizeCountry(item.country))],
+        ['geo', 'Todas las ubicaciones', item => item.location?.precision, item => precisionLabel(item.location?.precision)],
+      ];
+      for (const [field, all, value, label] of definitions) {
+        const options = new Map();
+        cases.forEach(item => { const key = value(item); if (!key) return; const entry = options.get(key) || { label: label(item), count: 0 }; entry.count++; options.set(key, entry); });
+        $('case-' + field).innerHTML = `<option value="all">${all}</option>` + [...options].sort((a, b) => a[1].label.localeCompare(b[1].label, 'es')).map(([key, item]) => `<option value="${esc(key)}">${esc(item.label)} (${number(item.count)})</option>`).join('');
+      }
+      panel.dataset.version = String(catalogVersion);
+    }
+    panel.querySelectorAll('[data-case-filter]').forEach(input => { const value = filters[input.dataset.caseFilter] ?? (input.tagName === 'SELECT' ? 'all' : ''); if (String(input.value) !== String(value)) input.value = value; });
+    const count = Object.keys(filters).length + (regionIds ? 1 : 0);
+    $('archive-filter-count').hidden = !count;
+    $('archive-filter-count').textContent = count;
+    $('catalog-actions').hidden = state.view !== 'cases';
+  }
+  function showArchiveFilters() {
+    const open = $('archive-filter-panel').hidden;
+    $('archive-filter-panel').hidden = !open;
+    $('archive-filter-toggle').setAttribute('aria-expanded', String(open));
+    if (open) { $('filter-panel').hidden = true; $('filter-toggle').setAttribute('aria-expanded', 'false'); $('case-source').focus(); }
+  }
+  function scopeCluster(rows) {
+    regionIds = new Set(rows.map(item => item.id)); caseCache = null; casePage = 0;
+    document.body.dataset.mobileView = 'list';
+    commit({ view: 'atlas', selectedKind: null, selectedId: null }, true);
+    $('feed-list').focus();
+  }
   function commit(patch, push = false, detailEntry = false) {
     state = M.normalizeState({ ...state, ...patch });
     history[push ? 'pushState' : 'replaceState']({ ufologist: true, monitorDetail: detailEntry }, '', M.writeState(state));
@@ -75,6 +169,7 @@
     else commit({ selectedKind: null, selectedId: null });
   }
   function navigate(view) {
+    if (view !== 'atlas') { regionIds = null; caseCache = null; }
     commit({ view, selectedId: null, selectedKind: null }, true);
     if (view === 'atlas') { document.body.dataset.mobileView = 'map'; syncMobile(); }
     requestAnimationFrame(syncSpatial);
@@ -150,6 +245,7 @@
     $('globe-zoom-controls').hidden = state.spatial !== 'globe';
     $('globe-hint').hidden = state.spatial !== 'globe';
     renderSources();
+    renderArchiveFilters();
     if (state.view === 'monitor' || state.view === 'atlas') renderFeed(); else renderCatalog();
     updateMap();
     renderDetail();
@@ -176,20 +272,47 @@
     const atlas = state.view === 'atlas';
     const items = atlas ? visibleCases() : visibleItems();
     $('feed-title').textContent = atlas ? 'Casos del archivo' : 'Actualizaciones de fuentes';
-    $('feed-subtitle').textContent = atlas ? 'Expedientes históricos del catálogo. La posición puede ser aproximada.' : 'Publicaciones reales, documentos y contexto del cielo. Siempre con enlace al original.';
-    $('feed-count').textContent = items.length + (atlas ? (items.length === 1 ? ' caso' : ' casos') : (items.length === 1 ? ' publicación' : ' publicaciones'));
-    document.querySelector('.feed-order').innerHTML = atlas ? '<span>Fecha del suceso</span><span>Catálogo editorial</span>' : '<span>Fecha de publicación</span><span>Más recientes primero</span>';
-    $('view-description').textContent = atlas ? 'Atlas histórico · Casos del catálogo editorial' : 'Atlas: casos históricos · Feed: publicaciones recientes';
-    $('feed-state').textContent = loadError || (loading && !atlas ? 'Cargando las publicaciones de las fuentes…' : '');
-    $('feed-state').hidden = !loadError && (!loading || atlas);
+    $('feed-subtitle').textContent = atlas ? 'Catálogo completo: NUFORC, GEIPAN, archivos oficiales y casos editoriales. Clasificaciones y fuentes de origen conservadas.' : 'Publicaciones reales, documentos y contexto del cielo. Siempre con enlace al original.';
+    $('feed-count').textContent = number(items.length) + (atlas ? (items.length === 1 ? ' caso' : ' casos') : (items.length === 1 ? ' publicación' : ' publicaciones'));
+    document.querySelector('.feed-order').innerHTML = atlas ? '<span>Fecha del suceso</span><span>Archivo completo</span>' : '<span>Fecha de publicación</span><span>Más recientes primero</span>';
+    $('view-description').textContent = atlas ? 'Atlas histórico · Todas las bases del archivo' : 'Atlas: archivo completo · Feed: publicaciones recientes';
+    $('feed-state').textContent = atlas ? archiveStatus() : loadError || (loading ? 'Cargando las publicaciones de las fuentes…' : '');
+    $('feed-state').hidden = atlas ? ![...catalogLoads.values()].some(item => item.status !== 'ok') : !loadError && !loading;
     $('feed-retry').hidden = atlas || loading;
     if (!items.length && !(loading && !atlas)) {
       const matches = !atlas && state.query.trim() ? visibleCases().length : 0;
-      $('feed-list').innerHTML = `<div class="empty-state">${icon(atlas ? 'map' : 'file-text')}<h2>${atlas ? 'No hay casos para esta búsqueda' : 'Sin publicaciones en esta selección'}</h2><p>${atlas ? 'Prueba con otro nombre o lugar.' : 'No hay publicaciones de estas fuentes en el periodo seleccionado. Amplía el periodo o cambia los filtros.'}</p>${matches ? `<p><a href="#view=atlas" data-view="atlas" class="text-link">Ver ${matches} caso${matches === 1 ? '' : 's'} del archivo que coincide${matches === 1 ? '' : 'n'}</a></p>` : ''}${!atlas ? '<button class="secondary-button" data-reset-filters>Ver todas las publicaciones</button>' : '<button class="secondary-button" data-clear-search>Limpiar búsqueda</button>'}</div>`;
+      $('feed-list').innerHTML = `${atlas ? regionBanner() : ''}<div class="empty-state">${icon(atlas ? 'map' : 'file-text')}<h2>${atlas ? 'No hay casos para esta selección' : 'Sin publicaciones en esta selección'}</h2><p>${atlas ? 'Prueba con otro nombre, lugar o clasificación.' : 'No hay publicaciones de estas fuentes en el periodo seleccionado. Amplía el periodo o cambia los filtros.'}</p>${matches ? `<p><a href="#view=atlas" data-view="atlas" class="text-link">Ver ${number(matches)} casos del archivo que coinciden</a></p>` : ''}${!atlas ? '<button class="secondary-button" data-reset-filters>Ver todas las publicaciones</button>' : '<button class="secondary-button" data-reset-archive>Mostrar todos los casos</button>'}</div>`;
     } else {
-      $('feed-list').innerHTML = items.map(item => atlas ? caseRow(item) : feedRow(item)).join('');
+      $('feed-list').innerHTML = atlas ? regionBanner() + pagedCases(items).map(caseRow).join('') + pagination(items) : items.map(feedRow).join('');
     }
     $('map-list-fallback').innerHTML = visibleCases().slice(0, 30).map(c => `<button class="related-item" data-open-case="${esc(c.id)}">${esc(c.title)}<small>${esc(c.location?.label || c.country)} · ${esc(day(c.observedAt))}</small></button>`).join('');
+  }
+  function regionBanner() {
+    return regionIds ? `<div class="archive-region-note"><p>${number(regionIds.size)} registros en la zona seleccionada.</p><button class="text-link" data-clear-region>Ver todo el archivo</button></div>` : '';
+  }
+  function pagedCases(rows) {
+    const key = state.view + ':' + caseCache?.key;
+    if (key !== pageKey) { pageKey = key; casePage = 0; }
+    casePage = Math.max(0, Math.min(casePage, Math.max(0, Math.ceil(rows.length / PAGE_SIZE) - 1)));
+    return rows.slice(casePage * PAGE_SIZE, (casePage + 1) * PAGE_SIZE);
+  }
+  function pagination(rows) {
+    if (!rows.length) return '';
+    return `<nav class="archive-pagination" aria-label="Páginas del archivo"><p>${number(casePage * PAGE_SIZE + 1)}–${number(Math.min((casePage + 1) * PAGE_SIZE, rows.length))} de ${number(rows.length)} registros</p><div><button class="secondary-button" data-case-page="${casePage - 1}"${casePage === 0 ? ' disabled' : ''}>Anterior</button><button class="secondary-button" data-case-page="${casePage + 1}"${(casePage + 1) * PAGE_SIZE >= rows.length ? ' disabled' : ''}>Siguiente</button></div></nav>`;
+  }
+  function caseLabel(c) {
+    return c.sourceId === 'nuforc' ? 'Reporte ciudadano' : c.sourceId === 'geipan' ? 'Caso GEIPAN' : c.editorialStatus === 'curated' ? 'Caso editorial' : c.needsReview ? 'Archivo · Pendiente de revisión' : 'Registro de archivo';
+  }
+  function countryLabel(value) {
+    return ({ 'United States': 'Estados Unidos', 'United Kingdom': 'Reino Unido', France: 'Francia', Spain: 'España', Germany: 'Alemania', Italy: 'Italia', Canada: 'Canadá', Brazil: 'Brasil', Mexico: 'México', 'New Zealand': 'Nueva Zelanda', Belgium: 'Bélgica', Denmark: 'Dinamarca', Sweden: 'Suecia', Norway: 'Noruega', Russia: 'Rusia', Other: 'Sin país atribuido' })[value] || value;
+  }
+  function precisionLabel(value) {
+    return ({ reported: 'Coordenada reportada', approximate: 'Ubicación aproximada', locality: 'Localidad', city: 'Ciudad', airport: 'Aeropuerto', facility: 'Instalación', department: 'Departamento', county: 'Condado', province: 'Provincia', region: 'Región', 'country-region': 'Región del país', island: 'Isla', area: 'Área', country: 'Centro de país' })[value] || value || 'Sin coordenadas';
+  }
+  function classificationLabel(c) {
+    const type = (typeof TYPE_META !== 'undefined' && TYPE_META[c.encounterType || c.type]?.label) || c.encounterType || c.type;
+    const system = c.classificationSystem || c.system;
+    return [c.classification ? (system ? system + ' · ' : '') + (c.classificationLabel || c.classification) : '', c.shape ? 'Forma: ' + (c.shapeLabel || c.shape) : '', type && (!c.classification || c.encounterInferred) ? type + (c.encounterInferred ? ' (tipo inferido)' : '') : ''].filter(Boolean).join(' · ');
   }
   function feedRow(item) {
     const s = source(item.sourceId);
@@ -197,19 +320,14 @@
     return `<article class="feed-item${selected ? ' is-selected' : ''}" data-item-id="${esc(item.id)}"><button class="feed-item-button" data-open-item="${esc(item.id)}"><span class="feed-item-meta"><span class="feed-source">${esc(s?.name || item.sourceId)}</span><time class="feed-date" datetime="${esc(item.publishedAt || '')}">${esc(day(item.publishedAt))}</time><span class="type-badge type-badge--${esc(item.kind || 'article')}">${esc(kinds[item.kind] || 'Publicación')}</span></span><h2 class="feed-item-title">${esc(item.title)}</h2><p class="feed-item-summary">${esc(item.summary || 'Consulta la publicación original para conocer todos los detalles.')}</p></button><div class="feed-item-footer"><span class="editorial-status">${item.category === 'sky-context' ? 'Contexto del cielo' : 'UAP'} · Sin revisión editorial</span>${external(item.url, 'Abrir fuente')}</div></article>`;
   }
   function caseRow(c) {
-    return `<article class="feed-item${state.selectedId === c.id ? ' is-selected' : ''}"><button class="feed-item-button" data-open-case="${esc(c.id)}"><span class="feed-item-meta"><span class="feed-source">${esc(c.country || 'Archivo')}</span><time class="feed-date">${esc(day(c.observedAt))}</time><span class="type-badge">Caso histórico</span></span><h2 class="feed-item-title">${esc(c.title)}</h2><p class="feed-item-summary">${esc(c.summary)}</p><span class="feed-item-location">${esc(c.location?.label || 'Sin localización')}</span></button><div class="feed-item-footer"><span class="editorial-status">${c.sources.length} fuentes enlazadas · Ubicación aproximada</span><button class="text-link" data-open-case="${esc(c.id)}">Ver expediente</button></div></article>`;
+    return `<article class="feed-item${state.selectedId === c.id ? ' is-selected' : ''}"><button class="feed-item-button" data-open-case="${esc(c.id)}"><span class="feed-item-meta"><span class="feed-source">${esc(c.sourceName || c.country || 'Archivo')}</span><time class="feed-date">${esc(day(c.observedAt))}</time><span class="type-badge">${esc(caseLabel(c))}</span></span><h2 class="feed-item-title">${esc(c.title)}</h2><p class="feed-item-summary">${esc(c.summary)}</p><span class="case-classification">${esc(classificationLabel(c))}</span><span class="feed-item-location">${esc(c.location?.label || 'Sin localización')}</span></button><div class="feed-item-footer"><span class="editorial-status">${c.sources.length} fuentes enlazadas · ${esc(precisionLabel(c.location?.precision))}</span><button class="text-link" data-open-case="${esc(c.id)}">Ver expediente</button></div></article>`;
   }
   function renderCatalog() {
     if (state.view === 'cases') {
-      $('catalog-title').textContent = 'Casos para entender el fenómeno';
-      $('catalog-intro').textContent = 'Expedientes históricos con referencias, fecha del suceso y contexto geográfico. El origen de una fuente no determina una explicación.';
+      $('catalog-title').textContent = 'Archivo completo de casos';
       const filtered = visibleCases();
-      const preferred = ['nimitz-2004', 'roswell-1947', 'phoenix-1997', 'rendlesham-1980', 'gimbal-2015'];
-      const ordered = [...filtered].sort((a, b) => {
-        const x = preferred.indexOf(a.id), y = preferred.indexOf(b.id);
-        return (x < 0 ? 100 : x) - (y < 0 ? 100 : y);
-      });
-      $('catalog-list').innerHTML = ordered.map(c => `<article class="catalog-card"><div class="catalog-card-meta"><span>${esc(c.country || 'Archivo')}</span><span>${esc(day(c.observedAt))}</span></div><h2 class="catalog-card-title">${esc(c.title)}</h2><p class="catalog-card-summary">${esc(c.summary)}</p><div class="catalog-card-footer"><span>${c.sources.length} fuentes</span><button class="text-link" data-open-case="${esc(c.id)}">Ver expediente ${icon('file-text')}</button></div></article>`).join('') || '<p class="empty-state">No hay casos para esta búsqueda.</p>';
+      $('catalog-intro').textContent = `${number(filtered.length)} registros en esta selección · ${archiveStatus()}. NUFORC, GEIPAN, archivos oficiales y catálogo editorial con sus categorías originales.`;
+      $('catalog-list').innerHTML = regionBanner() + (pagedCases(filtered).map(c => `<article class="catalog-card"><div class="catalog-card-meta"><span>${esc(c.sourceName || c.country || 'Archivo')}</span><span>${esc(day(c.observedAt))}</span></div><h2 class="catalog-card-title">${esc(c.title)}</h2><p class="case-classification">${esc(classificationLabel(c))}</p><p class="catalog-card-summary">${esc(c.summary)}</p><div class="catalog-card-footer"><span>${esc(caseLabel(c))}</span><button class="text-link" data-open-case="${esc(c.id)}">Ver expediente ${icon('file-text')}</button></div></article>`).join('') || '<p class="empty-state">No hay casos para esta selección. <button class="text-link" data-reset-archive>Mostrar todos los casos</button></p>') + pagination(filtered);
     } else {
       $('catalog-title').textContent = 'Fuentes y procedencia';
       $('catalog-intro').textContent = 'Quién publica, cuándo se consultó y qué cubre cada fuente. Una conexión activa no implica que haya nuevas publicaciones.';
@@ -232,7 +350,7 @@
         (dialogTrigger?.element?.isConnected ? dialogTrigger.element : replacement || $('app-search')).focus();
       }
       currentDetailKey = '';
-      if (id && !loading && !item) toast('Ese registro no está disponible en esta copia. Puedes buscarlo en el catálogo.');
+      if (id && !loading && !item && !(kind === 'case' && [...catalogLoads.values()].some(load => load.status === 'loading'))) toast('Ese registro no está disponible en esta copia. Puedes buscarlo en el catálogo.');
       return;
     }
     const key = kind + ':' + id + (kind === 'case' ? '' : ':' + snapshot.generatedAt);
@@ -258,15 +376,15 @@
     return `<ul class="source-list">${sources.map(s => `<li>${external(s.url, s.name)}<span>${s.kind === 'primary' ? 'Institución / documento de origen' : 'Referencia / cobertura'} · ${esc(new URL(s.url).hostname.replace(/^www\./, ''))}</span></li>`).join('')}</ul>`;
   }
   function renderCaseDetail(c) {
-    $('detail-meta').innerHTML = `<span class="type-badge">Caso histórico</span><span>Suceso: ${esc(day(c.observedAt))}</span><span>${esc(c.country)}</span>`;
+    $('detail-meta').innerHTML = `<span class="type-badge">${esc(caseLabel(c))}</span><span>Suceso: ${esc(day(c.observedAt))}</span><span>${esc(c.sourceName || c.country)}</span>`;
     const media = c.media.find(m => m.k === 'video' && m.commons);
     const flir = media?.commons === 'FLIR1 Official UAP Footage from the USG for Public Release.webm';
     const videoURL = flir ? 'https://upload.wikimedia.org/wikipedia/commons/7/70/FLIR1_Official_UAP_Footage_from_the_USG_for_Public_Release.webm' : media ? 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(media.commons) : '';
     const mediaHTML = media ? `<figure class="case-video"><div class="case-video-preview">${flir ? '<img src="assets/media/flir1-official.jpg" alt="Fotograma original de FLIR1, US Navy / Department of Defense" width="330" height="247">' : ''}<button class="primary-button" data-play-video="${esc(videoURL)}">${flir ? 'Reproducir vídeo original' : 'Cargar vídeo original'}</button></div><figcaption>${esc(media.cap || 'Material audiovisual enlazado')}. ${external('https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(media.commons), 'Ver archivo y atribución')}</figcaption></figure>` : '';
-    $('detail-body').innerHTML = `<p class="detail-kicker">Expediente del archivo</p>${mediaHTML}<section class="detail-section"><h3>Lo que recoge el registro</h3><p>${esc(c.summary)}</p></section><section class="detail-section"><h3>Documentación y referencias</h3>${linkedSources(c.sources)}</section><section class="detail-section"><h3>Qué sigue sin resolverse</h3><p>Este resumen reúne el relato y las referencias del catálogo. La publicación de un documento, un vídeo o un testimonio no determina por sí sola la naturaleza de lo observado. Contrasta las afirmaciones y las explicaciones con sus fuentes.</p></section><div class="detail-actions">${saveButton('case', c.id)}<button class="text-link" data-explore-case="${esc(c.id)}">Ver en el globo ${icon('globe')}</button></div>`;
+    $('detail-body').innerHTML = `<p class="detail-kicker">Expediente del archivo</p>${mediaHTML}<section class="detail-section"><h3>Lo que recoge el registro</h3><p>${esc(c.summary || c.contentNote || 'Este registro conserva los metadatos del archivo de origen.')}</p>${c.summary && c.contentNote ? `<p class="detail-note">${esc(c.contentNote)}</p>` : ''}</section><section class="detail-section"><h3>Clasificación conservada</h3>${facts([['Procedencia', c.sourceName || 'Catálogo editorial'], ['Tipo de encuentro', ((typeof TYPE_META !== 'undefined' && TYPE_META[c.encounterType || c.type]?.label) || c.encounterType || c.type || 'No atribuido en este archivo') + (c.encounterInferred ? ' · Inferido por UFOlogist con la taxonomía original' : '')], ['Forma reportada', c.shapeReported || c.shapeLabel || c.shape || 'No registrada'], ['Clasificación de origen', classificationLabel(c) || 'Sin clasificación'], ['Revisión', c.needsReview ? 'Pendiente de revisión editorial' : c.editorialStatus === 'curated' ? 'Caso del catálogo editorial' : 'Registro de la fuente, sin revisión editorial de UFOlogist']])}</section><section class="detail-section"><h3>Documentación y referencias</h3>${linkedSources(c.sources)}${c.provenance?.linkScope === 'catalog' ? '<p class="detail-note">El enlace abre el catálogo de origen. Busca el registro por fecha y lugar; este archivo no incluye una URL individual del reporte.</p>' : ''}</section><section class="detail-section"><h3>Cómo interpretar el registro</h3><p>Se conserva la clasificación del archivo de origen. Un reporte ciudadano, una clasificación oficial y un resumen editorial tienen alcances distintos. Consulta el original y las explicaciones registradas para valorar cada caso.</p></section><div class="detail-actions">${saveButton('case', c.id)}<button class="text-link" data-explore-case="${esc(c.id)}">Ver en el globo ${icon('globe')}</button></div>`;
     const related = snapshot.items.filter(item => item.caseIds?.includes(c.id));
     $('detail-publications').innerHTML = '<h3>En este expediente</h3>' + (related.length ? related.map(item => relatedButton('item', item.id, item.title, day(item.publishedAt))).join('') : '<p class="detail-note">Todavía no hay publicaciones del monitor vinculadas editorialmente a este caso.</p>') + '<h3>Explorar otros casos</h3>' + cases.filter(x => x.id !== c.id && x.country === c.country).slice(0, 4).map(x => relatedButton('case', x.id, x.title, day(x.observedAt))).join('');
-    $('detail-context').innerHTML = `<h3>Contexto geográfico</h3>${c.location ? '<div id="detail-map" class="context-map" aria-label="Ubicación aproximada del caso"></div>' : '<p class="detail-note">No hay una ubicación documentada.</p>'}${facts([['Lugar', c.location?.label || 'No documentado'], ['Precisión', 'Ubicación aproximada del catálogo'], ['Suceso', day(c.observedAt)], ['Publicación del expediente', 'Sin fecha de publicación atribuida']])}<p class="detail-note">La región representada orienta la lectura; no define el alcance del fenómeno ni una posición exacta.</p>`;
+    $('detail-context').innerHTML = `<h3>Contexto geográfico</h3>${c.location ? '<div id="detail-map" class="context-map" aria-label="Ubicación aproximada del caso"></div>' : '<p class="detail-note">No hay una ubicación documentada.</p>'}${facts([['Lugar', c.location?.label || 'No documentado'], ['País', c.country || 'No registrado'], ['Precisión', precisionLabel(c.location?.precision)], ['Suceso', day(c.observedAt)], ['Hora registrada', c.time ? (c.datetimePrecision === 'hour-only' ? String(c.hour).padStart(2, '0') + ' h · sin minutos registrados' : c.time) + (c.timezone ? ' · UTC' + c.timezone : ' · zona no atribuida') : 'No registrada'], ['Referencia del archivo', c.sourceCaseId || 'Sin identificador original en el archivo compacto'], ['Publicación del expediente', 'Sin fecha de publicación atribuida']])}<p class="detail-note">La posición puede representar una localidad, región o centro de país. No define una posición exacta del suceso.</p>`;
   }
   function relatedButton(kind, id, title, subtitle) {
     return `<button class="related-item" data-open-${kind}="${esc(id)}">${esc(title)}<small>${esc(subtitle || '')}</small></button>`;
@@ -336,6 +454,7 @@
       const renderer = await window.UFOMonitorGlobe.create({
         container: $('monitor-globe'), world, reducedMotion: reducedMotion(),
         onCase: id => openDetail('case', id),
+        onCluster: rows => scopeCluster(rows),
         onError: error => { if (generation === globeGeneration) failGlobe(error); },
       });
       if (generation !== globeGeneration || globeFailed) { renderer.destroy(); return null; }
@@ -388,16 +507,22 @@
       map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
       map.on('load', () => {
         mapReady = true; mapCasesKey = '';
-        map.addSource('cases', { type: 'geojson', data: caseGeoJSON(), cluster: true, clusterMaxZoom: 5, clusterRadius: 43 });
+        map.addSource('cases', { type: 'geojson', data: caseGeoJSON(), cluster: true, clusterMaxZoom: 13, clusterRadius: 43 });
         map.addLayer({ id: 'case-clusters', type: 'circle', source: 'cases', filter: ['has', 'point_count'], paint: { 'circle-color': '#073b4c', 'circle-stroke-color': '#27c8e4', 'circle-stroke-width': 1.5, 'circle-radius': ['step', ['get', 'point_count'], 17, 10, 22, 25, 27], 'circle-opacity': 0.96 } });
         map.addLayer({ id: 'cluster-count', type: 'symbol', source: 'cases', filter: ['has', 'point_count'], layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Noto Sans Regular'], 'text-size': 12 }, paint: { 'text-color': '#d9faff' } });
-        map.addLayer({ id: 'case-points', type: 'circle', source: 'cases', filter: ['!', ['has', 'point_count']], paint: { 'circle-color': mapColors.case, 'circle-radius': 4.5, 'circle-stroke-color': '#091b28', 'circle-stroke-width': 2 } });
+        map.addLayer({ id: 'case-points', type: 'circle', source: 'cases', filter: ['!', ['has', 'point_count']], paint: { 'circle-color': ['coalesce', ['get', 'color'], mapColors.case], 'circle-radius': 4.5, 'circle-stroke-color': '#091b28', 'circle-stroke-width': 2 } });
         map.addSource('selection', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
         map.addLayer({ id: 'selection-point', type: 'circle', source: 'selection', paint: { 'circle-color': '#fff', 'circle-radius': 7, 'circle-stroke-color': '#18d7ff', 'circle-stroke-width': 3 } });
         map.on('click', 'case-clusters', async event => {
           const feature = event.features?.[0];
           if (!feature) return;
-          try { const zoom = await map.getSource('cases').getClusterExpansionZoom(feature.properties.cluster_id); map.easeTo({ center: feature.geometry.coordinates, zoom: Math.min(zoom + 0.2, 7), duration: reducedMotion() ? 0 : 500 }); }
+          try {
+            const source = map.getSource('cases');
+            if (map.getZoom() >= 6.9) {
+              const leaves = await source.getClusterLeaves(feature.properties.cluster_id, feature.properties.point_count, 0);
+              scopeCluster(leaves.map(leaf => caseById.get(leaf.properties.id)).filter(Boolean));
+            } else { const zoom = await source.getClusterExpansionZoom(feature.properties.cluster_id); map.easeTo({ center: feature.geometry.coordinates, zoom: Math.min(zoom + 0.2, 7), duration: reducedMotion() ? 0 : 500 }); }
+          }
           catch (_) { toast('Acerca el mapa para explorar los casos de la zona.'); }
         });
         map.on('click', 'case-points', event => { const id = event.features?.[0]?.properties.id; if (id) openDetail('case', id); });
@@ -426,18 +551,18 @@
     map.easeTo({ center: [0, 18], zoom, duration: reducedMotion() ? 0 : duration });
   }
   function caseGeoJSON() {
-    return { type: 'FeatureCollection', features: visibleCases().filter(c => validLocation(c.location)).map(c => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [c.location.lng, c.location.lat] }, properties: { id: c.id, title: c.title, observedAt: c.observedAt } })) };
+    return { type: 'FeatureCollection', features: visibleCases().filter(c => validLocation(c.location)).map(c => ({ type: 'Feature', geometry: { type: 'Point', coordinates: [c.location.lng, c.location.lat] }, properties: { id: c.id, color: /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : mapColors.case } })) };
   }
   function updateMap() {
     const filtered = visibleCases().filter(c => validLocation(c.location));
     const count = filtered.length;
     const ready = state.spatial === 'globe' ? globeReady : mapReady;
     const failed = state.spatial === 'globe' ? globeFailed : mapFailed;
-    $('map-message').textContent = failed ? 'Atlas no disponible · Consulta los casos en la lista' : ready ? count + (count === 1 ? ' caso' : ' casos') + ' del archivo · Coordenadas aproximadas' : state.spatial === 'globe' ? 'Preparando el globo…' : 'Preparando el mapa 2D…';
+    $('map-message').textContent = failed ? 'Atlas no disponible · Consulta los casos en la lista' : ready ? number(count) + (count === 1 ? ' caso' : ' casos') + ' del archivo · ' + ([...catalogLoads.values()].some(item => item.status !== 'ok') ? archiveStatus() : 'Coordenadas aproximadas') : state.spatial === 'globe' ? 'Preparando el globo…' : 'Preparando el mapa 2D…';
     $('map-reset').disabled = !ready;
     $('globe-zoom-in').disabled = !globeReady;
     $('globe-zoom-out').disabled = !globeReady;
-    const key = filtered.map(c => c.id).join('|');
+    const key = visibleCases();
     if (globeReady && globe && key !== globeCasesKey) { globe.setCases(filtered); globeCasesKey = key; }
     if (mapReady && key !== mapCasesKey) { map.getSource('cases')?.setData(caseGeoJSON()); mapCasesKey = key; }
   }
@@ -472,20 +597,22 @@
   }
   function syncMobile() {
     const mode = document.body.dataset.mobileView || 'list';
+    document.querySelector('#mobile-views [data-mobile-view="list"]').textContent = state.view === 'atlas' ? 'Casos' : 'Publicaciones';
     document.querySelectorAll('[data-mobile-view]').forEach(button => { if (button.tagName === 'BUTTON') { button.classList.toggle('is-active', button.dataset.mobileView === mode); button.setAttribute('aria-pressed', String(button.dataset.mobileView === mode)); } });
   }
   async function exploreCase(id) {
     const item = caseById.get(id);
     if (!item) return;
     document.body.dataset.mobileView = 'map';
-    commit({ view: 'atlas', spatial: 'globe', query: '', selectedId: null, selectedKind: null }, true);
+    regionIds = null; caseCache = null;
+    commit({ view: 'atlas', spatial: 'globe', query: '', caseFilters: {}, selectedId: null, selectedKind: null }, true);
     const renderer = await ensureGlobe();
     renderer?.select(item);
     if (renderer) $('monitor-globe').focus({ preventScroll: true });
   }
 
   document.addEventListener('click', event => {
-    const action = event.target.closest('[data-open-item],[data-open-case],[data-open-source],[data-explore-case],[data-save-kind],[data-copy-link],[data-play-video],[data-reset-filters],[data-clear-search],a[data-view]');
+    const action = event.target.closest('[data-open-item],[data-open-case],[data-open-source],[data-explore-case],[data-save-kind],[data-copy-link],[data-play-video],[data-reset-filters],[data-clear-search],[data-archive-filters],[data-reset-archive],[data-close-archive],[data-retry-archive],[data-case-page],[data-clear-region],a[data-view]');
     if (!action) return;
     if (action.dataset.openItem) openDetail('item', action.dataset.openItem, action);
     else if (action.dataset.openCase) openDetail('case', action.dataset.openCase, action);
@@ -508,6 +635,12 @@
       navigator.clipboard?.writeText(location.href).then(() => toast('Enlace copiado.')).catch(() => toast('No se pudo copiar. Puedes usar la dirección del navegador.'));
     } else if (action.hasAttribute('data-reset-filters')) commit({ period: 'all', sources: null, category: 'all', query: '' });
     else if (action.hasAttribute('data-clear-search')) commit({ query: '' });
+    else if (action.hasAttribute('data-archive-filters')) showArchiveFilters();
+    else if (action.hasAttribute('data-close-archive')) { $('archive-filter-panel').hidden = true; $('archive-filter-toggle').setAttribute('aria-expanded', 'false'); (state.view === 'cases' ? $('catalog-actions').querySelector('button') : $('archive-filter-toggle')).focus(); }
+    else if (action.hasAttribute('data-reset-archive')) { regionIds = null; caseCache = null; commit({ query: '', caseFilters: {} }); }
+    else if (action.hasAttribute('data-clear-region')) { regionIds = null; caseCache = null; render(); }
+    else if (action.hasAttribute('data-retry-archive')) loadCatalog();
+    else if (action.hasAttribute('data-case-page')) { casePage = Number(action.dataset.casePage) || 0; render(); const list = state.view === 'cases' ? $('catalog-view') : $('feed-list'); list.scrollTop = 0; (list.querySelector('button[data-open-case]') || list).focus(); }
     else if (action.dataset.view) { event.preventDefault(); navigate(action.dataset.view); }
   });
   $('primary-nav').addEventListener('click', event => { const button = event.target.closest('button[data-view]'); if (button) navigate(button.dataset.view); });
@@ -521,10 +654,18 @@
     else commit({ spatial: button.dataset.spatial }, true);
   });
   $('period-control').addEventListener('click', event => { const button = event.target.closest('[data-period]'); if (button) commit({ period: button.dataset.period }); });
-  $('app-search').addEventListener('input', event => commit({ query: event.target.value }));
+  let searchTimer;
+  $('app-search').addEventListener('input', event => { clearTimeout(searchTimer); const query = event.target.value; searchTimer = setTimeout(() => commit({ query }), 180); });
   $('category-filter').addEventListener('change', event => commit({ category: event.target.value }));
   $('source-filters').addEventListener('change', () => { const checked = [...$('source-filters').querySelectorAll('input:checked')].map(x => x.value); commit({ sources: checked.length === snapshot.sources.filter(s => s.feedUrl).length ? null : checked }); });
-  $('filter-toggle').addEventListener('click', () => { const open = $('filter-panel').hidden; $('filter-panel').hidden = !open; $('filter-toggle').setAttribute('aria-expanded', String(open)); if (open) $('category-filter').focus(); });
+  $('filter-toggle').addEventListener('click', () => { const open = $('filter-panel').hidden; $('filter-panel').hidden = !open; $('filter-toggle').setAttribute('aria-expanded', String(open)); if (open) { $('archive-filter-panel').hidden = true; $('archive-filter-toggle').setAttribute('aria-expanded', 'false'); $('category-filter').focus(); } });
+  $('archive-filter-toggle').addEventListener('click', showArchiveFilters);
+  $('archive-filter-panel').addEventListener('change', event => {
+    const input = event.target.closest('[data-case-filter]');
+    if (!input) return;
+    regionIds = null; caseCache = null;
+    commit({ caseFilters: { ...state.caseFilters, [input.dataset.caseFilter]: input.value } });
+  });
   $('mobile-views').addEventListener('click', event => { const button = event.target.closest('button'); if (button) { document.body.dataset.mobileView = button.dataset.mobileView; syncMobile(); requestAnimationFrame(syncSpatial); } });
   $('feed-retry').addEventListener('click', () => loadSnapshot(true));
   $('map-reset').addEventListener('click', () => state.spatial === 'globe' ? globe?.reset() : resetWorld());
@@ -536,12 +677,16 @@
   document.addEventListener('keydown', event => {
     if (event.key === '/' && !event.ctrlKey && !event.metaKey && !/input|textarea|select/i.test(document.activeElement.tagName) && !$('detail-dialog').open) { event.preventDefault(); $('app-search').focus(); }
     if (event.key === 'Escape' && !$('filter-panel').hidden && !$('detail-dialog').open) { $('filter-panel').hidden = true; $('filter-toggle').setAttribute('aria-expanded', 'false'); $('filter-toggle').focus(); }
+    if (event.key === 'Escape' && !$('archive-filter-panel').hidden && !$('detail-dialog').open) { $('archive-filter-panel').hidden = true; $('archive-filter-toggle').setAttribute('aria-expanded', 'false'); (state.view === 'cases' ? $('catalog-actions').querySelector('button') : $('archive-filter-toggle')).focus(); }
   });
   function restoreState() {
+    const params = new URLSearchParams(location.hash.slice(1));
+    if (!params.has('view') && [...params.keys()].some(key => legacyFilterKeys.has(key))) { location.replace('globe.html' + location.hash); return; }
     const next = M.readState(location.hash);
     // Back/forward may emit both events. Rendering twice replaces the element
     // that just regained focus when a detail closes.
     if (JSON.stringify(next) === JSON.stringify(state)) return;
+    if (next.view !== state.view) { regionIds = null; caseCache = null; }
     state = next; render();
   }
   window.addEventListener('popstate', restoreState);
@@ -550,5 +695,6 @@
   document.addEventListener('visibilitychange', () => { syncSpatial(); if (!document.hidden && !refreshing) loadSnapshot(); });
   setInterval(() => { if (!document.hidden) loadSnapshot(); }, 60000);
   render();
+  loadCatalog();
   loadSnapshot();
 }());
