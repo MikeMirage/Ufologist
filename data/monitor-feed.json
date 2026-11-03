@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-03T10:04:54Z",
-  "lastSuccessfulAt": "2026-11-03T10:04:54Z",
+  "generatedAt": "2026-11-03T17:51:20Z",
+  "lastSuccessfulAt": "2026-11-03T17:51:20Z",
   "sources": [
     {
       "id": "nasa",
@@ -10,12 +10,13 @@
       "feedUrl": "https://www.nasa.gov/feed/",
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
-      "status": "error",
-      "checkedAt": "2026-11-03T10:04:54Z",
-      "lastSuccessAt": "2026-11-02T09:57:56Z",
-      "lastPublishedAt": "2026-11-02T05:05:00Z",
-      "itemCount": 5,
-      "error": "ValueError: Declaraciones XML externas no permitidas"
+      "status": "ok",
+      "checkedAt": "2026-11-03T17:51:20Z",
+      "lastSuccessAt": "2026-11-03T17:51:20Z",
+      "lastPublishedAt": "2026-11-03T16:37:42Z",
+      "itemCount": 8,
+      "error": null,
+      "fetchedItemCount": 10
     },
     {
       "id": "debrief",
@@ -25,9 +26,9 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-03T10:04:54Z",
-      "lastSuccessAt": "2026-11-03T10:04:54Z",
-      "lastPublishedAt": "2026-11-02T19:05:02Z",
+      "checkedAt": "2026-11-03T17:51:20Z",
+      "lastSuccessAt": "2026-11-03T17:51:20Z",
+      "lastPublishedAt": "2026-11-03T15:58:58Z",
       "itemCount": 4,
       "error": null,
       "fetchedItemCount": 100
@@ -40,9 +41,9 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-03T10:04:54Z",
-      "lastSuccessAt": "2026-11-03T10:04:54Z",
-      "lastPublishedAt": "2026-10-16T10:50:19Z",
+      "checkedAt": "2026-11-03T17:51:20Z",
+      "lastSuccessAt": "2026-11-03T17:51:20Z",
+      "lastPublishedAt": "2026-11-03T14:00:46Z",
       "itemCount": 5,
       "error": null,
       "fetchedItemCount": 25
@@ -54,12 +55,13 @@
       "feedUrl": "https://cnes-geipan.fr/rss.xml",
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
-      "status": "error",
-      "checkedAt": "2026-11-03T10:04:54Z",
-      "lastSuccessAt": "2026-11-03T02:39:59Z",
+      "status": "ok",
+      "checkedAt": "2026-11-03T17:51:20Z",
+      "lastSuccessAt": "2026-11-03T17:51:20Z",
       "lastPublishedAt": "2025-05-20T00:00:00Z",
       "itemCount": 20,
-      "error": "ParseError: not well-formed (invalid token): line 1, column 0"
+      "error": null,
+      "fetchedItemCount": 20
     },
     {
       "id": "nara",
@@ -105,6 +107,51 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-5310136571feb6432568",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 3 – Comet PanSTARRs and Rainbow Meteor",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-3-comet-panstarrs-and-rainbow-meteor/",
+      "publishedAt": "2026-11-03T05:05:00Z",
+      "ingestedAt": "2026-11-03T17:51:20Z",
+      "summary": "",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
+    {
+      "id": "nasa-c1f7350195d928503012",
+      "sourceId": "nasa",
+      "title": "What’s Up: November 2026 Skywatching Tips from NASA",
+      "url": "https://science.nasa.gov/solar-system/skywatching/whats-up-november-2026-skywatching-tips-from-nasa/",
+      "publishedAt": "2026-11-02T18:19:58Z",
+      "ingestedAt": "2026-11-03T17:51:20Z",
+      "summary": "Meteor Showers, a Spacecraft Milestone, and a Supermoon Catch Taurid and Leonid meteors, spot Mars near Jupiter, celebrate Voyager 1’s light-day milestone, and watch November’s supermoon. Skywatching Highlights Transcript A month of meteor showers … a close pairing of Mars and…",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
+    {
+      "id": "nasa-9afd0129ac20e2508e44",
+      "sourceId": "nasa",
+      "title": "NASA Invites Media to Northrop Grumman CRS-25 Station Resupply Launch",
+      "url": "https://www.nasa.gov/news-release/nasa-invites-media-to-northrop-grumman-crs-25-station-resupply-launch/",
+      "publishedAt": "2026-11-02T17:33:22Z",
+      "ingestedAt": "2026-11-03T17:51:20Z",
+      "summary": "Media accreditation is open for the next launch to deliver NASA science investigations, supplies, and equipment to the International Space Station. A Northrop Grumman Cygnus XL spacecraft will launch in November to the orbital laboratory on a SpaceX Falcon 9 rocket for NASA.…",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-52a09350e0c433fa0b23",
       "sourceId": "nasa",
