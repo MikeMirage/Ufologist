@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-02T09:57:56Z",
-  "lastSuccessfulAt": "2026-11-02T09:57:56Z",
+  "generatedAt": "2026-11-03T02:39:59Z",
+  "lastSuccessfulAt": "2026-11-03T02:39:59Z",
   "sources": [
     {
       "id": "nasa",
@@ -10,13 +10,12 @@
       "feedUrl": "https://www.nasa.gov/feed/",
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
-      "status": "ok",
-      "checkedAt": "2026-11-02T09:57:56Z",
+      "status": "error",
+      "checkedAt": "2026-11-03T02:39:59Z",
       "lastSuccessAt": "2026-11-02T09:57:56Z",
       "lastPublishedAt": "2026-11-02T05:05:00Z",
       "itemCount": 5,
-      "error": null,
-      "fetchedItemCount": 10
+      "error": "ValueError: Declaraciones XML externas no permitidas"
     },
     {
       "id": "debrief",
@@ -26,9 +25,9 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-02T09:57:56Z",
-      "lastSuccessAt": "2026-11-02T09:57:56Z",
-      "lastPublishedAt": "2026-11-01T13:22:54Z",
+      "checkedAt": "2026-11-03T02:39:59Z",
+      "lastSuccessAt": "2026-11-03T02:39:59Z",
+      "lastPublishedAt": "2026-11-02T19:05:02Z",
       "itemCount": 4,
       "error": null,
       "fetchedItemCount": 100
@@ -41,8 +40,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-02T09:57:56Z",
-      "lastSuccessAt": "2026-11-02T09:57:56Z",
+      "checkedAt": "2026-11-03T02:39:59Z",
+      "lastSuccessAt": "2026-11-03T02:39:59Z",
       "lastPublishedAt": "2026-10-16T10:50:19Z",
       "itemCount": 5,
       "error": null,
@@ -56,8 +55,8 @@
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
       "status": "ok",
-      "checkedAt": "2026-11-02T09:57:56Z",
-      "lastSuccessAt": "2026-11-02T09:57:56Z",
+      "checkedAt": "2026-11-03T02:39:59Z",
+      "lastSuccessAt": "2026-11-03T02:39:59Z",
       "lastPublishedAt": "2025-05-20T00:00:00Z",
       "itemCount": 20,
       "error": null,
