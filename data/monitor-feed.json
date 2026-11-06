@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T09:54:37Z",
-  "lastSuccessfulAt": "2026-11-06T09:54:37Z",
+  "generatedAt": "2026-11-06T17:29:04Z",
+  "lastSuccessfulAt": "2026-11-06T17:29:04Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,9 +11,9 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-06T09:54:37Z",
-      "lastSuccessAt": "2026-11-06T09:54:37Z",
-      "lastPublishedAt": "2026-11-06T05:05:00Z",
+      "checkedAt": "2026-11-06T17:29:04Z",
+      "lastSuccessAt": "2026-11-06T17:29:04Z",
+      "lastPublishedAt": "2026-11-06T16:23:41Z",
       "itemCount": 12,
       "error": null,
       "fetchedItemCount": 10
@@ -26,10 +26,10 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-06T09:54:37Z",
-      "lastSuccessAt": "2026-11-06T09:54:37Z",
-      "lastPublishedAt": "2026-11-05T15:33:26Z",
-      "itemCount": 4,
+      "checkedAt": "2026-11-06T17:29:04Z",
+      "lastSuccessAt": "2026-11-06T17:29:04Z",
+      "lastPublishedAt": "2026-11-06T16:41:57Z",
+      "itemCount": 5,
       "error": null,
       "fetchedItemCount": 100
     },
@@ -41,8 +41,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-06T09:54:37Z",
-      "lastSuccessAt": "2026-11-06T09:54:37Z",
+      "checkedAt": "2026-11-06T17:29:04Z",
+      "lastSuccessAt": "2026-11-06T17:29:04Z",
       "lastPublishedAt": "2026-11-03T14:00:46Z",
       "itemCount": 5,
       "error": null,
@@ -56,8 +56,8 @@
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
       "status": "ok",
-      "checkedAt": "2026-11-06T09:54:37Z",
-      "lastSuccessAt": "2026-11-06T09:54:37Z",
+      "checkedAt": "2026-11-06T17:29:04Z",
+      "lastSuccessAt": "2026-11-06T17:29:04Z",
       "lastPublishedAt": "2025-05-20T00:00:00Z",
       "itemCount": 20,
       "error": null,
@@ -107,6 +107,21 @@
     }
   ],
   "items": [
+    {
+      "id": "debrief-4a8ce4fb90dbf38581cc",
+      "sourceId": "debrief",
+      "title": "“No Link to a Known Artificial Object Has Been Found”: Astronomers Confirm Earth Has Captured a Tiny New Moon",
+      "url": "https://thedebrief.org/no-link-to-a-known-artificial-object-has-been-found-astronomers-confirm-earth-has-captured-a-tiny-new-moon/",
+      "publishedAt": "2026-11-06T16:41:57Z",
+      "ingestedAt": "2026-11-06T17:29:04Z",
+      "summary": "Astronomers say Earth has captured a tiny new natural satellite, confiming that “no link to a known artificial object has been found.\"",
+      "category": "sky-context",
+      "kind": "article",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-ef462061cde94afcd338",
       "sourceId": "nasa",
