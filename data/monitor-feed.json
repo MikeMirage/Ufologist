@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-09T00:05:26Z",
-  "lastSuccessfulAt": "2026-11-09T00:05:26Z",
+  "generatedAt": "2026-11-09T06:22:27Z",
+  "lastSuccessfulAt": "2026-11-09T06:22:27Z",
   "sources": [
     {
       "id": "nasa",
@@ -10,12 +10,13 @@
       "feedUrl": "https://www.nasa.gov/feed/",
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
-      "status": "error",
-      "checkedAt": "2026-11-09T00:05:26Z",
-      "lastSuccessAt": "2026-11-08T20:46:20Z",
-      "lastPublishedAt": "2026-11-08T15:26:38Z",
-      "itemCount": 14,
-      "error": "HTTPError: Too Many Requests"
+      "status": "ok",
+      "checkedAt": "2026-11-09T06:22:27Z",
+      "lastSuccessAt": "2026-11-09T06:22:27Z",
+      "lastPublishedAt": "2026-11-09T05:05:00Z",
+      "itemCount": 15,
+      "error": null,
+      "fetchedItemCount": 10
     },
     {
       "id": "debrief",
@@ -25,8 +26,8 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-09T00:05:26Z",
-      "lastSuccessAt": "2026-11-09T00:05:26Z",
+      "checkedAt": "2026-11-09T06:22:27Z",
+      "lastSuccessAt": "2026-11-09T06:22:27Z",
       "lastPublishedAt": "2026-11-07T14:48:21Z",
       "itemCount": 5,
       "error": null,
@@ -40,8 +41,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-09T00:05:26Z",
-      "lastSuccessAt": "2026-11-09T00:05:26Z",
+      "checkedAt": "2026-11-09T06:22:27Z",
+      "lastSuccessAt": "2026-11-09T06:22:27Z",
       "lastPublishedAt": "2026-11-03T14:00:46Z",
       "itemCount": 5,
       "error": null,
@@ -55,8 +56,8 @@
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
       "status": "ok",
-      "checkedAt": "2026-11-09T00:05:26Z",
-      "lastSuccessAt": "2026-11-09T00:05:26Z",
+      "checkedAt": "2026-11-09T06:22:27Z",
+      "lastSuccessAt": "2026-11-09T06:22:27Z",
       "lastPublishedAt": "2025-05-20T00:00:00Z",
       "itemCount": 20,
       "error": null,
@@ -106,6 +107,21 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-fec79c17fae28b283191",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 9 – Rigel and the Witch Head Nebula",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-9-rigel-and-the-witch-head-nebula/",
+      "publishedAt": "2026-11-09T05:05:00Z",
+      "ingestedAt": "2026-11-09T06:22:27Z",
+      "summary": "",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-4b964b146a7587e2200d",
       "sourceId": "nasa",
