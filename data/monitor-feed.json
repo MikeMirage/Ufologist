@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-10T15:48:37Z",
-  "lastSuccessfulAt": "2026-11-10T15:48:37Z",
+  "generatedAt": "2026-11-10T21:48:09Z",
+  "lastSuccessfulAt": "2026-11-10T21:48:09Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,9 +11,9 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-10T15:48:37Z",
-      "lastSuccessAt": "2026-11-10T15:48:37Z",
-      "lastPublishedAt": "2026-11-10T14:57:55Z",
+      "checkedAt": "2026-11-10T21:48:09Z",
+      "lastSuccessAt": "2026-11-10T21:48:09Z",
+      "lastPublishedAt": "2026-11-10T19:22:45Z",
       "itemCount": 17,
       "error": null,
       "fetchedItemCount": 10
@@ -26,8 +26,8 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-10T15:48:37Z",
-      "lastSuccessAt": "2026-11-10T15:48:37Z",
+      "checkedAt": "2026-11-10T21:48:09Z",
+      "lastSuccessAt": "2026-11-10T21:48:09Z",
       "lastPublishedAt": "2026-11-10T15:47:40Z",
       "itemCount": 6,
       "error": null,
@@ -41,8 +41,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-10T15:48:37Z",
-      "lastSuccessAt": "2026-11-10T15:48:37Z",
+      "checkedAt": "2026-11-10T21:48:09Z",
+      "lastSuccessAt": "2026-11-10T21:48:09Z",
       "lastPublishedAt": "2026-11-03T14:00:46Z",
       "itemCount": 5,
       "error": null,
@@ -55,13 +55,12 @@
       "feedUrl": "https://cnes-geipan.fr/rss.xml",
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
-      "status": "ok",
-      "checkedAt": "2026-11-10T15:48:37Z",
+      "status": "error",
+      "checkedAt": "2026-11-10T21:48:09Z",
       "lastSuccessAt": "2026-11-10T15:48:37Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
-      "error": null,
-      "fetchedItemCount": 20
+      "error": "ParseError: not well-formed (invalid token): line 1, column 0"
     },
     {
       "id": "nara",
