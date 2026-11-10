@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-10T07:45:22Z",
-  "lastSuccessfulAt": "2026-11-10T07:45:22Z",
+  "generatedAt": "2026-11-10T15:48:37Z",
+  "lastSuccessfulAt": "2026-11-10T15:48:37Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,9 +11,9 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-10T07:45:22Z",
-      "lastSuccessAt": "2026-11-10T07:45:22Z",
-      "lastPublishedAt": "2026-11-10T05:05:00Z",
+      "checkedAt": "2026-11-10T15:48:37Z",
+      "lastSuccessAt": "2026-11-10T15:48:37Z",
+      "lastPublishedAt": "2026-11-10T14:57:55Z",
       "itemCount": 17,
       "error": null,
       "fetchedItemCount": 10
@@ -26,10 +26,10 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-10T07:45:22Z",
-      "lastSuccessAt": "2026-11-10T07:45:22Z",
-      "lastPublishedAt": "2026-11-09T15:20:44Z",
-      "itemCount": 5,
+      "checkedAt": "2026-11-10T15:48:37Z",
+      "lastSuccessAt": "2026-11-10T15:48:37Z",
+      "lastPublishedAt": "2026-11-10T15:47:40Z",
+      "itemCount": 6,
       "error": null,
       "fetchedItemCount": 100
     },
@@ -41,8 +41,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-10T07:45:22Z",
-      "lastSuccessAt": "2026-11-10T07:45:22Z",
+      "checkedAt": "2026-11-10T15:48:37Z",
+      "lastSuccessAt": "2026-11-10T15:48:37Z",
       "lastPublishedAt": "2026-11-03T14:00:46Z",
       "itemCount": 5,
       "error": null,
@@ -56,8 +56,8 @@
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
       "status": "ok",
-      "checkedAt": "2026-11-10T07:45:22Z",
-      "lastSuccessAt": "2026-11-10T07:45:22Z",
+      "checkedAt": "2026-11-10T15:48:37Z",
+      "lastSuccessAt": "2026-11-10T15:48:37Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
       "error": null,
@@ -107,6 +107,21 @@
     }
   ],
   "items": [
+    {
+      "id": "debrief-015d86e05f037a1a5122",
+      "sourceId": "debrief",
+      "title": "DARPA Robot Builds a Structure in Space for the First Time, Opening the Door to Giant Orbiting Spacecraft",
+      "url": "https://thedebrief.org/darpa-robot-builds-a-structure-in-space-for-the-first-time-opening-the-door-to-giant-orbiting-spacecraft/",
+      "publishedAt": "2026-11-10T12:59:24Z",
+      "ingestedAt": "2026-11-10T15:48:37Z",
+      "summary": "A DARPA robot has assembled a structure in orbit for the first time, paving the way for giant space telescopes and solar power arrays.",
+      "category": "sky-context",
+      "kind": "article",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-d990a8442c3fb4881540",
       "sourceId": "nasa",
