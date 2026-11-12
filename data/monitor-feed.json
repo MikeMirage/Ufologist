@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-12T04:17:17Z",
-  "lastSuccessfulAt": "2026-11-12T04:17:17Z",
+  "generatedAt": "2026-11-12T12:49:49Z",
+  "lastSuccessfulAt": "2026-11-12T12:49:49Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,10 +11,10 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-12T04:17:17Z",
-      "lastSuccessAt": "2026-11-12T04:17:17Z",
-      "lastPublishedAt": "2026-11-12T00:41:35Z",
-      "itemCount": 18,
+      "checkedAt": "2026-11-12T12:49:49Z",
+      "lastSuccessAt": "2026-11-12T12:49:49Z",
+      "lastPublishedAt": "2026-11-12T05:05:00Z",
+      "itemCount": 19,
       "error": null,
       "fetchedItemCount": 10
     },
@@ -26,8 +26,8 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-12T04:17:17Z",
-      "lastSuccessAt": "2026-11-12T04:17:17Z",
+      "checkedAt": "2026-11-12T12:49:49Z",
+      "lastSuccessAt": "2026-11-12T12:49:49Z",
       "lastPublishedAt": "2026-11-11T15:11:36Z",
       "itemCount": 6,
       "error": null,
@@ -41,8 +41,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-12T04:17:17Z",
-      "lastSuccessAt": "2026-11-12T04:17:17Z",
+      "checkedAt": "2026-11-12T12:49:49Z",
+      "lastSuccessAt": "2026-11-12T12:49:49Z",
       "lastPublishedAt": "2026-11-03T14:00:46Z",
       "itemCount": 5,
       "error": null,
@@ -56,7 +56,7 @@
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
       "status": "error",
-      "checkedAt": "2026-11-12T04:17:17Z",
+      "checkedAt": "2026-11-12T12:49:49Z",
       "lastSuccessAt": "2026-11-11T01:56:16Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
@@ -106,6 +106,21 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-5308c7ed8c13ac56bdeb",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 12 – Moon, Venus and Spica Meet",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-12-moon-venus-and-spica-meet/",
+      "publishedAt": "2026-11-12T05:05:00Z",
+      "ingestedAt": "2026-11-12T12:49:49Z",
+      "summary": "",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-55b3e3aad90939b0fab2",
       "sourceId": "nasa",
