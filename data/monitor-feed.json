@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-13T01:49:49Z",
-  "lastSuccessfulAt": "2026-11-13T01:49:49Z",
+  "generatedAt": "2026-11-13T09:29:52Z",
+  "lastSuccessfulAt": "2026-11-13T09:29:52Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,10 +11,10 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-13T01:49:49Z",
-      "lastSuccessAt": "2026-11-13T01:49:49Z",
-      "lastPublishedAt": "2026-11-12T20:10:02Z",
-      "itemCount": 19,
+      "checkedAt": "2026-11-13T09:29:52Z",
+      "lastSuccessAt": "2026-11-13T09:29:52Z",
+      "lastPublishedAt": "2026-11-13T05:05:00Z",
+      "itemCount": 20,
       "error": null,
       "fetchedItemCount": 10
     },
@@ -26,8 +26,8 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-13T01:49:49Z",
-      "lastSuccessAt": "2026-11-13T01:49:49Z",
+      "checkedAt": "2026-11-13T09:29:52Z",
+      "lastSuccessAt": "2026-11-13T09:29:52Z",
       "lastPublishedAt": "2026-11-12T20:36:32Z",
       "itemCount": 6,
       "error": null,
@@ -41,8 +41,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-13T01:49:49Z",
-      "lastSuccessAt": "2026-11-13T01:49:49Z",
+      "checkedAt": "2026-11-13T09:29:52Z",
+      "lastSuccessAt": "2026-11-13T09:29:52Z",
       "lastPublishedAt": "2026-11-03T14:00:46Z",
       "itemCount": 5,
       "error": null,
@@ -55,13 +55,12 @@
       "feedUrl": "https://cnes-geipan.fr/rss.xml",
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
-      "status": "ok",
-      "checkedAt": "2026-11-13T01:49:49Z",
+      "status": "error",
+      "checkedAt": "2026-11-13T09:29:52Z",
       "lastSuccessAt": "2026-11-13T01:49:49Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
-      "error": null,
-      "fetchedItemCount": 20
+      "error": "ParseError: not well-formed (invalid token): line 1, column 0"
     },
     {
       "id": "nara",
@@ -107,6 +106,21 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-f8746cf4ef0b0e34bb32",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 13 – NGC 206 and the Star Clouds of Andromeda",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-13-ngc-206-and-the-star-clouds-of-andromeda/",
+      "publishedAt": "2026-11-13T05:05:00Z",
+      "ingestedAt": "2026-11-13T09:29:52Z",
+      "summary": "",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-5308c7ed8c13ac56bdeb",
       "sourceId": "nasa",
