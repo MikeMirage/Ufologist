@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-16T17:28:19Z",
-  "lastSuccessfulAt": "2026-11-16T17:28:19Z",
+  "generatedAt": "2026-11-17T01:05:05Z",
+  "lastSuccessfulAt": "2026-11-17T01:05:05Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,10 +11,10 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-16T17:28:19Z",
-      "lastSuccessAt": "2026-11-16T17:28:19Z",
-      "lastPublishedAt": "2026-11-16T15:22:09Z",
-      "itemCount": 21,
+      "checkedAt": "2026-11-17T01:05:05Z",
+      "lastSuccessAt": "2026-11-17T01:05:05Z",
+      "lastPublishedAt": "2026-11-16T23:12:45Z",
+      "itemCount": 22,
       "error": null,
       "fetchedItemCount": 10
     },
@@ -26,8 +26,8 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "ok",
-      "checkedAt": "2026-11-16T17:28:19Z",
-      "lastSuccessAt": "2026-11-16T17:28:19Z",
+      "checkedAt": "2026-11-17T01:05:05Z",
+      "lastSuccessAt": "2026-11-17T01:05:05Z",
       "lastPublishedAt": "2026-11-16T15:10:50Z",
       "itemCount": 6,
       "error": null,
@@ -41,8 +41,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-16T17:28:19Z",
-      "lastSuccessAt": "2026-11-16T17:28:19Z",
+      "checkedAt": "2026-11-17T01:05:05Z",
+      "lastSuccessAt": "2026-11-17T01:05:05Z",
       "lastPublishedAt": "2026-11-13T04:00:50Z",
       "itemCount": 5,
       "error": null,
@@ -56,7 +56,7 @@
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
       "status": "error",
-      "checkedAt": "2026-11-16T17:28:19Z",
+      "checkedAt": "2026-11-17T01:05:05Z",
       "lastSuccessAt": "2026-11-15T07:50:28Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
@@ -106,6 +106,21 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-0af0bf2a120cdb552f3c",
+      "sourceId": "nasa",
+      "title": "Sentinel-6B in Orbit Around Earth",
+      "url": "https://science.nasa.gov/photojournal/sentinel-6b-in-orbit-around-earth/",
+      "publishedAt": "2026-11-16T18:52:32Z",
+      "ingestedAt": "2026-11-17T01:05:05Z",
+      "summary": "Description This artist’s concept shows the Sentinel-6B satellite, which will become the reference satellite for other missions studying sea surface height.",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-78cb1b8a86590c94e437",
       "sourceId": "nasa",
