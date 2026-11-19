@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-19T07:57:09Z",
-  "lastSuccessfulAt": "2026-11-19T07:57:09Z",
+  "generatedAt": "2026-11-19T17:22:47Z",
+  "lastSuccessfulAt": "2026-11-19T17:22:47Z",
   "sources": [
     {
       "id": "nasa",
@@ -10,12 +10,13 @@
       "feedUrl": "https://www.nasa.gov/feed/",
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
-      "status": "error",
-      "checkedAt": "2026-11-19T07:57:09Z",
-      "lastSuccessAt": "2026-11-18T09:09:37Z",
-      "lastPublishedAt": "2026-11-18T05:05:00Z",
-      "itemCount": 24,
-      "error": "ValueError: Declaraciones XML externas no permitidas"
+      "status": "ok",
+      "checkedAt": "2026-11-19T17:22:47Z",
+      "lastSuccessAt": "2026-11-19T17:22:47Z",
+      "lastPublishedAt": "2026-11-19T15:33:55Z",
+      "itemCount": 27,
+      "error": null,
+      "fetchedItemCount": 10
     },
     {
       "id": "debrief",
@@ -25,7 +26,7 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "error",
-      "checkedAt": "2026-11-19T07:57:09Z",
+      "checkedAt": "2026-11-19T17:22:47Z",
       "lastSuccessAt": "2026-11-18T09:09:37Z",
       "lastPublishedAt": "2026-11-17T23:34:27Z",
       "itemCount": 6,
@@ -39,9 +40,9 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-19T07:57:09Z",
-      "lastSuccessAt": "2026-11-19T07:57:09Z",
-      "lastPublishedAt": "2026-11-13T04:00:50Z",
+      "checkedAt": "2026-11-19T17:22:47Z",
+      "lastSuccessAt": "2026-11-19T17:22:47Z",
+      "lastPublishedAt": "2026-11-19T12:39:18Z",
       "itemCount": 5,
       "error": null,
       "fetchedItemCount": 25
@@ -53,12 +54,13 @@
       "feedUrl": "https://cnes-geipan.fr/rss.xml",
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
-      "status": "error",
-      "checkedAt": "2026-11-19T07:57:09Z",
-      "lastSuccessAt": "2026-11-17T18:33:12Z",
+      "status": "ok",
+      "checkedAt": "2026-11-19T17:22:47Z",
+      "lastSuccessAt": "2026-11-19T17:22:47Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
-      "error": "HTTPError: Bad Gateway"
+      "error": null,
+      "fetchedItemCount": 20
     },
     {
       "id": "nara",
@@ -104,6 +106,51 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-2e20115a61007f76b4a3",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 19 – The Horsehead and Flame Nebulas",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-19-the-horsehead-and-flame-nebulas/",
+      "publishedAt": "2026-11-19T05:05:00Z",
+      "ingestedAt": "2026-11-19T17:22:47Z",
+      "summary": "APODScienceAPODAPOD: 2026 November 19 – The…Today’s APODArchiveSubmissionsIndexSearchCalendarRSSEducationAboutDiscuss APOD Astronomy Picture of the Day Discover the cosmos! Each day a different image or photograph of our fascinating universe is featured, along with a brief…",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
+    {
+      "id": "nasa-b41c4de3e0f28efd9a0d",
+      "sourceId": "nasa",
+      "title": "El Niño Rains Paint the Atacama",
+      "url": "https://science.nasa.gov/earth/earth-observatory/el-nino-rains-paint-the-atacama/",
+      "publishedAt": "2026-11-19T05:00:00Z",
+      "ingestedAt": "2026-11-19T17:22:47Z",
+      "summary": "Winter precipitation helped wake dormant seeds in northern Chile, carpeting the desert with what may be the region’s most extensive flowering of the satellite era.",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
+    {
+      "id": "nasa-946586051f9fd3c7eed6",
+      "sourceId": "nasa",
+      "title": "NASA Announces Mid-Power Electric Rocket Challenge for US Companies",
+      "url": "https://www.nasa.gov/directorates/stmd/prizes-challenges-crowdsourcing-program/nasa-announces-mid-power-electric-rocket-challenge-for-us-companies/",
+      "publishedAt": "2026-11-18T18:12:32Z",
+      "ingestedAt": "2026-11-19T17:22:47Z",
+      "summary": "NASA launched a new competition inviting U.S. companies to produce prototypes of mid-power Hall effect thrusters – a type of electric propulsion system considered crucial for future space operations and exploration. Hall effect thrusters use an electric field to accelerate a…",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-0806628fa2434835fccb",
       "sourceId": "nasa",
