@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-21T23:47:54Z",
-  "lastSuccessfulAt": "2026-11-21T23:47:54Z",
+  "generatedAt": "2026-11-22T06:44:00Z",
+  "lastSuccessfulAt": "2026-11-22T06:44:00Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,10 +11,10 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-21T23:47:54Z",
-      "lastSuccessAt": "2026-11-21T23:47:54Z",
-      "lastPublishedAt": "2026-11-21T05:05:00Z",
-      "itemCount": 28,
+      "checkedAt": "2026-11-22T06:44:00Z",
+      "lastSuccessAt": "2026-11-22T06:44:00Z",
+      "lastPublishedAt": "2026-11-22T05:05:00Z",
+      "itemCount": 29,
       "error": null,
       "fetchedItemCount": 10
     },
@@ -26,7 +26,7 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "error",
-      "checkedAt": "2026-11-21T23:47:54Z",
+      "checkedAt": "2026-11-22T06:44:00Z",
       "lastSuccessAt": "2026-11-18T09:09:37Z",
       "lastPublishedAt": "2026-11-17T23:34:27Z",
       "itemCount": 6,
@@ -40,8 +40,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-21T23:47:54Z",
-      "lastSuccessAt": "2026-11-21T23:47:54Z",
+      "checkedAt": "2026-11-22T06:44:00Z",
+      "lastSuccessAt": "2026-11-22T06:44:00Z",
       "lastPublishedAt": "2026-11-19T12:39:18Z",
       "itemCount": 5,
       "error": null,
@@ -54,13 +54,12 @@
       "feedUrl": "https://cnes-geipan.fr/rss.xml",
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
-      "status": "ok",
-      "checkedAt": "2026-11-21T23:47:54Z",
+      "status": "error",
+      "checkedAt": "2026-11-22T06:44:00Z",
       "lastSuccessAt": "2026-11-21T23:47:54Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
-      "error": null,
-      "fetchedItemCount": 20
+      "error": "ParseError: not well-formed (invalid token): line 1, column 0"
     },
     {
       "id": "nara",
@@ -106,6 +105,21 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-7a7e6ef9a0f22aff65c8",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 22 – Swirls and Colors on Jupiter from Juno",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-22-swirls-and-colors-on-jupiter-from-juno/",
+      "publishedAt": "2026-11-22T05:05:00Z",
+      "ingestedAt": "2026-11-22T06:44:00Z",
+      "summary": "",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-72ea12fa87f5a40d150d",
       "sourceId": "nasa",
