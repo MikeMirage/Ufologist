@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-23T01:41:11Z",
-  "lastSuccessfulAt": "2026-11-23T01:41:11Z",
+  "generatedAt": "2026-11-23T09:48:04Z",
+  "lastSuccessfulAt": "2026-11-23T09:48:04Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,10 +11,10 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-23T01:41:11Z",
-      "lastSuccessAt": "2026-11-23T01:41:11Z",
-      "lastPublishedAt": "2026-11-22T19:13:25Z",
-      "itemCount": 29,
+      "checkedAt": "2026-11-23T09:48:04Z",
+      "lastSuccessAt": "2026-11-23T09:48:04Z",
+      "lastPublishedAt": "2026-11-23T05:05:00Z",
+      "itemCount": 31,
       "error": null,
       "fetchedItemCount": 10
     },
@@ -26,7 +26,7 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "error",
-      "checkedAt": "2026-11-23T01:41:11Z",
+      "checkedAt": "2026-11-23T09:48:04Z",
       "lastSuccessAt": "2026-11-18T09:09:37Z",
       "lastPublishedAt": "2026-11-17T23:34:27Z",
       "itemCount": 6,
@@ -40,8 +40,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-23T01:41:11Z",
-      "lastSuccessAt": "2026-11-23T01:41:11Z",
+      "checkedAt": "2026-11-23T09:48:04Z",
+      "lastSuccessAt": "2026-11-23T09:48:04Z",
       "lastPublishedAt": "2026-11-19T12:39:18Z",
       "itemCount": 5,
       "error": null,
@@ -54,12 +54,13 @@
       "feedUrl": "https://cnes-geipan.fr/rss.xml",
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
-      "status": "error",
-      "checkedAt": "2026-11-23T01:41:11Z",
-      "lastSuccessAt": "2026-11-22T21:03:10Z",
+      "status": "ok",
+      "checkedAt": "2026-11-23T09:48:04Z",
+      "lastSuccessAt": "2026-11-23T09:48:04Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
-      "error": "ParseError: not well-formed (invalid token): line 1, column 0"
+      "error": null,
+      "fetchedItemCount": 20
     },
     {
       "id": "nara",
@@ -105,6 +106,36 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-f2140fee950f7a18f5d8",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 23 – The Emergence of Dark Nebula Lynds 1251",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-23-the-emergence-of-dark-nebula-lynds-1251/",
+      "publishedAt": "2026-11-23T05:05:00Z",
+      "ingestedAt": "2026-11-23T09:48:04Z",
+      "summary": "",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
+    {
+      "id": "nasa-032b17500d4009fe9ff8",
+      "sourceId": "nasa",
+      "title": "Laser Focus at the Top of the World",
+      "url": "https://science.nasa.gov/earth/earth-observatory/laser-focus-at-the-top-of-the-world/",
+      "publishedAt": "2026-11-23T05:01:00Z",
+      "ingestedAt": "2026-11-23T09:48:04Z",
+      "summary": "A next-generation geodetic instrument developed by NASA, part of a network that helps measure satellites’ orbits and the planet’s shape, has debuted in Svalbard, Norway.",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-7a7e6ef9a0f22aff65c8",
       "sourceId": "nasa",
