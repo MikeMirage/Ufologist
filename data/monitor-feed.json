@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-24T17:40:31Z",
-  "lastSuccessfulAt": "2026-11-24T17:40:31Z",
+  "generatedAt": "2026-11-25T01:37:00Z",
+  "lastSuccessfulAt": "2026-11-25T01:37:00Z",
   "sources": [
     {
       "id": "nasa",
@@ -10,12 +10,13 @@
       "feedUrl": "https://www.nasa.gov/feed/",
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
-      "status": "error",
-      "checkedAt": "2026-11-24T17:40:31Z",
-      "lastSuccessAt": "2026-11-23T09:48:04Z",
-      "lastPublishedAt": "2026-11-23T05:05:00Z",
-      "itemCount": 31,
-      "error": "ValueError: Declaraciones XML externas no permitidas"
+      "status": "ok",
+      "checkedAt": "2026-11-25T01:37:00Z",
+      "lastSuccessAt": "2026-11-25T01:37:00Z",
+      "lastPublishedAt": "2026-11-24T21:14:36Z",
+      "itemCount": 34,
+      "error": null,
+      "fetchedItemCount": 10
     },
     {
       "id": "debrief",
@@ -25,7 +26,7 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "error",
-      "checkedAt": "2026-11-24T17:40:31Z",
+      "checkedAt": "2026-11-25T01:37:00Z",
       "lastSuccessAt": "2026-11-18T09:09:37Z",
       "lastPublishedAt": "2026-11-17T23:34:27Z",
       "itemCount": 6,
@@ -39,8 +40,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-24T17:40:31Z",
-      "lastSuccessAt": "2026-11-24T17:40:31Z",
+      "checkedAt": "2026-11-25T01:37:00Z",
+      "lastSuccessAt": "2026-11-25T01:37:00Z",
       "lastPublishedAt": "2026-11-19T12:39:18Z",
       "itemCount": 5,
       "error": null,
@@ -53,12 +54,13 @@
       "feedUrl": "https://cnes-geipan.fr/rss.xml",
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
-      "status": "error",
-      "checkedAt": "2026-11-24T17:40:31Z",
-      "lastSuccessAt": "2026-11-24T06:00:14Z",
+      "status": "ok",
+      "checkedAt": "2026-11-25T01:37:00Z",
+      "lastSuccessAt": "2026-11-25T01:37:00Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
-      "error": "ParseError: not well-formed (invalid token): line 1, column 0"
+      "error": null,
+      "fetchedItemCount": 20
     },
     {
       "id": "nara",
@@ -104,6 +106,51 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-ecbc64e7d02a7a442820",
+      "sourceId": "nasa",
+      "title": "Teams Lock in Mission Architecture for NASA’s SR-1 Freedom",
+      "url": "https://www.nasa.gov/general/nasa-locks-in-sr1-freedom-mission-architecture/",
+      "publishedAt": "2026-11-24T21:04:32Z",
+      "ingestedAt": "2026-11-25T01:37:00Z",
+      "summary": "NASA completed a major review for Space Reactor-1 (SR-1) Freedom and locked in key elements of the spacecraft, which is targeted to launch in 2028 and demonstrate nuclear electric propulsion in deep space for the first time. Experts from across the agency, the U.S. Department…",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
+    {
+      "id": "nasa-5257e4b96b7100c003d2",
+      "sourceId": "nasa",
+      "title": "NASA’s Northrop Grumman CRS-25 Mission Overview",
+      "url": "https://www.nasa.gov/missions/station/nasas-northrop-grumman-crs-25-mission-overview/",
+      "publishedAt": "2026-11-24T19:09:16Z",
+      "ingestedAt": "2026-11-25T01:37:00Z",
+      "summary": "NASA’s Northrop Grumman Commercial Resupply Services 25 mission, or Northrop Grumman CRS-25, will deliver about 11,000 pounds of science and supplies to the International Space Station. The mission will be the third flight of the company’s Cygnus XL, the larger, more…",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
+    {
+      "id": "nasa-a659db74de57d17ab12e",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 24 – Galaxies Battle in the NGC 7771 Group",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-24-galaxies-battle-in-the-ngc-7771-group/",
+      "publishedAt": "2026-11-24T05:05:00Z",
+      "ingestedAt": "2026-11-25T01:37:00Z",
+      "summary": "",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-f2140fee950f7a18f5d8",
       "sourceId": "nasa",
