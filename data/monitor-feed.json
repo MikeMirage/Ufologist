@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-28T04:15:54Z",
-  "lastSuccessfulAt": "2026-11-28T04:15:54Z",
+  "generatedAt": "2026-11-28T13:02:28Z",
+  "lastSuccessfulAt": "2026-11-28T13:02:28Z",
   "sources": [
     {
       "id": "nasa",
@@ -11,10 +11,10 @@
       "kind": "institution",
       "description": "Ciencia y contexto del cielo. RSS general, filtrado por relevancia UAP o aeroespacial.",
       "status": "ok",
-      "checkedAt": "2026-11-28T04:15:54Z",
-      "lastSuccessAt": "2026-11-28T04:15:54Z",
-      "lastPublishedAt": "2026-11-27T15:01:00Z",
-      "itemCount": 36,
+      "checkedAt": "2026-11-28T13:02:28Z",
+      "lastSuccessAt": "2026-11-28T13:02:28Z",
+      "lastPublishedAt": "2026-11-28T05:05:00Z",
+      "itemCount": 37,
       "error": null,
       "fetchedItemCount": 10
     },
@@ -26,7 +26,7 @@
       "kind": "media",
       "description": "Cobertura periodística de UAP, ciencia y tecnología. Publicación no equivale a verificación.",
       "status": "error",
-      "checkedAt": "2026-11-28T04:15:54Z",
+      "checkedAt": "2026-11-28T13:02:28Z",
       "lastSuccessAt": "2026-11-18T09:09:37Z",
       "lastPublishedAt": "2026-11-17T23:34:27Z",
       "itemCount": 6,
@@ -40,8 +40,8 @@
       "kind": "archive",
       "description": "Publicaciones documentales y archivos. Se filtran temas ajenos al fenómeno UAP.",
       "status": "ok",
-      "checkedAt": "2026-11-28T04:15:54Z",
-      "lastSuccessAt": "2026-11-28T04:15:54Z",
+      "checkedAt": "2026-11-28T13:02:28Z",
+      "lastSuccessAt": "2026-11-28T13:02:28Z",
       "lastPublishedAt": "2026-11-26T14:20:10Z",
       "itemCount": 5,
       "error": null,
@@ -54,12 +54,13 @@
       "feedUrl": "https://cnes-geipan.fr/rss.xml",
       "kind": "institution",
       "description": "Actualidad institucional de baja frecuencia; el RSS no es un flujo de avistamientos.",
-      "status": "error",
-      "checkedAt": "2026-11-28T04:15:54Z",
-      "lastSuccessAt": "2026-11-27T22:42:04Z",
+      "status": "ok",
+      "checkedAt": "2026-11-28T13:02:28Z",
+      "lastSuccessAt": "2026-11-28T13:02:28Z",
       "lastPublishedAt": "2026-11-03T00:00:00Z",
       "itemCount": 21,
-      "error": "ParseError: not well-formed (invalid token): line 1, column 0"
+      "error": null,
+      "fetchedItemCount": 20
     },
     {
       "id": "nara",
@@ -105,6 +106,21 @@
     }
   ],
   "items": [
+    {
+      "id": "nasa-e2c6c7d975556baecea4",
+      "sourceId": "nasa",
+      "title": "APOD: 2026 November 28 – Apollo 17 VIP Site Anaglyph",
+      "url": "https://science.nasa.gov/image-article/apod-2026-november-28-apollo-17-vip-site-anaglyph/",
+      "publishedAt": "2026-11-28T05:05:00Z",
+      "ingestedAt": "2026-11-28T13:02:28Z",
+      "summary": "",
+      "category": "sky-context",
+      "kind": "update",
+      "editorialStatus": "unreviewed",
+      "observedAt": null,
+      "location": null,
+      "caseIds": []
+    },
     {
       "id": "nasa-51fd5ff1e872d4a46456",
       "sourceId": "nasa",
